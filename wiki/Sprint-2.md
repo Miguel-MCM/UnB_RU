@@ -30,9 +30,9 @@ Todos os jobs usam o Ruby definido em `.ruby-version` (3.3.8), com as gems em ca
 
 ## Decisões
 
-- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (82 undefined)`, porque os step definitions ainda vão ser escritos.
+- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (79 undefined, 3 passed)`: só os cenários do cadastro de usuário já têm step definitions.
 - **Runner fixado em `ubuntu-24.04`.** O `ubuntu-latest` passou a ser o Ubuntu 26.04, que não oferece o Ruby 3.3.8. Para usar o `ubuntu-latest`, é preciso subir o Ruby do projeto para a versão 3.3 mais recente, em `.ruby-version` e no `Dockerfile`.
-- **`db/schema.rb` versionado.** Sem ele, `bin/rails db:test:prepare` falha. O arquivo ainda está vazio porque não há migrations, e é atualizado sempre que alguém roda `bin/rails db:migrate`.
+- **`db/schema.rb` versionado.** Sem ele, `bin/rails db:test:prepare` falha. O arquivo é atualizado sempre que alguém roda `bin/rails db:migrate`.
 
 ## Rodar localmente
 
@@ -45,3 +45,16 @@ bin/rubocop
 ```
 
 Para corrigir automaticamente as ofensas do RuboCop que têm correção segura, use `bin/rubocop -a`.
+
+## Issue #6 — Cadastro de Usuário
+
+- **Issue:** [#6 Cadastro de Usuário](https://github.com/Miguel-MCM/UnB_RU/issues/6) (no repositório principal, [#1](https://github.com/neatzzy/UnB_RU/issues/1))
+- **Responsável:** Miguel ([@Miguel-MCM](https://github.com/Miguel-MCM))
+- **Design:** [Figma do projeto](https://www.figma.com/design/Clozp7Rj1jOBz6l7LoT44t/UnB-RU---Engenharia-de-Software?node-id=0-1&p=f&t=Z5Wstj7zb37w7TT8-0)
+
+A issue foi desenvolvida por mim com o [Cursor](https://cursor.com), usando o agente com o modelo **Claude Opus 5.5**, da Anthropic, em TDD: primeiro os step definitions do Cucumber para os cenários de `features/cadastro_de_usuario.feature`, depois as specs do RSpec do modelo e das requisições, e só então o código que as faz passar. O primeiro prompt enviado ao agente foi:
+
+> Utilize TDD para desenvolver a issue #6
+> Faça a página conforme o seguinte figma: https://www.figma.com/design/Clozp7Rj1jOBz6l7LoT44t/UnB-RU---Engenharia-de-Software?node-id=0-1&p=f&t=Z5Wstj7zb37w7TT8-0
+
+Todo o código gerado pelo agente foi revisado por mim.
