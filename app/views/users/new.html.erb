@@ -1,0 +1,32 @@
+<% content_for :title, "Criar conta · RU UnB Digital" %>
+
+<section class="card auth-card">
+  <span class="auth-card__icon"><%= icon(:badge) %></span>
+  <h1 class="auth-card__title">Crie sua conta</h1>
+  <p class="auth-card__subtitle">
+    Cadastre-se com sua matrícula da UnB para acessar o Restaurante Universitário e gerenciar seu saldo.
+  </p>
+
+  <%= form_with model: @user, url: signup_path, class: "auth-form" do |form| %>
+    <%= render "field", form:, attribute: :nome, label: "Nome Completo", icon_name: :person,
+          placeholder: "Ex: Ana Beatriz Silva", autocomplete: "name" %>
+
+    <%= render "field", form:, attribute: :matricula, label: "Matrícula SIGAA ou SIAPE", icon_name: :badge,
+          placeholder: "Ex: 221045999 ou 1984201", autocomplete: "username", inputmode: "numeric" %>
+
+    <%= render "field", form:, attribute: :password, label: "Senha de Acesso", icon_name: :lock,
+          type: :password_field, placeholder: "Crie uma senha de acesso", autocomplete: "new-password" %>
+
+    <%= render "field", form:, attribute: :password_confirmation, label: "Confirmar Senha", icon_name: :lock,
+          type: :password_field, placeholder: "Digite a senha novamente", autocomplete: "new-password" %>
+
+    <%= form.button class: "button button--primary" do %>
+      <%= icon(:person_add) %>
+      Criar Minha Conta
+    <% end %>
+  <% end %>
+
+  <p class="auth-card__footer">
+    <%= link_to "Já possui uma conta? Acesse aqui", login_path, class: "link" %>
+  </p>
+</section>

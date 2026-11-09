@@ -1,0 +1,26 @@
+pt-BR:
+  activerecord:
+    models:
+      user: Usuário
+    attributes:
+      user:
+        nome: Nome Completo
+        matricula: Matrícula
+        password: Senha de Acesso
+        password_confirmation: Confirmar Senha
+    errors:
+      models:
+        user:
+          attributes:
+            matricula:
+              invalid: deve conter apenas números
+              taken: já possui uma conta cadastrada
+            password_confirmation:
+              confirmation: As senhas não conferem
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: não pode ficar em branco
+      confirmation: não confere com %{attribute}
+      invalid: não é válido
+      taken: já está em uso

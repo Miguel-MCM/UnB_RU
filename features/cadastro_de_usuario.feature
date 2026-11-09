@@ -10,7 +10,7 @@ Funcionalidade: Cadastro de usuário
 
   Cenário: Realizar cadastro com sucesso preenchendo os dados obrigatórios
     Dado que o estudante preenche o campo "Nome Completo" com "João da Silva"
-    E preenche o campo "Matricula SIGAA ou SIAPE" com "2023123456"
+    E preenche o campo "Matrícula SIGAA ou SIAPE" com "2023123456"
     E preenche o campo "Senha de Acesso" com "SenhaForte123"
     E preenche o campo "Confirmar Senha" com "SenhaForte123"
     Quando clica no botão "Criar Minha Conta"
@@ -19,7 +19,7 @@ Funcionalidade: Cadastro de usuário
 
   Cenário: Tentar cadastrar com senhas divergentes
     Dado que o estudante preenche o campo "Nome Completo" com "Maria Souza"
-    E preenche o campo "Matricula SIGAA ou SIAPE" com "2023654321"
+    E preenche o campo "Matrícula SIGAA ou SIAPE" com "2023654321"
     E preenche o campo "Senha de Acesso" com "Senha123"
     E preenche o campo "Confirmar Senha" com "OutraSenha Diferente"
     Quando clica no botão "Criar Minha Conta"
