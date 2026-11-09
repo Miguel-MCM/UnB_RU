@@ -5,7 +5,7 @@ Sistema de gerenciamento para o Restaurante Universitário da UnB.
 - **Repositório principal:** [neatzzy/UnB_RU](https://github.com/neatzzy/UnB_RU)
 - **Fork do grupo:** [Miguel-MCM/UnB_RU](https://github.com/Miguel-MCM/UnB_RU)
 - **Kanban:** [UnB RU](https://github.com/users/Miguel-MCM/projects/1/views/2)
-- **Workflow:** [`.github/workflows/ci.yml`](https://github.com/Miguel-MCM/UnB_RU/blob/sprint2-ci/.github/workflows/ci.yml)
+- **Workflow:** [`.github/workflows/ci.yml`](https://github.com/Miguel-MCM/UnB_RU/blob/sprint2/.github/workflows/ci.yml)
 - **Execuções:** [GitHub Actions](https://github.com/Miguel-MCM/UnB_RU/actions/workflows/ci.yml)
 
 ## Como o CI foi feito
