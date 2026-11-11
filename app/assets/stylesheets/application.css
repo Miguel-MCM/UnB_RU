@@ -19,6 +19,7 @@
   --color-page: #fcf9f8;
   --color-surface: #ffffff;
   --color-input: #f6f3f2;
+  --color-muted-surface: #f3f0ef;
   --color-border: #efe9e7;
   --color-danger: #c8371f;
   --color-danger-surface: #fdf1ef;
@@ -68,6 +69,97 @@ p {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding-right: 24px;
+}
+
+.topbar__nav {
+  display: flex;
+  gap: 8px;
+  padding-left: 24px;
+  border-left: 1px solid var(--color-border);
+}
+
+.topbar__link {
+  padding: 8px 14px;
+  border-radius: var(--radius-input);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.topbar__link:hover,
+.topbar__link[aria-current="page"] {
+  background: var(--color-muted-surface);
+  color: var(--color-text);
+}
+
+.topbar__conta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.topbar__usuario,
+.topbar__saldo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.topbar__usuario {
+  align-items: flex-end;
+  font-size: 13px;
+}
+
+.topbar__usuario small,
+.topbar__saldo small {
+  color: var(--color-text-subtle);
+  font-size: 11px;
+}
+
+.topbar__saldo {
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: var(--radius-input);
+  background: var(--color-muted-surface);
+}
+
+.topbar__saldo small:first-child {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.topbar__saldo strong {
+  color: var(--color-success);
+  font-size: 14px;
+}
+
+.topbar__avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-primary-dark);
+  color: #ffffff;
+}
+
+.topbar__avatar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.topbar__sair {
+  padding: 6px 4px;
+  border: 0;
+  background: none;
+  color: var(--color-danger);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .brand__logo {
@@ -112,7 +204,7 @@ p {
 }
 
 .flash {
-  width: min(100%, 580px);
+  width: min(100%, 880px);
   padding: 12px 16px;
   border-radius: var(--radius-input);
   font-weight: 600;
@@ -178,4 +270,43 @@ p {
 
 .button--primary:hover {
   background: var(--color-primary);
+}
+
+.button--small {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.button--small svg {
+  width: 16px;
+  height: 16px;
+}
+
+.button--block {
+  width: 100%;
+}
+
+.eyebrow {
+  color: var(--color-text-subtle);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.eyebrow--sucesso {
+  color: var(--color-success);
+}
+
+.selo {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.selo--sucesso {
+  background: var(--color-success-surface);
+  color: var(--color-success);
 }

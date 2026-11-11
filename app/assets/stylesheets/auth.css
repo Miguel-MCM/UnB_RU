@@ -3,6 +3,10 @@
   padding: 32px;
 }
 
+.page:has(.auth-card) .flash {
+  width: min(100%, 580px);
+}
+
 .auth-card__icon {
   display: inline-flex;
   color: var(--color-primary);

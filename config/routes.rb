@@ -12,6 +12,10 @@ Rails.application.routes.draw do
   get "cadastro", to: "users#new", as: :signup
   post "cadastro", to: "users#create"
   get "login", to: "sessions#new"
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+
+  resource :recarga, only: %i[show create]
 
   # Defines the root path route ("/")
   # root "posts#index"

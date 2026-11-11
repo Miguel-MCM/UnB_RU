@@ -1,0 +1,165 @@
+<% content_for :title, "Recarga · RU UnB Digital" %>
+<% total = @quantidade.to_i * Recarga::TARIFA_CENTAVOS %>
+
+<div class="recarga">
+  <section class="conta">
+    <span class="conta__icone"><%= icon(:wallet) %></span>
+    <div>
+      <p class="eyebrow">Conta do estudante</p>
+      <p class="conta__nome"><%= current_user.nome %></p>
+    </div>
+    <div class="conta__saldo">
+      <p class="eyebrow">Saldo atual</p>
+      <p>
+        <strong class="conta__valor"><%= reais(current_user.saldo_centavos) %></strong>
+        <small>(<%= current_user.refeicoes_disponiveis %> refs)</small>
+      </p>
+    </div>
+  </section>
+
+  <header class="recarga__titulo">
+    <h1>Recarregar Saldo</h1>
+    <p>Adicione créditos para usar no RU.</p>
+  </header>
+
+  <%= turbo_frame_tag "recarga", class: "recarga__grid", data: { turbo_action: "replace" } do %>
+    <div class="recarga__passos">
+      <section class="card passo" id="pacotes">
+        <h2 class="passo__titulo"><span class="passo__numero">1</span> Escolha o Pacote de Refeições</h2>
+
+        <div class="pacotes">
+          <% Recarga::PACOTES.each do |quantidade, descricao| %>
+            <%= link_to recarga_path(quantidade:, metodo: @metodo), class: "pacote", aria: { current: ("true" if quantidade == @quantidade) } do %>
+              <span class="pacote__nome"><%= quantidade %> Refeições</span>
+              <span class="pacote__radio"><%= icon(:check_circle) %></span>
+              <span class="pacote__valor"><%= reais(quantidade * Recarga::TARIFA_CENTAVOS) %></span>
+              <span class="pacote__descricao"><%= descricao %></span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <div class="quantidade" id="quantidade-personalizada">
+          <div class="quantidade__linha">
+            <span class="quantidade__rotulo"><%= icon(:tune) %> Outra quantidade:</span>
+            <div class="stepper">
+              <% if @quantidade.to_i > 1 %>
+                <%= link_to icon(:remove), recarga_path(quantidade: @quantidade - 1, metodo: @metodo),
+                      class: "stepper__botao", aria: { label: "Diminuir quantidade" } %>
+              <% else %>
+                <span class="stepper__botao" aria-disabled="true"><%= icon(:remove) %></span>
+              <% end %>
+              <output class="stepper__valor"><%= @quantidade.to_i %></output>
+              <%= link_to icon(:add), recarga_path(quantidade: @quantidade.to_i + 1, metodo: @metodo),
+                    class: "stepper__botao", aria: { label: "Aumentar quantidade" } %>
+            </div>
+          </div>
+          <p class="quantidade__calculo">
+            <span>Cálculo: <%= @quantidade.to_i %> × <%= reais(Recarga::TARIFA_CENTAVOS) %></span>
+            <strong>= <%= reais(total) %></strong>
+          </p>
+        </div>
+      </section>
+
+      <section class="card passo" id="metodos">
+        <div class="passo__cabecalho">
+          <h2 class="passo__titulo"><span class="passo__numero">2</span> Selecione o Método</h2>
+          <span class="eyebrow"><%= Recarga::METODOS_PAGAMENTO.size %> opções</span>
+        </div>
+
+        <div class="metodos">
+          <% Recarga::METODOS_PAGAMENTO.each do |metodo, nome| %>
+            <%= link_to recarga_path(quantidade: @quantidade, metodo:), class: "metodo", aria: { current: ("true" if metodo == @metodo) } do %>
+              <%= icon(metodo == "pix" ? :qr_code : :credit_card) %>
+              <%= nome %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @metodo == "pix" %>
+          <div class="pagamento pix" id="pix">
+            <% if @quantidade %>
+              <% codigo = codigo_pix(total) %>
+              <div class="pix__qr-moldura"><%= qr_code_pix(codigo) %></div>
+              <div class="pix__instrucoes" data-controller="clipboard">
+                <p class="eyebrow eyebrow--sucesso">Instantâneo</p>
+                <h3 class="pagamento__titulo">Aponte o app do seu banco</h3>
+                <p class="pagamento__texto">Compensação imediata. O saldo é liberado em segundos.</p>
+                <label for="chave-pix" class="pix__rotulo">Chave Pix</label>
+                <textarea id="chave-pix" class="pix__chave" rows="3" readonly data-clipboard-target="source"><%= codigo %></textarea>
+                <button type="button" class="button button--primary button--small" data-action="clipboard#copy">
+                  <%= icon(:content_copy) %>
+                  <span data-clipboard-target="label">Copiar Código</span>
+                </button>
+              </div>
+            <% else %>
+              <p class="pagamento__texto">Escolha um pacote ou informe outra quantidade para gerar o QR Code.</p>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="pagamento" id="cartao">
+            <span class="pagamento__icone"><%= icon(:credit_card) %></span>
+            <div>
+              <p class="eyebrow eyebrow--sucesso">Aprovação na hora</p>
+              <h3 class="pagamento__titulo">Pague com cartão de crédito</h3>
+              <p class="pagamento__texto">Ao confirmar, o valor é cobrado no cartão e o saldo é liberado em seguida.</p>
+            </div>
+          </div>
+        <% end %>
+      </section>
+    </div>
+
+    <aside class="card resumo" id="resumo">
+      <div class="resumo__cabecalho">
+        <h2>Resumo da Recarga</h2>
+        <span class="resumo__icone"><%= icon(:receipt) %></span>
+      </div>
+
+      <% if @quantidade %>
+        <dl class="resumo__itens">
+          <div>
+            <dt>Refeições:</dt>
+            <dd class="resumo__refeicoes"><%= pluralize(@quantidade, "refeição", plural: "refeições") %></dd>
+          </div>
+          <div>
+            <dt>Tarifa unitária:</dt>
+            <dd><%= reais(Recarga::TARIFA_CENTAVOS) %> / un</dd>
+          </div>
+          <div>
+            <dt>Pagamento:</dt>
+            <dd class="resumo__metodo"><%= icon(@metodo == "pix" ? :qr_code : :credit_card) %> <%= Recarga::METODOS_PAGAMENTO[@metodo] %></dd>
+          </div>
+        </dl>
+
+        <dl class="resumo__saldo">
+          <div>
+            <dt>Saldo atual (<%= current_user.refeicoes_disponiveis %> refs)</dt>
+            <dd><%= reais(current_user.saldo_centavos) %></dd>
+          </div>
+          <div class="resumo__novo">
+            <dt>Novo saldo:</dt>
+            <dd><%= saldo_em_refeicoes(current_user.saldo_centavos + total) %></dd>
+          </div>
+        </dl>
+
+        <div class="resumo__total">
+          <div>
+            <p class="eyebrow">Total</p>
+            <p class="resumo__valor"><%= reais(total) %></p>
+          </div>
+          <span class="selo selo--sucesso">+<%= @quantidade %> refs</span>
+        </div>
+
+        <%= form_with url: recarga_path, data: { turbo_frame: "_top" } do |form| %>
+          <%= form.hidden_field :quantidade, value: @quantidade %>
+          <%= form.hidden_field :metodo, value: @metodo %>
+          <%= form.button class: "button button--primary button--block" do %>
+            <%= icon(:check_circle) %>
+            Confirmar
+          <% end %>
+        <% end %>
+      <% else %>
+        <p class="resumo__vazio">Escolha um pacote ou informe outra quantidade para ver o resumo.</p>
+      <% end %>
+    </aside>
+  <% end %>
+</div>
