@@ -1,4 +1,4 @@
-Dado(/^(?:que o estudante )?preenche o campo "([^"]*)" com "([^"]*)"$/) do |campo, valor|
+Dado(/^(?:que o (?:estudante|funcionário) )?preenche o campo "([^"]*)" com "([^"]*)"$/) do |campo, valor|
   fill_in campo, with: valor
 end
 

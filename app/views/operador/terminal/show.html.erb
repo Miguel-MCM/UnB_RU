@@ -1,0 +1,13 @@
+<% content_for :title, "Terminal de Validação · RU UnB" %>
+
+<section class="card terminal">
+  <span class="terminal__icone"><%= icon(:qr_code) %></span>
+  <div class="terminal__texto">
+    <span class="selo selo--sucesso">Operação Ativa</span>
+    <h1 class="terminal__titulo">Terminal liberado para operação</h1>
+    <p class="terminal__detalhe">
+      Sessão iniciada por <strong><%= current_funcionario.nome %></strong>
+      às <%= l(Time.current, format: "%H:%M") %>. A catraca está pronta para ler os QR Codes dos estudantes.
+    </p>
+  </div>
+</section>
