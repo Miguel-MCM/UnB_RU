@@ -66,4 +66,8 @@ group :test do
   # Testes de aceitação BDD dos cenários em features/ [https://github.com/cucumber/cucumber-rails]
   gem "cucumber-rails", require: false
   gem "database_cleaner-active_record"
+  gem "pdf-reader"
 end
+
+gem "prawn", "~> 2.5"
+gem "prawn-table", "~> 0.2.2"
