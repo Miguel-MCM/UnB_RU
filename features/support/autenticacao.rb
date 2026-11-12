@@ -1,6 +1,11 @@
 module AutenticacaoHelpers
-  def entrar_como_funcionario
-    @funcionario ||= Funcionario.create!(nome: "Carlos Mendes", matricula: "1984201", password: "Operador123")
+  def entrar_como_funcionario(administrador: false)
+    @funcionario ||= Funcionario.create!(
+      nome: administrador ? "Fernando Albuquerque" : "Carlos Mendes",
+      matricula: administrador ? "1083921" : "1984201",
+      password: "Operador123",
+      administrador:
+    )
 
     visit operador_login_path
     fill_in "Matrícula SIAPE ou Usuário SIGAA / gov.br", with: @funcionario.matricula

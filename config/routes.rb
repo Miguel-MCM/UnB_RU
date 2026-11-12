@@ -28,6 +28,13 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :admin do
+    resources :restaurantes, except: :show do
+      resources :catracas, only: :create
+    end
+    resources :catracas, only: %i[edit update destroy]
+  end
+
   # Defines the root path route ("/")
   # root "posts#index"
 end

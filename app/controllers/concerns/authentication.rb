@@ -21,4 +21,8 @@ module Authentication
     def require_operador
       redirect_to operador_login_path, alert: "Autentique-se como operador para continuar." unless current_funcionario
     end
+
+    def require_administrador
+      redirect_to operador_terminal_path, alert: "Área restrita a administradores." unless current_funcionario.administrador?
+    end
 end

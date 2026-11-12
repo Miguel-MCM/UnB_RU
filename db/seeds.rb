@@ -14,4 +14,10 @@ if Rails.env.development?
     funcionario.nome = "Carlos Mendes"
     funcionario.password = "Operador123"
   end
+
+  Funcionario.find_or_create_by!(matricula: "1083921") do |funcionario|
+    funcionario.nome = "Fernando Albuquerque"
+    funcionario.password = "Admin123"
+    funcionario.administrador = true
+  end
 end

@@ -3,6 +3,10 @@ pt-BR:
     models:
       user: Usuário
     attributes:
+      catraca:
+        nome: Nome
+      restaurante:
+        nome: Nome
       user:
         nome: Nome Completo
         matricula: Matrícula

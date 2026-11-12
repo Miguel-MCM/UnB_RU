@@ -12,7 +12,7 @@ module Operador
       if (funcionario = @login.funcionario)
         reset_session
         session[:funcionario_id] = funcionario.id
-        redirect_to operador_terminal_path
+        redirect_to funcionario.administrador? ? admin_restaurantes_path : operador_terminal_path
       else
         flash.now[:alert] = "Matrícula ou senha inválidas." if @login.errors.empty?
         render :new, status: :unprocessable_content

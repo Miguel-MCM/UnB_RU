@@ -19,12 +19,16 @@
         <nav class="topbar__nav" aria-label="Aplicação de controle">
           <%= link_to "Terminal de Validação", operador_terminal_path, class: "topbar__link topbar__link--destaque",
                 aria: { current: ("page" if current_page?(operador_terminal_path)) } %>
+          <% if current_funcionario.administrador? %>
+            <%= link_to "Restaurantes e Catracas", admin_restaurantes_path, class: "topbar__link topbar__link--destaque",
+                  aria: { current: ("page" if controller_path.start_with?("admin/")) } %>
+          <% end %>
         </nav>
 
         <div class="topbar__conta">
           <div class="topbar__usuario">
             <strong><%= current_funcionario.nome %></strong>
-            <small>Operador · <%= current_funcionario.matricula %></small>
+            <small><%= current_funcionario.administrador? ? "Administrador" : "Operador" %> · <%= current_funcionario.matricula %></small>
           </div>
           <span class="topbar__avatar"><%= icon(:person) %></span>
           <%= button_to "Sair", operador_logout_path, method: :delete, class: "topbar__sair" %>
