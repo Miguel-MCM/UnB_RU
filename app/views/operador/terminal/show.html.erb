@@ -1,13 +1,81 @@
 <% content_for :title, "Terminal de Validação · RU UnB" %>
 
-<section class="card terminal">
-  <span class="terminal__icone"><%= icon(:qr_code) %></span>
-  <div class="terminal__texto">
-    <span class="selo selo--sucesso">Operação Ativa</span>
-    <h1 class="terminal__titulo">Terminal liberado para operação</h1>
-    <p class="terminal__detalhe">
-      Sessão iniciada por <strong><%= current_funcionario.nome %></strong>
-      às <%= l(Time.current, format: "%H:%M") %>. A catraca está pronta para ler os QR Codes dos estudantes.
-    </p>
+<div class="terminal">
+  <section class="card terminal__cabecalho">
+    <span class="terminal__icone"><%= icon(:qr_code) %></span>
+    <div class="terminal__texto">
+      <h1 class="terminal__titulo">
+        Terminal de Validação
+        <span class="selo selo--sucesso">Operação Ativa</span>
+      </h1>
+      <p class="terminal__detalhe">
+        Terminal liberado para operação por <strong><%= current_funcionario.nome %></strong>
+        · <span class="terminal__tarifa">Tarifa vigente: <%= reais(@tarifa) %></span>
+      </p>
+    </div>
+    <div class="relogio">
+      <p class="eyebrow">Horário oficial</p>
+      <p class="relogio__hora"><%= l(Time.current, format: "%H:%M") %></p>
+    </div>
+  </section>
+
+  <div class="terminal__grid">
+    <section class="card painel leitor">
+      <h2 class="painel__titulo"><%= icon(:qr_code) %> Leitura Ótica do QR Code</h2>
+
+      <div class="leitor__area">
+        <%= icon(:qr_code, class: "leitor__qr") %>
+        <p class="leitor__status">Aguardando leitura do QR Code…</p>
+      </div>
+
+      <%= form_with url: operador_acessos_path, class: "leitor__form" do |form| %>
+        <%= form.label :identificacao, "Identificação do estudante", class: "field__label" %>
+        <div class="leitor__linha">
+          <%= form.text_field :identificacao, class: "field__input leitor__input", required: true, autofocus: true,
+                placeholder: "Matrícula lida no QR Code", inputmode: "numeric", autocomplete: "off" %>
+          <%= form.button class: "button button--primary" do %>
+            <%= icon(:qr_code) %>
+            Ler identificação
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="card painel" id="resultado" aria-live="polite">
+      <%= render "resultado", acesso: @acesso %>
+    </section>
   </div>
-</section>
+
+  <section class="card painel validacoes">
+    <h2 class="painel__titulo"><%= icon(:receipt) %> Últimas Validações Registradas</h2>
+
+    <% if @ultimos_acessos.any? %>
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th scope="col">Horário</th>
+            <th scope="col">Matrícula</th>
+            <th scope="col">Estudante</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Status da catraca</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @ultimos_acessos.each do |acesso| %>
+            <tr>
+              <td class="tabela__hora"><%= l(acesso.created_at, format: "%H:%M:%S") %></td>
+              <td><%= acesso.identificacao %></td>
+              <td><%= acesso.user&.nome || "—" %></td>
+              <td class="<%= "tabela__debito" if acesso.confirmado? %>">
+                <%= acesso.confirmado? ? "- #{reais(acesso.valor_centavos)}" : reais(0) %>
+              </td>
+              <td><%= status_acesso(acesso) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="painel__vazio">Nenhuma leitura registrada nesta sessão.</p>
+    <% end %>
+  </section>
+</div>

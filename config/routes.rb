@@ -23,6 +23,9 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy"
 
     resource :terminal, only: :show, controller: "terminal"
+    resources :acessos, only: :create do
+      resource :passagem, only: :create, controller: "passagens"
+    end
   end
 
   # Defines the root path route ("/")

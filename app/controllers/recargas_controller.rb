@@ -5,6 +5,7 @@ class RecargasController < ApplicationController
     quantidade = params[:quantidade].to_i
     @quantidade = quantidade if quantidade.positive?
     @metodo = params[:metodo].presence_in(Recarga::METODOS_PAGAMENTO.keys) || "pix"
+    @tarifa = Tarifa.vigente_centavos
   end
 
   def create

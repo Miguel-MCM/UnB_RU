@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_11_000952) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_223831) do
+  create_table "acessos", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "funcionario_id", null: false
+    t.string "identificacao", null: false
+    t.string "status", null: false
+    t.integer "valor_centavos", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["funcionario_id"], name: "index_acessos_on_funcionario_id"
+    t.index ["user_id"], name: "index_acessos_on_user_id"
+  end
+
   create_table "funcionarios", force: :cascade do |t|
     t.string "nome", null: false
     t.string "matricula", null: false
@@ -30,6 +42,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_000952) do
     t.index ["user_id"], name: "index_recargas_on_user_id"
   end
 
+  create_table "tarifas", force: :cascade do |t|
+    t.integer "valor_centavos", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "nome", null: false
     t.string "matricula", null: false
@@ -40,5 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_000952) do
     t.index ["matricula"], name: "index_users_on_matricula", unique: true
   end
 
+  add_foreign_key "acessos", "funcionarios"
+  add_foreign_key "acessos", "users"
   add_foreign_key "recargas", "users"
 end

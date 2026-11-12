@@ -1,5 +1,5 @@
 <% content_for :title, "Recarga · RU UnB Digital" %>
-<% total = @quantidade.to_i * Recarga::TARIFA_CENTAVOS %>
+<% total = @quantidade.to_i * @tarifa %>
 
 <div class="recarga">
   <section class="conta">
@@ -32,8 +32,8 @@
             <%= link_to recarga_path(quantidade:, metodo: @metodo), class: "pacote", aria: { current: ("true" if quantidade == @quantidade) } do %>
               <span class="pacote__nome"><%= quantidade %> Refeições</span>
               <span class="pacote__radio"><%= icon(:check_circle) %></span>
-              <span class="pacote__valor"><%= reais(quantidade * Recarga::TARIFA_CENTAVOS) %></span>
-              <span class="pacote__descricao"><%= descricao %></span>
+              <span class="pacote__valor"><%= reais(quantidade * @tarifa) %></span>
+              <span class="pacote__descricao"><%= descricao || "#{reais(@tarifa)} / un" %></span>
             <% end %>
           <% end %>
         </div>
@@ -54,7 +54,7 @@
             </div>
           </div>
           <p class="quantidade__calculo">
-            <span>Cálculo: <%= @quantidade.to_i %> × <%= reais(Recarga::TARIFA_CENTAVOS) %></span>
+            <span>Cálculo: <%= @quantidade.to_i %> × <%= reais(@tarifa) %></span>
             <strong>= <%= reais(total) %></strong>
           </p>
         </div>
@@ -122,7 +122,7 @@
           </div>
           <div>
             <dt>Tarifa unitária:</dt>
-            <dd><%= reais(Recarga::TARIFA_CENTAVOS) %> / un</dd>
+            <dd><%= reais(@tarifa) %> / un</dd>
           </div>
           <div>
             <dt>Pagamento:</dt>
