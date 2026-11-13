@@ -1,6 +1,6 @@
 module Operador
-  class SessionsController < ApplicationController
-    layout "operador"
+  class SessionsController < BaseController
+    skip_before_action :require_operador
 
     def new
       @login = LoginOperador.new

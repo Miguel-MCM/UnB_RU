@@ -10,6 +10,12 @@ RSpec.describe Recarga, type: :model do
     expect(recarga.valor_centavos).to eq(2250)
   end
 
+  it "usa a tarifa vigente" do
+    Tarifa.create!(valor_centavos: 600)
+
+    expect(Recarga.new(user:, quantidade: 5, metodo_pagamento: "pix").tap(&:validate).valor_centavos).to eq(3000)
+  end
+
   it "exige ao menos uma refeição" do
     recarga = Recarga.new(user:, quantidade: 0, metodo_pagamento: "pix")
 

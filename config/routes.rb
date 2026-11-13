@@ -15,6 +15,9 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy"
 
     resource :terminal, only: :show, controller: "terminal"
+    resources :acessos, only: :create do
+      resource :passagem, only: :create, controller: "passagens"
+    end
   end
 
   get "/cardapio_atual", to: "menus#current", as: :current_menu

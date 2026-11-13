@@ -2,6 +2,7 @@ class User < ApplicationRecord
   include Autenticavel
 
   has_many :recargas, dependent: :destroy
+  has_many :acessos, dependent: :nullify
 
   normalizes :matricula, with: ->(matricula) { matricula.strip }
 
@@ -10,7 +11,7 @@ class User < ApplicationRecord
   validates :password, presence: true, confirmation: true
 
   def refeicoes_disponiveis
-    saldo_centavos / Recarga::TARIFA_CENTAVOS
+    saldo_centavos / Tarifa.vigente_centavos
   end
 
   def recarregar!(quantidade:, metodo_pagamento:)
