@@ -45,6 +45,7 @@
           <p class="unidade__detalhe">Catracas ativas: <%= restaurante.catracas.size %></p>
         </div>
         <div class="unidade__acoes">
+          <%= link_to "Turnos", admin_restaurante_turnos_path(restaurante), class: "button button--claro button--small" %>
           <%= link_to "Editar unidade", edit_admin_restaurante_path(restaurante), class: "button button--claro button--small" %>
           <%= button_to "Remover unidade", admin_restaurante_path(restaurante), method: :delete,
                 class: "button button--perigo button--small",

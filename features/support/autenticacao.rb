@@ -12,6 +12,15 @@ module AutenticacaoHelpers
     fill_in "Senha de Acesso", with: @funcionario.password
     click_button "Entrar no Sistema"
   end
+
+  def entrar_como_estudante
+    @estudante ||= User.create!(nome: "Ana Beatriz Silva", matricula: "221045999", password: "Senha123", saldo_centavos: 1800)
+
+    visit login_path
+    fill_in "Matrícula SIGAA ou SIAPE", with: @estudante.matricula
+    fill_in "Senha de Acesso", with: "Senha123"
+    click_button "Entrar no Sistema"
+  end
 end
 
 World(AutenticacaoHelpers)

@@ -8,7 +8,14 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
 
 ---
 
-## [ ] 1. Gestão de Turnos e Time-frames — issue #17
+## [x] 1. Gestão de Turnos e Time-frames — issue #17
+
+> **Feito.** 7/7 cenários; RSpec 132/0. Decisões: horários em minutos desde 00:00 (`*_min`,
+> concern `HorarioEmMinutos`) para evitar fuso em colunas `time`; helper de teste
+> `entrar_como_estudante` e ParameterType `{hora}` disponíveis para as próximas issues; página
+> `/fastpass` (só leitura) pronta para receber a inscrição da #14.
+> Limitação conhecida: a não sobreposição de turnos só é garantida na aplicação (sem constraint no
+> banco) — aceitável porque só o administrador cadastra.
 
 - Tag Cucumber: `@issue_bonus_1` — `features/gestao_de_turnos_bonus.feature` (7 cenários)
 - Branch: `gestao-de-turnos` (a partir de `dev`)

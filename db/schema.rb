@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_224444) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_200751) do
   create_table "acessos", force: :cascade do |t|
     t.integer "user_id"
     t.integer "funcionario_id", null: false
@@ -65,6 +65,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_224444) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "time_frames", force: :cascade do |t|
+    t.integer "turno_id", null: false
+    t.integer "numero", null: false
+    t.integer "hora_inicio_min", null: false
+    t.integer "hora_fim_min", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["turno_id", "numero"], name: "index_time_frames_on_turno_id_and_numero", unique: true
+    t.index ["turno_id"], name: "index_time_frames_on_turno_id"
+  end
+
+  create_table "turnos", force: :cascade do |t|
+    t.integer "restaurante_id", null: false
+    t.string "nome", null: false
+    t.integer "hora_inicio_min", null: false
+    t.integer "hora_fim_min", null: false
+    t.integer "duracao_time_frame_min"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurante_id", "nome"], name: "index_turnos_on_restaurante_id_and_nome", unique: true
+    t.index ["restaurante_id"], name: "index_turnos_on_restaurante_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "nome", null: false
     t.string "matricula", null: false
@@ -79,4 +102,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_224444) do
   add_foreign_key "acessos", "users"
   add_foreign_key "catracas", "restaurantes"
   add_foreign_key "recargas", "users"
+  add_foreign_key "time_frames", "turnos"
+  add_foreign_key "turnos", "restaurantes"
 end

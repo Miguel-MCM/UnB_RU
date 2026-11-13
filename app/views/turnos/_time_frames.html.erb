@@ -1,0 +1,13 @@
+<%# locals: (turno:) -%>
+<% if turno.time_frames.any? %>
+  <p class="unidade__detalhe">
+    <%= pluralize(turno.time_frames.size, "time-frame", plural: "time-frames") %> de <%= turno.duracao_time_frame_min %> minutos
+  </p>
+  <ul class="time-frames">
+    <% turno.time_frames.each do |time_frame| %>
+      <li class="time-frame"><%= time_frame.horario %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="unidade__vazio">Turno ainda não dividido em time-frames.</p>
+<% end %>
