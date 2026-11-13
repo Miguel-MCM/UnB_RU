@@ -1,13 +1,5 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   get "cadastro", to: "users#new", as: :signup
   post "cadastro", to: "users#create"
@@ -28,6 +20,17 @@ Rails.application.routes.draw do
     end
   end
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  get "/cardapio_atual", to: "menus#current", as: :current_menu
+
+  resources :access_reports, path: "relatorio_acessos", only: [ :index ] do
+    collection do
+      get :export_pdf
+    end
+  end
+
+  resources :statements, path: "extrato", only: [ :index ] do
+    collection do
+      get :export_pdf
+    end
+  end
 end
