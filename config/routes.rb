@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   resource :recarga, only: %i[show create]
+  get "cardapio_atual", to: "menus#current", as: :current_menu
 
   namespace :operador do
     get "login", to: "sessions#new"
