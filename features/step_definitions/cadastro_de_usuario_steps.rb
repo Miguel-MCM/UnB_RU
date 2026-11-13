@@ -6,18 +6,6 @@ Dado("que o estudante está visualizando a tela de cadastro de usuário") do
   expect(page).to have_current_path(signup_path)
 end
 
-Dado(/^(?:que o estudante )?preenche o campo "([^"]*)" com "([^"]*)"$/) do |campo, valor|
-  fill_in campo, with: valor
-end
-
-Quando("clica no botão {string}") do |botao|
-  click_button botao
-end
-
-Quando("clica no link {string}") do |link|
-  click_link link
-end
-
 Então("o sistema deve criar a conta de acesso com sucesso") do
   expect(User.count).to eq(1)
 end

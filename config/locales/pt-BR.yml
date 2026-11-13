@@ -17,10 +17,23 @@ pt-BR:
               taken: já possui uma conta cadastrada
             password_confirmation:
               confirmation: As senhas não conferem
+  number:
+    currency:
+      format:
+        delimiter: "."
+        format: "%u %n"
+        precision: 2
+        separator: ","
+        unit: R$
   errors:
     format: "%{attribute} %{message}"
     messages:
       blank: não pode ficar em branco
       confirmation: não confere com %{attribute}
+      greater_than: deve ser maior que %{count}
+      inclusion: não está incluído na lista
       invalid: não é válido
+      not_a_number: não é um número
+      not_an_integer: não é um número inteiro
+      required: é obrigatório
       taken: já está em uso

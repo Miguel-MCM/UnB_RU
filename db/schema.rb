@@ -30,12 +30,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_203351) do
     t.index ["served_on", "meal_type"], name: "index_menus_on_served_on_and_meal_type", unique: true
   end
 
+  create_table "recargas", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "quantidade", null: false
+    t.integer "valor_centavos", null: false
+    t.string "metodo_pagamento", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_recargas_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "nome", null: false
     t.string "matricula", null: false
     t.string "password", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "saldo_centavos", default: 0, null: false
     t.index ["matricula"], name: "index_users_on_matricula", unique: true
   end
+
+  add_foreign_key "recargas", "users"
 end

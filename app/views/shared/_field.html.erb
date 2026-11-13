@@ -1,5 +1,5 @@
 <%# locals: (form:, attribute:, label:, icon_name:, type: :text_field, **input_options) -%>
-<% errors = form.object.errors[attribute] %>
+<% errors = form.object ? form.object.errors[attribute] : [] %>
 <% error_id = "#{form.field_id(attribute)}_error" %>
 <% password = type == :password_field %>
 

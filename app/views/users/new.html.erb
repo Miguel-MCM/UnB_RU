@@ -8,16 +8,16 @@
   </p>
 
   <%= form_with model: @user, url: signup_path, class: "auth-form" do |form| %>
-    <%= render "field", form:, attribute: :nome, label: "Nome Completo", icon_name: :person,
+    <%= render "shared/field", form:, attribute: :nome, label: "Nome Completo", icon_name: :person,
           placeholder: "Ex: Ana Beatriz Silva", autocomplete: "name" %>
 
-    <%= render "field", form:, attribute: :matricula, label: "Matrícula SIGAA ou SIAPE", icon_name: :badge,
+    <%= render "shared/field", form:, attribute: :matricula, label: "Matrícula SIGAA ou SIAPE", icon_name: :badge,
           placeholder: "Ex: 221045999 ou 1984201", autocomplete: "username", inputmode: "numeric" %>
 
-    <%= render "field", form:, attribute: :password, label: "Senha de Acesso", icon_name: :lock,
+    <%= render "shared/field", form:, attribute: :password, label: "Senha de Acesso", icon_name: :lock,
           type: :password_field, placeholder: "Crie uma senha de acesso", autocomplete: "new-password" %>
 
-    <%= render "field", form:, attribute: :password_confirmation, label: "Confirmar Senha", icon_name: :lock,
+    <%= render "shared/field", form:, attribute: :password_confirmation, label: "Confirmar Senha", icon_name: :lock,
           type: :password_field, placeholder: "Digite a senha novamente", autocomplete: "new-password" %>
 
     <%= form.button class: "button button--primary" do %>
