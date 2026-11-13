@@ -10,7 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_09_223012) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_203351) do
+  create_table "menus", force: :cascade do |t|
+    t.date "served_on", null: false
+    t.string "meal_type", null: false
+    t.string "standard_dish", null: false
+    t.string "ovolacto_dish", null: false
+    t.string "vegan_dish", null: false
+    t.string "extra_option"
+    t.string "salads"
+    t.string "garnish"
+    t.string "side_dishes"
+    t.string "dessert"
+    t.string "beverage"
+    t.string "soup"
+    t.boolean "has_toast", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["served_on", "meal_type"], name: "index_menus_on_served_on_and_meal_type", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "nome", null: false
     t.string "matricula", null: false
