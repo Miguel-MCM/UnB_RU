@@ -18,7 +18,7 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
 > banco) — aceitável porque só o administrador cadastra.
 
 - Tag Cucumber: `@issue_bonus_1` — `features/gestao_de_turnos_bonus.feature` (7 cenários)
-- Branch: `gestao-de-turnos` (a partir de `dev`)
+- Branch: `feat/gestao-de-turnos` (a partir de `dev`)
 - Commit: `feat: gestão de turnos e time-frames pelo administrador (#17)`
 - Notas de design:
   - `Turno` belongs_to `Restaurante`; `nome` ("almoço", "jantar", "café da manhã"), `hora_inicio`,
@@ -34,7 +34,7 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
 ## [ ] 2. Inscrição Única no FastPass — issue #14
 
 - Tag Cucumber: `@issue_bonus_4` — `features/inscricao_unica_FastPass_bonus.feature` (5 cenários)
-- Branch: `inscricao-fastpass` (a partir de `gestao-de-turnos`)
+- Branch: `feat/inscricao-fastpass` (a partir de `feat/gestao-de-turnos`)
 - Commit: `feat: inscrição única no sorteio do FastPass (#14)`
 - Notas de design:
   - `Sorteio` belongs_to `Turno`; `data_refeicao`, `status` (`aberto`, `encerrado`, `realizado`);
@@ -50,7 +50,7 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
 ## [ ] 3. Validação Rigorosa do FastPass — issue #16
 
 - Tag Cucumber: `@issue_bonus_2` — `features/validacao_FastPass_bonus.feature` (7 cenários, 8 com o esquema)
-- Branch: `validacao-fastpass` (a partir de `inscricao-fastpass`)
+- Branch: `feat/validacao-fastpass` (a partir de `feat/inscricao-fastpass`)
 - Commit: `feat: validação rigorosa do FastPass na catraca (#16)`
 - Notas de design:
   - Reaproveitar o fluxo de `Acesso` (leitura → `liberado` → `confirmar_passagem!` debita).
@@ -67,7 +67,7 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
 ## [ ] 4. Notificação de Sorteio — issue #15
 
 - Tag Cucumber: `@issue_bonus_3` — `features/notificacoes_sorteio_bonus.feature` (5 cenários)
-- Branch: `notificacao-sorteio` (a partir de `validacao-fastpass`)
+- Branch: `feat/notificacao-sorteio` (a partir de `feat/validacao-fastpass`)
 - Commit: `feat: notificação do resultado do sorteio do FastPass (#15)`
 - Notas de design:
   - `Notificacao` belongs_to `User` e `InscricaoFastpass`; `tipo` (`contemplado`, `nao_contemplado`),
