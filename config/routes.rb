@@ -17,6 +17,8 @@ Rails.application.routes.draw do
 
   resource :recarga, only: %i[show create]
 
+  get "cardapio_atual", to: "menus#current", as: :current_menu
+
   namespace :operador do
     get "login", to: "sessions#new"
     post "login", to: "sessions#create"

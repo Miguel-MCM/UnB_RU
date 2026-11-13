@@ -1,0 +1,37 @@
+<h1>Cardápio da Refeição Atual</h1>
+
+<% if @current_meal_type.nil? %>
+  <p id="no-meal-message">Não há refeição sendo servida no momento</p>
+<% elsif @menu.nil? %>
+  <p id="unavailable-menu-message">O cardápio do <%= @meal_label %> não está disponível</p>
+<% else %>
+  <section id="active-meal-cardapio">
+    <h2>Cardápio do <%= @meal_label %></h2>
+
+    <% if @current_meal_type == "cafe_da_manha" %>
+      <p>Complemento padrão: <%= @menu.standard_dish %></p>
+      <p>Complemento ovolactovegetariano: <%= @menu.ovolacto_dish %></p>
+      <p>Complemento vegetariano estrito: <%= @menu.vegan_dish %></p>
+      <% if @menu.extra_option.present? %>
+        <p id="extra-option">Opção extra: <%= @menu.extra_option %></p>
+      <% end %>
+    <% elsif @current_meal_type == "almoco" %>
+      <p>Saladas: <%= @menu.salads %></p>
+      <p>Guarnição: <%= @menu.garnish %></p>
+      <p>Acompanhamentos: <%= @menu.side_dishes %></p>
+      <p>Opção padrão: <%= @menu.standard_dish %></p>
+      <p>Opção ovolactovegetariana: <%= @menu.ovolacto_dish %></p>
+      <p>Opção vegetariana estrita: <%= @menu.vegan_dish %></p>
+      <p>Sobremesa: <%= @menu.dessert %></p>
+      <p>Bebida: <%= @menu.beverage %></p>
+    <% elsif @current_meal_type == "jantar" %>
+      <p>Sopa: <%= @menu.soup %></p>
+      <% if @menu.has_toast %>
+        <p>Acompanha: Torrada</p>
+      <% end %>
+      <p>Opção padrão: <%= @menu.standard_dish %></p>
+      <p>Opção ovolactovegetariana: <%= @menu.ovolacto_dish %></p>
+      <p>Opção vegetariana estrita: <%= @menu.vegan_dish %></p>
+    <% end %>
+  </section>
+<% end %>
