@@ -1,5 +1,6 @@
 class Catraca < ApplicationRecord
   belongs_to :restaurante
+  has_many :acessos, dependent: :destroy
 
   normalizes :nome, with: ->(nome) { nome.squish }
 

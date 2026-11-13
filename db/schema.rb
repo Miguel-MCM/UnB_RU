@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_224444) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_130000) do
   create_table "acessos", force: :cascade do |t|
     t.integer "user_id"
     t.integer "funcionario_id", null: false
@@ -19,7 +19,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_224444) do
     t.integer "valor_centavos", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "restaurante_id"
+    t.integer "catraca_id"
+    t.index ["catraca_id"], name: "index_acessos_on_catraca_id"
     t.index ["funcionario_id"], name: "index_acessos_on_funcionario_id"
+    t.index ["restaurante_id"], name: "index_acessos_on_restaurante_id"
     t.index ["user_id"], name: "index_acessos_on_user_id"
   end
 
@@ -40,6 +44,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_224444) do
     t.datetime "updated_at", null: false
     t.boolean "administrador", default: false, null: false
     t.index ["matricula"], name: "index_funcionarios_on_matricula", unique: true
+  end
+
+  create_table "menus", force: :cascade do |t|
+    t.date "served_on", null: false
+    t.string "meal_type", null: false
+    t.string "standard_dish", null: false
+    t.string "ovolacto_dish", null: false
+    t.string "vegan_dish", null: false
+    t.string "extra_option"
+    t.string "salads"
+    t.string "garnish"
+    t.string "side_dishes"
+    t.string "dessert"
+    t.string "beverage"
+    t.string "soup"
+    t.boolean "has_toast", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["served_on", "meal_type"], name: "index_menus_on_served_on_and_meal_type", unique: true
   end
 
   create_table "recargas", force: :cascade do |t|
@@ -75,7 +98,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_224444) do
     t.index ["matricula"], name: "index_users_on_matricula", unique: true
   end
 
+  add_foreign_key "acessos", "catracas"
   add_foreign_key "acessos", "funcionarios"
+  add_foreign_key "acessos", "restaurantes"
   add_foreign_key "acessos", "users"
   add_foreign_key "catracas", "restaurantes"
   add_foreign_key "recargas", "users"
