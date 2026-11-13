@@ -11,6 +11,15 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2026_11_13_203351) do
+  create_table "funcionarios", force: :cascade do |t|
+    t.string "nome", null: false
+    t.string "matricula", null: false
+    t.string "password", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["matricula"], name: "index_funcionarios_on_matricula", unique: true
+  end
+
   create_table "menus", force: :cascade do |t|
     t.date "served_on", null: false
     t.string "meal_type", null: false

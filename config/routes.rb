@@ -9,6 +9,14 @@ Rails.application.routes.draw do
 
   resource :recarga, only: %i[show create]
 
+  namespace :operador do
+    get "login", to: "sessions#new"
+    post "login", to: "sessions#create"
+    delete "logout", to: "sessions#destroy"
+
+    resource :terminal, only: :show, controller: "terminal"
+  end
+
   get "/cardapio_atual", to: "menus#current", as: :current_menu
 
   resources :access_reports, path: "relatorio_acessos", only: [ :index ] do

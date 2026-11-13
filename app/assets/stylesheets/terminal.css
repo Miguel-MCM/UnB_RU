@@ -1,0 +1,39 @@
+.terminal {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: min(100%, 880px);
+  padding: 28px 32px;
+}
+
+.terminal__icone {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.terminal__icone svg {
+  width: 34px;
+  height: 34px;
+}
+
+.terminal__texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.terminal__titulo {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.terminal__detalhe {
+  color: var(--color-text-muted);
+}

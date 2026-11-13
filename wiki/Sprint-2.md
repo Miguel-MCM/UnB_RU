@@ -30,7 +30,7 @@ Todos os jobs usam o Ruby definido em `.ruby-version` (3.3.8), com as gems em ca
 
 ## Decisões
 
-- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (75 undefined, 7 passed)`: só os cenários do cadastro de usuário e da recarga de saldo já têm step definitions.
+- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (72 undefined, 10 passed)`: só os cenários do cadastro de usuário, da recarga de saldo e da autenticação do funcionário já têm step definitions.
 - **Runner fixado em `ubuntu-24.04`.** O `ubuntu-latest` passou a ser o Ubuntu 26.04, que não oferece o Ruby 3.3.8. Para usar o `ubuntu-latest`, é preciso subir o Ruby do projeto para a versão 3.3 mais recente, em `.ruby-version` e no `Dockerfile`.
 - **`db/schema.rb` versionado.** Sem ele, `bin/rails db:test:prepare` falha. O arquivo é atualizado sempre que alguém roda `bin/rails db:migrate`.
 
@@ -70,5 +70,19 @@ A issue foi desenvolvida por mim com o [Cursor](https://cursor.com), usando o ag
 > Agora faça o mesmo processo de implementação para a issue 7
 
 Como os cenários pedem um estudante autenticado, a issue também trouxe o login do estudante em `/login`, com matrícula e senha. O pagamento é simulado: o QR Code e o código PIX copia e cola são gerados pela aplicação, mas nenhum banco aceita pagá-los.
+
+Todo o código gerado pelo agente foi revisado por mim.
+
+## Issue #9 — Autenticação do Funcionário
+
+- **Issue:** [#9 Autenticação do Funcionário](https://github.com/Miguel-MCM/UnB_RU/issues/9) (no repositório principal, [#4](https://github.com/neatzzy/UnB_RU/issues/4))
+- **Responsável:** Miguel ([@Miguel-MCM](https://github.com/Miguel-MCM))
+- **Design:** frame "Autenticação Operacional (US07)" do [Figma do projeto](https://www.figma.com/design/Clozp7Rj1jOBz6l7LoT44t/UnB-RU---Engenharia-de-Software?node-id=1-3165)
+
+A issue foi desenvolvida por mim com o [Cursor](https://cursor.com), usando o agente com o modelo **Claude Opus 5.5**, da Anthropic, no mesmo processo das issues #6 e #7: TDD a partir dos cenários de `features/autenticacao_do_funcionario.feature`, página no visual do Figma, branch própria, Pull Request contra a `sprint2` e card movido para In Progress. O primeiro prompt enviado ao agente, na mesma conversa das issues anteriores, foi:
+
+> Agora faça de novo pára a 9
+
+O login do operador fica em `/operador/login` e, depois de autenticado, leva ao terminal de catraca em `/operador/terminal`. Por enquanto essa página só confirma que o terminal foi liberado; a leitura do QR Code e o débito da refeição são da issue #11. Os operadores não se cadastram pelo site: para testar localmente, `bin/rails db:seed` cria o operador de matrícula `1984201` e senha `Operador123`.
 
 Todo o código gerado pelo agente foi revisado por mim.
