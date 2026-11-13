@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <%= render "layouts/head" %>
+
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__logo">UnB</span>
+        <span class="brand__text">
+          <strong class="brand__name">RU UnB Digital</strong>
+          <small class="brand__portal">Portal do Estudante</small>
+        </span>
+      </div>
+
+      <% if current_user %>
+        <nav class="topbar__nav" aria-label="Portal do Estudante">
+          <%= link_to "Recarga", recarga_path, class: "topbar__link", aria: { current: ("page" if current_page?(recarga_path)) } %>
+        </nav>
+
+        <div class="topbar__conta">
+          <div class="topbar__usuario">
+            <strong><%= current_user.nome %></strong>
+            <small>Matrícula: <%= current_user.matricula %></small>
+          </div>
+          <div class="topbar__saldo">
+            <small>Saldo RU</small>
+            <strong><%= reais(current_user.saldo_centavos) %></strong>
+            <small>(<%= current_user.refeicoes_disponiveis %> refeic.)</small>
+          </div>
+          <span class="topbar__avatar"><%= icon(:person) %></span>
+          <%= button_to "Sair", logout_path, method: :delete, class: "topbar__sair" %>
+        </div>
+      <% end %>
+    </header>
+
+    <main class="page">
+      <%= render "layouts/flash" %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

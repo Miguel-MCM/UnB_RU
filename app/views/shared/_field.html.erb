@@ -1,0 +1,31 @@
+<%# locals: (form:, attribute:, label:, icon_name:, type: :text_field, **input_options) -%>
+<% errors = form.object ? form.object.errors[attribute] : [] %>
+<% error_id = "#{form.field_id(attribute)}_error" %>
+<% password = type == :password_field %>
+
+<div class="field<%= " field--invalid" if errors.any? %>">
+  <div class="field__header">
+    <%= form.label attribute, label, class: "field__label" %>
+    <span class="field__hint">Obrigatório</span>
+  </div>
+
+  <div class="field__control" <%= tag.attributes(data: { controller: "password-visibility" }) if password %>>
+    <%= icon(icon_name, class: "field__icon") %>
+    <%= form.public_send type, attribute,
+          class: "field__input",
+          required: true,
+          aria: { invalid: errors.any?, describedby: (error_id if errors.any?) },
+          data: ({ password_visibility_target: "input" } if password),
+          **input_options %>
+    <% if password %>
+      <button type="button" class="field__toggle" aria-label="Mostrar senha" aria-pressed="false"
+              data-action="password-visibility#toggle">
+        <%= icon(:visibility) %>
+      </button>
+    <% end %>
+  </div>
+
+  <% if errors.any? %>
+    <p class="field__error" id="<%= error_id %>"><%= errors.first %></p>
+  <% end %>
+</div>
