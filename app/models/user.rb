@@ -1,12 +1,24 @@
 class User < ApplicationRecord
-  has_many :access_logs, dependent: :destroy
-  has_many :recharges, dependent: :destroy
+  include Autenticavel
 
-  validates :name, :registration_number, :role, presence: true
-  validates :registration_number, uniqueness: true
-  validates :role, inclusion: { in: %w[student admin] }
+  has_many :recargas, dependent: :destroy
+  has_many :acessos, dependent: :nullify
 
-  def admin?
-    role == "admin"
+  normalizes :matricula, with: ->(matricula) { matricula.strip }
+
+  validates :nome, presence: true
+  validates :matricula, presence: true, uniqueness: true, format: { with: /\A\d+\z/, allow_blank: true }
+  validates :password, presence: true, confirmation: true
+
+  def refeicoes_disponiveis
+    saldo_centavos / Tarifa.vigente_centavos
+  end
+
+  def recarregar!(quantidade:, metodo_pagamento:)
+    transaction do
+      recarga = recargas.create!(quantidade:, metodo_pagamento:)
+      increment!(:saldo_centavos, recarga.valor_centavos)
+      recarga
+    end
   end
 end

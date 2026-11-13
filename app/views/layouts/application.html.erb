@@ -1,29 +1,41 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for(:title) || "Unb Ru" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Unb Ru">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
+<html lang="pt-BR">
+  <%= render "layouts/head" %>
 
   <body>
-    <%= yield %>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__logo">UnB</span>
+        <span class="brand__text">
+          <strong class="brand__name">RU UnB Digital</strong>
+          <small class="brand__portal">Portal do Estudante</small>
+        </span>
+      </div>
+
+      <% if current_user %>
+        <nav class="topbar__nav" aria-label="Portal do Estudante">
+          <%= link_to "Recarga", recarga_path, class: "topbar__link", aria: { current: ("page" if current_page?(recarga_path)) } %>
+        </nav>
+
+        <div class="topbar__conta">
+          <div class="topbar__usuario">
+            <strong><%= current_user.nome %></strong>
+            <small>Matrícula: <%= current_user.matricula %></small>
+          </div>
+          <div class="topbar__saldo">
+            <small>Saldo RU</small>
+            <strong><%= reais(current_user.saldo_centavos) %></strong>
+            <small>(<%= current_user.refeicoes_disponiveis %> refeic.)</small>
+          </div>
+          <span class="topbar__avatar"><%= icon(:person) %></span>
+          <%= button_to "Sair", logout_path, method: :delete, class: "topbar__sair" %>
+        </div>
+      <% end %>
+    </header>
+
+    <main class="page">
+      <%= render "layouts/flash" %>
+      <%= yield %>
+    </main>
   </body>
 </html>

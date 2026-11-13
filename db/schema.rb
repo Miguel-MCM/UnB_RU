@@ -10,19 +10,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_01_000000) do
-  create_table "access_logs", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "restaurant_id", null: false
-    t.integer "turnstile_id", null: false
-    t.string "meal_type", null: false
-    t.decimal "amount_paid", precision: 10, scale: 2, default: "0.0"
-    t.datetime "accessed_at", null: false
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
+  create_table "acessos", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "funcionario_id", null: false
+    t.string "identificacao", null: false
+    t.string "status", null: false
+    t.integer "valor_centavos", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["restaurant_id"], name: "index_access_logs_on_restaurant_id"
-    t.index ["turnstile_id"], name: "index_access_logs_on_turnstile_id"
-    t.index ["user_id"], name: "index_access_logs_on_user_id"
+    t.index ["funcionario_id"], name: "index_acessos_on_funcionario_id"
+    t.index ["user_id"], name: "index_acessos_on_user_id"
+  end
+
+  create_table "catracas", force: :cascade do |t|
+    t.integer "restaurante_id", null: false
+    t.string "nome", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurante_id", "nome"], name: "index_catracas_on_restaurante_id_and_nome", unique: true
+    t.index ["restaurante_id"], name: "index_catracas_on_restaurante_id"
+  end
+
+  create_table "funcionarios", force: :cascade do |t|
+    t.string "nome", null: false
+    t.string "matricula", null: false
+    t.string "password", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "administrador", default: false, null: false
+    t.index ["matricula"], name: "index_funcionarios_on_matricula", unique: true
   end
 
   create_table "menus", force: :cascade do |t|
@@ -44,43 +61,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_000000) do
     t.index ["served_on", "meal_type"], name: "index_menus_on_served_on_and_meal_type", unique: true
   end
 
-  create_table "recharges", force: :cascade do |t|
+  create_table "recargas", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.decimal "amount", precision: 10, scale: 2, null: false
-    t.datetime "recharged_at", null: false
-    t.string "description"
+    t.integer "quantidade", null: false
+    t.integer "valor_centavos", null: false
+    t.string "metodo_pagamento", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_recharges_on_user_id"
+    t.index ["user_id"], name: "index_recargas_on_user_id"
   end
 
-  create_table "restaurants", force: :cascade do |t|
-    t.string "name", null: false
+  create_table "restaurantes", force: :cascade do |t|
+    t.string "nome", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["nome"], name: "index_restaurantes_on_nome", unique: true
   end
 
-  create_table "turnstiles", force: :cascade do |t|
-    t.string "name", null: false
-    t.integer "restaurant_id", null: false
+  create_table "tarifas", force: :cascade do |t|
+    t.integer "valor_centavos", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["restaurant_id"], name: "index_turnstiles_on_restaurant_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "registration_number", null: false
-    t.string "role", default: "student", null: false
-    t.decimal "balance", precision: 10, scale: 2, default: "0.0"
+    t.string "nome", null: false
+    t.string "matricula", null: false
+    t.string "password", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["registration_number"], name: "index_users_on_registration_number", unique: true
+    t.integer "saldo_centavos", default: 0, null: false
+    t.index ["matricula"], name: "index_users_on_matricula", unique: true
   end
 
-  add_foreign_key "access_logs", "restaurants"
-  add_foreign_key "access_logs", "turnstiles"
-  add_foreign_key "access_logs", "users"
-  add_foreign_key "recharges", "users"
-  add_foreign_key "turnstiles", "restaurants"
+  add_foreign_key "acessos", "funcionarios"
+  add_foreign_key "acessos", "users"
+  add_foreign_key "catracas", "restaurantes"
+  add_foreign_key "recargas", "users"
 end

@@ -3,10 +3,9 @@ require "rails_helper"
 RSpec.describe "Cardápio da Refeição Atual", type: :request do
   include ActiveSupport::Testing::TimeHelpers
 
-  let!(:student) { User.create!(name: "João", registration_number: "231012345", role: "student") }
-
   before do
-    post "/test_login", params: { user_id: student.id }
+    User.create!(nome: "João", matricula: "231012345", password: "Senha123")
+    post login_path, params: { matricula: "231012345", password: "Senha123" }
   end
 
   after { travel_back }

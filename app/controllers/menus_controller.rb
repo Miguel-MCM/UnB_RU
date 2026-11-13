@@ -1,5 +1,5 @@
 class MenusController < ApplicationController
-  before_action :require_authentication
+  before_action :require_login
 
   def current
     @current_meal_type = Menu.current_meal_type(Time.current)

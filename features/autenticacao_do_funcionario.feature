@@ -9,7 +9,7 @@ Funcionalidade: Autenticação do funcionário
     Dado que o funcionário acessou a página de "Autenticação do Operador"
 
   Cenário: Realizar login com credenciais válidas do operador
-    Dado que o funcionário preenche o campo "Matricula SIAPE ou Usuário SIGAA / gov.br" com "1984201"
+    Dado que o funcionário preenche o campo "Matrícula SIAPE ou Usuário SIGAA / gov.br" com "1984201"
     E preenche o campo "Senha de Acesso" com uma senha válida
     Quando clica no botão "Entrar no Sistema"
     Então a sessão do operador deve ser autenticada com sucesso
@@ -23,4 +23,4 @@ Funcionalidade: Autenticação do funcionário
 
   Cenário: Exibir restrições de obrigatoriedade nos campos de acesso
     Dado que o formulário de autenticação está visível para o operador
-    Então os campos "Matricula SIAPE ou Usuário SIGAA / gov.br" e "Senha de Acesso" devem ser sinalizados como obrigatórios
+    Então os campos "Matrícula SIAPE ou Usuário SIGAA / gov.br" e "Senha de Acesso" devem ser sinalizados como obrigatórios

@@ -36,6 +36,12 @@ module UnbRu
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    config.i18n.default_locale = :"pt-BR"
+    config.time_zone = "Brasilia"
+
+    # Os campos com erro são marcados pela partial users/_field, sem o wrapper padrão.
+    config.action_view.field_error_proc = ->(html_tag, _instance) { html_tag }
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end

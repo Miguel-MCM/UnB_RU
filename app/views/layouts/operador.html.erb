@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <%= render "layouts/head" %>
+
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__logo"><%= icon(:qr_code) %></span>
+        <span class="brand__text">
+          <span class="brand__linha">
+            <strong class="brand__name">RU UnB</strong>
+            <span class="selo selo--sucesso">Operacional</span>
+          </span>
+          <small class="brand__local">Campus Darcy Ribeiro · Piso 2</small>
+        </span>
+      </div>
+
+      <% if current_funcionario %>
+        <nav class="topbar__nav" aria-label="Aplicação de controle">
+          <%= link_to "Terminal de Validação", operador_terminal_path, class: "topbar__link topbar__link--destaque",
+                aria: { current: ("page" if current_page?(operador_terminal_path)) } %>
+          <% if current_funcionario.administrador? %>
+            <%= link_to "Restaurantes e Catracas", admin_restaurantes_path, class: "topbar__link topbar__link--destaque",
+                  aria: { current: ("page" if controller_path.start_with?("admin/")) } %>
+          <% end %>
+        </nav>
+
+        <div class="topbar__conta">
+          <div class="topbar__usuario">
+            <strong><%= current_funcionario.nome %></strong>
+            <small><%= current_funcionario.administrador? ? "Administrador" : "Operador" %> · <%= current_funcionario.matricula %></small>
+          </div>
+          <span class="topbar__avatar"><%= icon(:person) %></span>
+          <%= button_to "Sair", operador_logout_path, method: :delete, class: "topbar__sair" %>
+        </div>
+      <% end %>
+    </header>
+
+    <main class="page">
+      <%= render "layouts/flash" %>
+      <%= yield %>
+    </main>
+  </body>
+</html>
