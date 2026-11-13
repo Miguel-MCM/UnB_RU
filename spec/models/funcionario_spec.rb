@@ -18,6 +18,11 @@ RSpec.describe Funcionario, type: :model do
     expect(funcionario.errors.attribute_names).to include(:nome, :matricula, :password)
   end
 
+  it "não é administrador a menos que isso seja definido" do
+    expect(Funcionario.new(atributos)).not_to be_administrador
+    expect(Funcionario.new(atributos.merge(administrador: true))).to be_administrador
+  end
+
   it "não permite duas contas com a mesma matrícula" do
     Funcionario.create!(atributos)
 

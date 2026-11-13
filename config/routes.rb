@@ -20,6 +20,13 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :admin do
+    resources :restaurantes, except: :show do
+      resources :catracas, only: :create
+    end
+    resources :catracas, only: %i[edit update destroy]
+  end
+
   get "/cardapio_atual", to: "menus#current", as: :current_menu
 
   resources :access_reports, path: "relatorio_acessos", only: [ :index ] do

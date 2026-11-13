@@ -23,12 +23,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_203351) do
     t.index ["user_id"], name: "index_acessos_on_user_id"
   end
 
+  create_table "catracas", force: :cascade do |t|
+    t.integer "restaurante_id", null: false
+    t.string "nome", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurante_id", "nome"], name: "index_catracas_on_restaurante_id_and_nome", unique: true
+    t.index ["restaurante_id"], name: "index_catracas_on_restaurante_id"
+  end
+
   create_table "funcionarios", force: :cascade do |t|
     t.string "nome", null: false
     t.string "matricula", null: false
     t.string "password", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "administrador", default: false, null: false
     t.index ["matricula"], name: "index_funcionarios_on_matricula", unique: true
   end
 
@@ -61,6 +71,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_203351) do
     t.index ["user_id"], name: "index_recargas_on_user_id"
   end
 
+  create_table "restaurantes", force: :cascade do |t|
+    t.string "nome", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["nome"], name: "index_restaurantes_on_nome", unique: true
+  end
+
   create_table "tarifas", force: :cascade do |t|
     t.integer "valor_centavos", null: false
     t.datetime "created_at", null: false
@@ -79,5 +96,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_203351) do
 
   add_foreign_key "acessos", "funcionarios"
   add_foreign_key "acessos", "users"
+  add_foreign_key "catracas", "restaurantes"
   add_foreign_key "recargas", "users"
 end
