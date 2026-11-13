@@ -20,7 +20,10 @@
           </div>
         </header>
         <div class="unidade__corpo">
-          <%= render "turnos/time_frames", turno: %>
+          <% if @turnos_inscritos.include?(turno.id) %>
+            <p class="turno__inscricao">Você está participando do sorteio do FastPass deste turno.</p>
+          <% end %>
+          <%= render "fastpass/time_frames", turno:, inscricoes: @inscricoes %>
         </div>
       </section>
     <% end %>

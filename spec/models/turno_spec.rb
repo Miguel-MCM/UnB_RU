@@ -114,6 +114,18 @@ RSpec.describe Turno, type: :model do
       expect(almoco.time_frames.count).to eq(12)
     end
 
+    it "recusa a redivisão quando algum time-frame já possui inscrições no FastPass" do
+      almoco.dividir_em_time_frames!(15)
+      estudante = User.create!(nome: "Mariana Souza Silva", matricula: "100001", password: "Senha123")
+      InscricaoFastpass.inscrever!(user: estudante, time_frame: almoco.time_frames.first)
+
+      expect(almoco.dividir_em_time_frames!(30)).to be(false)
+      expect(almoco.errors[:base]).to include("Não é possível redividir um turno que já possui inscrições no FastPass")
+      expect(almoco.reload.duracao_time_frame_min).to eq(15)
+      expect(almoco.time_frames.count).to eq(12)
+      expect(InscricaoFastpass.count).to eq(1)
+    end
+
     it "não altera nada com uma duração zero ou negativa" do
       expect(almoco.dividir_em_time_frames!(0)).to be(false)
       expect(almoco.dividir_em_time_frames!(-15)).to be(false)
@@ -125,6 +137,14 @@ RSpec.describe Turno, type: :model do
     almoco.dividir_em_time_frames!(15)
 
     expect { almoco.destroy }.to change(TimeFrame, :count).by(-12)
+  end
+
+  it "remove sorteios e inscrições junto com o turno" do
+    almoco.dividir_em_time_frames!(15)
+    estudante = User.create!(nome: "Mariana Souza Silva", matricula: "100001", password: "Senha123")
+    InscricaoFastpass.inscrever!(user: estudante, time_frame: almoco.time_frames.first)
+
+    expect { almoco.destroy }.to change(InscricaoFastpass, :count).by(-1).and change(Sorteio, :count).by(-1)
   end
 
   it "é listado pelo restaurante em ordem de horário" do

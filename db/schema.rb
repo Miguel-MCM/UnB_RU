@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_200751) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_203506) do
   create_table "acessos", force: :cascade do |t|
     t.integer "user_id"
     t.integer "funcionario_id", null: false
@@ -42,6 +42,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_200751) do
     t.index ["matricula"], name: "index_funcionarios_on_matricula", unique: true
   end
 
+  create_table "inscricoes_fastpass", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "sorteio_id", null: false
+    t.integer "time_frame_id", null: false
+    t.string "status", default: "inscrito", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sorteio_id"], name: "index_inscricoes_fastpass_on_sorteio_id"
+    t.index ["time_frame_id"], name: "index_inscricoes_fastpass_on_time_frame_id"
+    t.index ["user_id", "sorteio_id"], name: "index_inscricoes_fastpass_on_user_id_and_sorteio_id", unique: true
+  end
+
   create_table "recargas", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "quantidade", null: false
@@ -57,6 +69,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_200751) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["nome"], name: "index_restaurantes_on_nome", unique: true
+  end
+
+  create_table "sorteios", force: :cascade do |t|
+    t.integer "turno_id", null: false
+    t.date "data_refeicao", null: false
+    t.string "status", default: "aberto", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["turno_id", "data_refeicao"], name: "index_sorteios_on_turno_id_and_data_refeicao", unique: true
+    t.index ["turno_id"], name: "index_sorteios_on_turno_id"
   end
 
   create_table "tarifas", force: :cascade do |t|
@@ -101,7 +123,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_200751) do
   add_foreign_key "acessos", "funcionarios"
   add_foreign_key "acessos", "users"
   add_foreign_key "catracas", "restaurantes"
+  add_foreign_key "inscricoes_fastpass", "sorteios"
+  add_foreign_key "inscricoes_fastpass", "time_frames"
+  add_foreign_key "inscricoes_fastpass", "users"
   add_foreign_key "recargas", "users"
+  add_foreign_key "sorteios", "turnos"
   add_foreign_key "time_frames", "turnos"
   add_foreign_key "turnos", "restaurantes"
 end

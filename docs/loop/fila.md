@@ -31,7 +31,15 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
   - Admin: `Admin::TurnosController` aninhado em restaurantes. Estudante: uma página do FastPass que
     lista os time-frames do turno (base para a issue #14).
 
-## [ ] 2. Inscrição Única no FastPass — issue #14
+## [x] 2. Inscrição Única no FastPass — issue #14
+
+> **Feito.** 5/5 cenários; RSpec 152/0. Decisões: o `Sorteio` do dia nasce `aberto` sob demanda
+> (`Sorteio.do_dia!`); encerrar só pelo model (`encerrar!`, sem tela); redividir um turno com
+> inscrições é recusado; inscrição trava o turno (`with_lock`). Steps reaproveitáveis: "que o
+> estudante ["matrícula"] está inscrito no time-frame das X às Y do <turno>" (cria o estudante se
+> não existir) e "que o turno X do restaurante Y está dividido em time-frames de N minutos".
+> Pendente para a #15: hoje dá para se inscrever num turno que já passou (o sorteio do dia nasce
+> aberto) — encerrar as inscrições quando o sorteio for realizado (T-60) resolve.
 
 - Tag Cucumber: `@issue_bonus_4` — `features/inscricao_unica_FastPass_bonus.feature` (5 cenários)
 - Branch: `feat/inscricao-fastpass` (a partir de `feat/gestao-de-turnos`)
@@ -77,6 +85,8 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
   - Disparo periódico: job `NotificarSorteiosJob` registrado em `config/recurring.yml` (Solid Queue).
     No Cucumber, "Quando o horário atual for HH:MM" = `travel_to` + chamar o método do model.
   - Estudante vê as notificações no portal (mensagem do contemplado cita o time-frame).
+  - Herdado da #14: realizar o sorteio (status `realizado`) no T-60 deve encerrar as inscrições;
+    validar/ocultar a inscrição em turno que já começou. Testar os status `sorteado`/`nao_sorteado`.
 
 ---
 

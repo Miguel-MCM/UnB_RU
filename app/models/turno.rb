@@ -2,6 +2,7 @@ class Turno < ApplicationRecord
   include HorarioEmMinutos
 
   belongs_to :restaurante
+  has_many :sorteios, dependent: :destroy
   has_many :time_frames, -> { order(:numero) }, dependent: :destroy
 
   horario :hora_inicio, :hora_fim
@@ -28,13 +29,15 @@ class Turno < ApplicationRecord
   end
 
   # Redivide o turno em time-frames de `minutos`, com o turno travado (with_lock
-  # recarrega o registro e abre a transação). Se a duração for inválida, nada é
-  # alterado e retorna false (os erros ficam em #errors).
+  # recarrega o registro e abre a transação). Se a duração for inválida ou se
+  # algum time-frame já tiver inscrições no FastPass, nada é alterado e retorna
+  # false (os erros ficam em #errors).
   def dividir_em_time_frames!(minutos)
     with_lock do
-      self.duracao_time_frame_min = minutos
-
-      if save
+      if possui_inscricoes?
+        errors.add(:base, :possui_inscricoes)
+        false
+      elsif update(duracao_time_frame_min: minutos)
         time_frames.delete_all
         criar_time_frames
         true
@@ -43,6 +46,10 @@ class Turno < ApplicationRecord
         false
       end
     end
+  end
+
+  def possui_inscricoes?
+    time_frames.joins(:inscricoes_fastpass).exists?
   end
 
   private

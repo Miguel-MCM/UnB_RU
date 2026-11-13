@@ -1,0 +1,53 @@
+# Inscrição gratuita de um estudante no sorteio do FastPass de um turno,
+# escolhendo um único time-frame por turno e dia.
+class InscricaoFastpass < ApplicationRecord
+  belongs_to :user
+  belongs_to :sorteio
+  belongs_to :time_frame
+
+  enum :status, {
+    inscrito: "inscrito",
+    sorteado: "sorteado",
+    nao_sorteado: "nao_sorteado",
+    utilizado: "utilizado"
+  }
+
+  validate :inscricoes_abertas, on: :create
+  validate :um_time_frame_por_turno, on: :create
+  validate :time_frame_do_turno_do_sorteio, on: :create
+
+  scope :do_dia, ->(data = Date.current) { joins(:sorteio).where(sorteios: { data_refeicao: data }) }
+  scope :do_turno, ->(turno) { joins(:sorteio).where(sorteios: { turno_id: turno }) }
+
+  # Inscreve o estudante no sorteio do dia do turno do time-frame. Não cobra
+  # nada. O turno fica travado para não concorrer com a redivisão dos
+  # time-frames. Retorna a inscrição: persistida, ou com os erros em #errors.
+  def self.inscrever!(user:, time_frame:)
+    inscricao = nil
+    time_frame.turno.with_lock do
+      inscricao = new(user:, time_frame:, sorteio: Sorteio.do_dia!(time_frame.turno))
+      inscricao.save
+    end
+    inscricao
+  rescue ActiveRecord::RecordNotUnique
+    inscricao.errors.add(:base, :um_time_frame_por_turno)
+    inscricao
+  end
+
+  private
+    def inscricoes_abertas
+      errors.add(:base, :inscricoes_encerradas) if sorteio && !sorteio.inscricoes_abertas?
+    end
+
+    def um_time_frame_por_turno
+      return unless user && sorteio
+
+      errors.add(:base, :um_time_frame_por_turno) if InscricaoFastpass.exists?(user:, sorteio:)
+    end
+
+    def time_frame_do_turno_do_sorteio
+      return unless time_frame && sorteio
+
+      errors.add(:base, :time_frame_de_outro_turno) if time_frame.turno_id != sorteio.turno_id
+    end
+end

@@ -17,6 +17,14 @@ bin/docker-run bin/rubocop
 bin/docker-run bin/brakeman --no-pager -q
 ```
 
+Se a issue tem migrations novas, confira que elas geram o `db/schema.rb` commitado. Num banco vazio o
+`db:migrate` só carrega o `schema.rb` existente (falso positivo); por isso rode as migrations numa
+cópia sem o schema:
+
+```bash
+bin/docker-run bash -c 'rm -rf /tmp/copia && cp -r /app /tmp/copia && cd /tmp/copia && rm -f db/schema.rb storage/*.sqlite3 && RAILS_ENV=development bin/rails db:create db:migrate >/dev/null && diff <(grep -v "^#" /app/db/schema.rb) <(grep -v "^#" db/schema.rb) && echo SCHEMA OK'
+```
+
 Para o Cucumber completo, compare com as issues já implementadas: rode também com `--strict` nas
 tags que já passavam (`@issue_1 or @issue_2 or @issue_4 or @issue_6 or @issue_8`, mais as tags de
 issues marcadas `[x]` em `docs/loop/fila.md`) e informe qualquer regressão.

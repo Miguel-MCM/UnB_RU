@@ -242,6 +242,23 @@
   text-align: center;
 }
 
+.time-frame--inscricao {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.time-frame__inscrito {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.turno__inscricao {
+  margin: 0 0 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
 @media (max-width: 820px) {
   .novo-turno__form {
     grid-template-columns: 1fr;

@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   resource :recarga, only: %i[show create]
   resource :fastpass, only: :show, controller: "fastpass"
+  resources :inscricoes_fastpass, only: :create, path: "fastpass/inscricoes"
 
   namespace :operador do
     get "login", to: "sessions#new"
