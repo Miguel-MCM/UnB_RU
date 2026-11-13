@@ -9,7 +9,18 @@ class Acesso < ApplicationRecord
     nao_encontrado: "nao_encontrado"
   }
 
+  REFEICOES = { "cafe_da_manha" => "Café da Manhã", "almoco" => "Almoço", "jantar" => "Jantar" }.freeze
+
   validates :identificacao, presence: true
+
+  def self.refeicao_do_horario(momento)
+    minutos = momento.hour * 60 + momento.min
+
+    if minutos < 10 * 60 + 30 then "cafe_da_manha"
+    elsif minutos < 16 * 60 then "almoco"
+    else "jantar"
+    end
+  end
 
   def self.registrar_leitura!(identificacao, funcionario:)
     identificacao = identificacao.to_s.strip
@@ -22,7 +33,7 @@ class Acesso < ApplicationRecord
       else :liberado
       end
 
-    create!(identificacao:, user:, funcionario:, valor_centavos: tarifa, status:)
+    create!(identificacao:, user:, funcionario:, valor_centavos: tarifa, status:, refeicao: refeicao_do_horario(Time.current))
   end
 
   def liberou_catraca?

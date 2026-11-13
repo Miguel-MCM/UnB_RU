@@ -15,6 +15,7 @@
       <% if current_user %>
         <nav class="topbar__nav" aria-label="Portal do Estudante">
           <%= link_to "Recarga", recarga_path, class: "topbar__link", aria: { current: ("page" if current_page?(recarga_path)) } %>
+          <%= link_to "Extrato", statements_path, class: "topbar__link", aria: { current: ("page" if current_page?(statements_path)) } %>
         </nav>
 
         <div class="topbar__conta">
