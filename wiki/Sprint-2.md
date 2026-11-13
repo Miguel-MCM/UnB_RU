@@ -7,6 +7,7 @@ Sistema de gerenciamento para o Restaurante Universitário da UnB.
 - **Kanban:** [UnB RU](https://github.com/users/Miguel-MCM/projects/1/views/2)
 - **Workflow:** [`.github/workflows/ci.yml`](https://github.com/Miguel-MCM/UnB_RU/blob/sprint2/.github/workflows/ci.yml)
 - **Execuções:** [GitHub Actions](https://github.com/Miguel-MCM/UnB_RU/actions/workflows/ci.yml)
+- **Publicação da Wiki:** [`.github/workflows/wiki.yml`](https://github.com/Miguel-MCM/UnB_RU/blob/sprint2/.github/workflows/wiki.yml)
 
 ## Como o CI foi feito
 
@@ -33,6 +34,8 @@ Todos os jobs usam o Ruby definido em `.ruby-version` (3.3.8), com as gems em ca
 - **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (61 undefined, 21 passed)`: só os cenários do cadastro de usuário, da recarga de saldo, da autenticação do funcionário, da validação de entrada e da gestão de restaurantes e catracas já têm step definitions.
 - **Runner fixado em `ubuntu-24.04`.** O `ubuntu-latest` passou a ser o Ubuntu 26.04, que não oferece o Ruby 3.3.8. Para usar o `ubuntu-latest`, é preciso subir o Ruby do projeto para a versão 3.3 mais recente, em `.ruby-version` e no `Dockerfile`.
 - **`db/schema.rb` versionado.** Sem ele, `bin/rails db:test:prepare` falha. O arquivo é atualizado sempre que alguém roda `bin/rails db:migrate`.
+- **A Wiki acompanha a `sprint2`.** As páginas da Wiki ficam na pasta `wiki/` do repositório. Sempre que essa pasta muda na `sprint2`, o workflow `wiki.yml` copia as páginas para a Wiki do GitHub. Por isso, as páginas devem ser editadas na pasta `wiki/`, não direto na Wiki: uma edição feita só na Wiki é sobrescrita na próxima publicação. Quando o workflow chegar à `main`, ele também poderá ser rodado manualmente na aba Actions.
+- **Modelos de domínio em português.** Quando a base de banco e autenticação do João Borges chegou à `sprint2`, ela trazia outra versão dos mesmos modelos, com nomes em inglês (`Restaurant`, `Turnstile`, `AccessLog`, `Recharge`). O grupo manteve os modelos das issues já implementadas (`User`, `Funcionario`, `Restaurante`, `Catraca`, `Acesso`, `Recarga`, `Tarifa`). Da base, ficaram as gems e rotas de PDF, cardápio, relatório e extrato, os passos de PDF do Cucumber e a tabela `menus`.
 
 ## Rodar localmente
 
