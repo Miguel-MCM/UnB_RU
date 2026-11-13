@@ -41,6 +41,20 @@ RSpec.describe Acesso, type: :model do
     end
   end
 
+  describe ".refeicao_do_horario" do
+    it "classifica a leitura pelo turno do dia" do
+      expect(Acesso.refeicao_do_horario(Time.zone.local(2024, 5, 14, 7, 45))).to eq("cafe_da_manha")
+      expect(Acesso.refeicao_do_horario(Time.zone.local(2024, 5, 14, 12, 20))).to eq("almoco")
+      expect(Acesso.refeicao_do_horario(Time.zone.local(2024, 5, 14, 19, 10))).to eq("jantar")
+    end
+  end
+
+  it "registra a refeição do horário da leitura" do
+    travel_to Time.zone.local(2024, 5, 14, 12, 20) do
+      expect(ler("100001").refeicao).to eq("almoco")
+    end
+  end
+
   describe "#confirmar_passagem!" do
     it "debita a tarifa do momento da leitura" do
       acesso = ler("100001")

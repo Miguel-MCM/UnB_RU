@@ -7,8 +7,8 @@ Dado("que o estudante está autenticado no Portal do Estudante RU UnB") do
   click_button "Entrar no Sistema"
 end
 
-Dado('acessou a seção de "Recarga"') do
-  within("nav") { click_link "Recarga" }
+Dado("acessou a seção de {string}") do |secao|
+  within("nav") { click_link secao }
 end
 
 Dado("que o estudante visualiza os pacotes de refeições disponíveis") do
