@@ -30,7 +30,7 @@ Todos os jobs usam o Ruby definido em `.ruby-version` (3.3.8), com as gems em ca
 
 ## Decisões
 
-- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (61 undefined, 21 passed)`: só os cenários do cadastro de usuário, da recarga de saldo, da autenticação do funcionário, da validação de entrada e da gestão de restaurantes e catracas já têm step definitions.
+- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (58 undefined, 24 passed)`: só os cenários do cadastro de usuário, da recarga de saldo, do extrato e histórico, da autenticação do funcionário, da validação de entrada e da gestão de restaurantes e catracas já têm step definitions.
 - **Runner fixado em `ubuntu-24.04`.** O `ubuntu-latest` passou a ser o Ubuntu 26.04, que não oferece o Ruby 3.3.8. Para usar o `ubuntu-latest`, é preciso subir o Ruby do projeto para a versão 3.3 mais recente, em `.ruby-version` e no `Dockerfile`.
 - **`db/schema.rb` versionado.** Sem ele, `bin/rails db:test:prepare` falha. O arquivo é atualizado sempre que alguém roda `bin/rails db:migrate`.
 
@@ -70,6 +70,20 @@ A issue foi desenvolvida por mim com o [Cursor](https://cursor.com), usando o ag
 > Agora faça o mesmo processo de implementação para a issue 7
 
 Como os cenários pedem um estudante autenticado, a issue também trouxe o login do estudante em `/login`, com matrícula e senha. O pagamento é simulado: o QR Code e o código PIX copia e cola são gerados pela aplicação, mas nenhum banco aceita pagá-los.
+
+Todo o código gerado pelo agente foi revisado por mim.
+
+## Issue #8 — Extrato e Histórico
+
+- **Issue:** [#8 Extrato e Histórico](https://github.com/Miguel-MCM/UnB_RU/issues/8) (no repositório principal, [#3](https://github.com/neatzzy/UnB_RU/issues/3))
+- **Responsável:** Miguel ([@Miguel-MCM](https://github.com/Miguel-MCM))
+- **Design:** frame "Extrato de Refeições (US04)" do [Figma do projeto](https://www.figma.com/design/Clozp7Rj1jOBz6l7LoT44t/UnB-RU---Engenharia-de-Software?node-id=1-2330)
+
+A issue foi desenvolvida por mim com o [Cursor](https://cursor.com), usando o agente com o modelo **Claude Opus 5.5**, da Anthropic, no mesmo processo das issues anteriores: TDD a partir dos cenários de `features/extrato_e_historico.feature`, página no visual do Figma, branch própria, Pull Request contra a `sprint2` e card movido para In Progress. O prompt usado foi:
+
+> Agora implemente a issue 8
+
+O extrato fica em `/extrato`, nas rotas que já estavam reservadas na `sprint2`. Mostra o total gasto, as refeições e o total recarregado no mês, e lista as refeições debitadas e as recargas, com filtro por período e por tipo de refeição. "Exportar PDF" baixa o extrato com os filtros aplicados, gerado com a gem `prawn`, e "Imprimir" abre a impressão do navegador. Para filtrar pelo tipo de refeição, cada passagem pela catraca passou a guardar se foi café da manhã, almoço ou jantar, conforme o horário da leitura.
 
 Todo o código gerado pelo agente foi revisado por mim.
 
