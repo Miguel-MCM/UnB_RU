@@ -1,0 +1,124 @@
+<% saldo_reais = (current_user&.saldo_centavos.to_i / 100.0) %>
+<% refeicoes_restantes = current_user&.refeicoes_disponiveis.to_i %>
+<% gasto_reais = (@total_gasto_centavos.to_i / 100.0) %>
+<% recarregado_reais = (@total_recarregado_centavos.to_i / 100.0) %>
+
+<div style="background-color: #f4f6f9; min-height: 100vh; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1e293b;">
+  <header style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 32px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="background-color: #003b7a; color: #ffffff; font-weight: 800; font-size: 14px; padding: 10px 8px; border-radius: 6px;">UnB</div>
+        <div>
+          <div style="font-size: 16px; font-weight: 800; color: #003b7a; line-height: 1.1;">RU UnB Digital</div>
+          <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px;">Portal do Estudante</div>
+        </div>
+      </div>
+
+      <nav style="display: flex; align-items: center; gap: 16px; margin-left: 28px; border-left: 1px solid #e2e8f0; padding-left: 24px;">
+        <a href="#" style="text-decoration: none; color: #475569; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 8px;">Início</a>
+        <%= link_to "Recarga", recarga_path, style: "text-decoration: none; color: #475569; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 8px;" %>
+        <%= link_to "Extrato", statements_path, style: "text-decoration: none; background-color: #e8f0fe; color: #003b7a; font-size: 14px; font-weight: 700; padding: 8px 14px; border-radius: 8px;" %>
+      </nav>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="text-align: right; font-size: 12px;">
+        <strong style="display: block; color: #1e293b; font-size: 13px;"><%= current_user&.nome %></strong>
+        <span style="color: #64748b;">Matrícula: <%= current_user&.matricula %></span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; text-align: right;">
+        <small style="display: block; font-size: 9px; color: #64748b; text-transform: uppercase;">Saldo RU</small>
+        <strong style="color: #15803d; font-size: 14px;">R$ <%= format("%.2f", saldo_reais).tr(".", ",") %></strong>
+        <span style="display: block; font-size: 10px; color: #64748b;">(<%= refeicoes_restantes %> refeiç.)</span>
+      </div>
+      <div style="width: 34px; height: 34px; border-radius: 50%; background-color: #003b7a;"></div>
+      <%= button_to "Sair", logout_path, method: :delete, style: "background: none; border: none; color: #dc2626; font-size: 13px; font-weight: 600; cursor: pointer;" %>
+    </div>
+  </header>
+
+  <main style="max-width: 980px; margin: 28px auto; padding: 0 20px 48px;">
+    <div style="background: #ffffff; border-radius: 14px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 44px; height: 44px; background-color: #0b5ed7; color: #ffffff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">RU</div>
+        <div>
+          <p style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Conta do Estudante</p>
+          <p style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 2px 0 0;"><%= current_user&.nome %></p>
+        </div>
+      </div>
+      <div style="background: #f8fafc; border-radius: 10px; padding: 10px 18px; text-align: right;">
+        <p style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Saldo Restante</p>
+        <p style="font-size: 20px; font-weight: 800; color: #15803d; margin: 2px 0 0;">
+          R$ <%= format("%.2f", saldo_reais).tr(".", ",") %>
+          <span style="font-size: 12px; color: #64748b; font-weight: 500;">(<%= refeicoes_restantes %> refs)</span>
+        </p>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+      <div>
+        <h1 style="font-size: 28px; font-weight: 800; color: #003b7a; margin: 0 0 6px;">Extrato e Histórico de Refeições</h1>
+        <p style="font-size: 14px; color: #64748b; margin: 0;">Acompanhe suas recargas, refeições realizadas e exporte seu comprovante em PDF.</p>
+      </div>
+      <div>
+        <%= link_to "Exportar PDF", export_pdf_statements_path(request.query_parameters), style: "display: inline-block; background-color: #0b5ed7; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 14px;" %>
+      </div>
+    </div>
+
+    <% if flash[:alert].present? %>
+      <div id="flash-alert" style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-weight: 600;">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+      <div style="background: #ffffff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Total Gasto no Mês</span>
+        <strong style="display: block; font-size: 20px; color: #dc2626; margin-top: 4px;">R$ <%= format("%.2f", gasto_reais).tr(".", ",") %></strong>
+      </div>
+      <div style="background: #ffffff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Total Recarregado</span>
+        <strong style="display: block; font-size: 20px; color: #003b7a; margin-top: 4px;">R$ <%= format("%.2f", recarregado_reais).tr(".", ",") %></strong>
+      </div>
+      <div style="background: #ffffff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Refeições Realizadas</span>
+        <strong style="display: block; font-size: 20px; color: #0f172a; margin-top: 4px;"><%= @acessos.size %> refeições</strong>
+      </div>
+    </div>
+
+    <div style="background: #ffffff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px;">
+      <%= form_with url: statements_path, method: :get, local: true, style: "display: flex; gap: 16px; align-items: flex-end;" do %>
+        <div>
+          <label for="periodo" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Período</label>
+          <%= select_tag :periodo, options_for_select([ [ "Todos", "" ], [ "Mês Atual", "mes_atual" ], [ "Últimos 30 dias", "ultimos_30_dias" ] ], params[:periodo]), style: "padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px;" %>
+        </div>
+        <div>
+          <label for="tipo_refeicao" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Tipo de Refeição</label>
+          <%= select_tag :tipo_refeicao, options_for_select([ [ "Todas", "" ], [ "Café da Manhã", "cafe_da_manha" ], [ "Almoço", "almoco" ], [ "Jantar", "jantar" ] ], params[:tipo_refeicao]), style: "padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px;" %>
+        </div>
+        <div>
+          <%= submit_tag "Filtrar", style: "background-color: #003b7a; color: #ffffff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;" %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @recargas.empty? && @acessos.empty? %>
+      <div style="background: #ffffff; border-radius: 14px; padding: 36px 24px; text-align: center; border: 1px dashed #cbd5e1; color: #475569; font-weight: 600;">
+        <p style="margin: 0;">Não há registros para exportar</p>
+      </div>
+    <% else %>
+      <div style="background: #ffffff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <h2 style="font-size: 16px; font-weight: 700; margin: 0 0 14px;">Histórico de Lançamentos</h2>
+        <% @recargas.each do |recarga| %>
+          <p style="padding: 10px 12px; background: #f8fafc; border-radius: 8px; margin: 6px 0; font-size: 14px;">
+            <strong>Recarga de Saldo</strong> — <%= recarga.quantidade %> refeições (R$ <%= format("%.2f", recarga.valor_centavos / 100.0).tr(".", ",") %>)
+          </p>
+        <% end %>
+        <% @acessos.each do |acesso| %>
+          <p style="padding: 10px 12px; background: #f8fafc; border-radius: 8px; margin: 6px 0; font-size: 14px;">
+            <strong>Refeição Realizada</strong> — Matrícula <%= acesso.identificacao %> (R$ <%= format("%.2f", acesso.valor_centavos / 100.0).tr(".", ",") %>)
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+  </main>
+</div>

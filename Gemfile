@@ -70,3 +70,7 @@ group :test do
   gem "cucumber-rails", require: false
   gem "database_cleaner-active_record"
 end
+
+gem "prawn", "~> 2.5"
+gem "prawn-table", "~> 0.2.2"
+gem "pdf-reader", group: :test

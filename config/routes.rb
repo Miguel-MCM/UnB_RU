@@ -16,6 +16,11 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   resource :recarga, only: %i[show create]
+  resources :statements, path: "extrato", only: [ :index ] do
+    collection do
+      get :export_pdf
+    end
+  end
 
   namespace :operador do
     get "login", to: "sessions#new"
