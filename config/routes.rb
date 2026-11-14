@@ -37,5 +37,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
-  resources :access_reports, path: "relatorio_acessos", only: [ :index ]
+  resources :access_reports, path: "relatorio_acessos", only: [ :index ] do
+    collection do
+      get :export_pdf
+    end
+  end
 end
