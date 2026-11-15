@@ -1,6 +1,7 @@
 class Acesso < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :funcionario
+  belongs_to :catraca, optional: true
 
   enum :status, {
     liberado: "liberado",
@@ -11,7 +12,7 @@ class Acesso < ApplicationRecord
 
   validates :identificacao, presence: true
 
-  def self.registrar_leitura!(identificacao, funcionario:)
+  def self.registrar_leitura!(identificacao, funcionario:, catraca: nil)
     identificacao = identificacao.to_s.strip
     user = User.find_by(matricula: identificacao)
     tarifa = Tarifa.vigente_centavos
@@ -22,7 +23,7 @@ class Acesso < ApplicationRecord
       else :liberado
       end
 
-    create!(identificacao:, user:, funcionario:, valor_centavos: tarifa, status:)
+    create!(identificacao:, user:, funcionario:, catraca:, valor_centavos: tarifa, status:)
   end
 
   def liberou_catraca?

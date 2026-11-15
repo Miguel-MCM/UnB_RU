@@ -10,6 +10,9 @@
       </h1>
       <p class="terminal__detalhe">
         Terminal liberado para operação por <strong><%= current_funcionario.nome %></strong>
+        <% if @catraca %>
+          · Catraca: <strong><%= @catraca.nome %></strong>
+        <% end %>
         · <span class="terminal__tarifa">Tarifa vigente: <%= reais(@tarifa) %></span>
       </p>
     </div>
@@ -46,8 +49,11 @@
     </section>
   </div>
 
-  <section class="card painel validacoes">
-    <h2 class="painel__titulo"><%= icon(:receipt) %> Últimas Validações Registradas</h2>
+  <section class="card painel validacoes" id="historico">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h2 class="painel__titulo"><%= icon(:receipt) %> <%= @catraca ? "Histórico da Catraca (#{@catraca.nome})" : "Últimas Validações Registradas" %></h2>
+      <%= link_to "Consultar histórico local", operador_historico_path, class: "button button--secondary" %>
+    </div>
 
     <% if @ultimos_acessos.any? %>
       <table class="tabela">

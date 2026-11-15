@@ -19,6 +19,8 @@
         <nav class="topbar__nav" aria-label="Aplicação de controle">
           <%= link_to "Terminal de Validação", operador_terminal_path, class: "topbar__link topbar__link--destaque",
                 aria: { current: ("page" if current_page?(operador_terminal_path)) } %>
+          <%= link_to "Histórico Local", operador_historico_path, class: "topbar__link topbar__link--destaque",
+                aria: { current: ("page" if current_page?(operador_historico_path)) } %>
           <% if current_funcionario.administrador? %>
             <%= link_to "Restaurantes e Catracas", admin_restaurantes_path, class: "topbar__link topbar__link--destaque",
                   aria: { current: ("page" if controller_path.start_with?("admin/")) } %>
