@@ -9,4 +9,4 @@ Sistema de gerenciamento para o Restaurante Universitário da UnB, desenvolvido 
 ## Sprints
 
 - [[Sprint 1 — Especificação BDD|Sprint-1]]
-- [[Sprint 2 — Integração Contínua|Sprint-2]]
+- [[Sprint 2 — Features e Integração Contínua|Sprint-2]]
