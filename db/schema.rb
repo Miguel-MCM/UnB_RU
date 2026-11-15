@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_220000) do
     t.integer "valor_centavos", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "refeicao"
     t.integer "catraca_id"
     t.index ["catraca_id"], name: "index_acessos_on_catraca_id"
     t.index ["funcionario_id"], name: "index_acessos_on_funcionario_id"
