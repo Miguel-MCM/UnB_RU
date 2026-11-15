@@ -1,0 +1,26 @@
+<% content_for :title, "Acessar · RU UnB Digital" %>
+
+<section class="card auth-card">
+  <span class="auth-card__icon"><%= icon(:login) %></span>
+  <h1 class="auth-card__title">Acesse sua conta</h1>
+  <p class="auth-card__subtitle">
+    Entre com sua matrícula e senha para acessar o Portal do Estudante.
+  </p>
+
+  <%= form_with url: login_path, class: "auth-form" do |form| %>
+    <%= render "shared/field", form:, attribute: :matricula, label: "Matrícula SIGAA ou SIAPE", icon_name: :badge,
+          placeholder: "Ex: 221045999 ou 1984201", autocomplete: "username", inputmode: "numeric", value: params[:matricula] %>
+
+    <%= render "shared/field", form:, attribute: :password, label: "Senha de Acesso", icon_name: :lock,
+          type: :password_field, placeholder: "Digite sua senha de acesso", autocomplete: "current-password" %>
+
+    <%= form.button class: "button button--primary" do %>
+      <%= icon(:login) %>
+      Entrar no Sistema
+    <% end %>
+  <% end %>
+
+  <p class="auth-card__footer">
+    <%= link_to "Ainda não possui uma conta? Cadastre-se", signup_path, class: "link" %>
+  </p>
+</section>

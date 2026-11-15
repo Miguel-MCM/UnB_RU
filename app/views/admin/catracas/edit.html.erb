@@ -1,0 +1,17 @@
+<% content_for :title, "Editar catraca · RU UnB" %>
+
+<section class="card auth-card">
+  <span class="auth-card__icon"><%= icon(:sensors) %></span>
+  <h1 class="auth-card__title">Editar catraca</h1>
+  <p class="auth-card__subtitle">Catraca do restaurante <strong><%= @catraca.restaurante.nome %></strong>.</p>
+
+  <%= form_with model: [ :admin, @catraca ], class: "auth-form" do |form| %>
+    <%= render "shared/field", form:, attribute: :nome, label: "Nome da catraca", icon_name: :sensors,
+          placeholder: "Ex: Entrada 1" %>
+
+    <div class="form-acoes">
+      <%= link_to "Cancelar", admin_restaurantes_path, class: "button button--claro" %>
+      <%= form.button "Salvar catraca", class: "button button--primary" %>
+    </div>
+  <% end %>
+</section>

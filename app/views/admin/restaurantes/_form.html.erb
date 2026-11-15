@@ -1,0 +1,16 @@
+<%# locals: (restaurante:, titulo:) -%>
+<section class="card auth-card">
+  <span class="auth-card__icon"><%= icon(:restaurant) %></span>
+  <h1 class="auth-card__title"><%= titulo %></h1>
+  <p class="auth-card__subtitle">O restaurante fica disponível para seleção na Aplicação de Controle.</p>
+
+  <%= form_with model: [ :admin, restaurante ], class: "auth-form" do |form| %>
+    <%= render "shared/field", form:, attribute: :nome, label: "Nome do restaurante", icon_name: :restaurant,
+          placeholder: "Ex: Darcy Ribeiro" %>
+
+    <div class="form-acoes">
+      <%= link_to "Cancelar", admin_restaurantes_path, class: "button button--claro" %>
+      <%= form.button "Salvar restaurante", class: "button button--primary" %>
+    </div>
+  <% end %>
+</section>

@@ -1,0 +1,68 @@
+<%# locals: (acesso:) -%>
+<% if acesso.nil? %>
+  <div class="veredito veredito--neutro">
+    <span class="veredito__icone"><%= icon(:qr_code) %></span>
+    <div>
+      <p class="veredito__titulo">Aguardando leitura</p>
+      <p class="veredito__texto">Aproxime o QR Code do estudante do leitor.</p>
+    </div>
+  </div>
+<% elsif acesso.liberou_catraca? %>
+  <div class="veredito veredito--sucesso">
+    <span class="veredito__icone"><%= icon(:check_circle) %></span>
+    <div>
+      <p class="veredito__titulo"><%= acesso.confirmado? ? "Passagem confirmada" : "Acesso liberado" %></p>
+      <p class="veredito__texto">
+        <%= acesso.confirmado? ? "Débito de #{reais(acesso.valor_centavos)} efetuado" : "Catraca liberada · aguardando a passagem" %>
+      </p>
+    </div>
+  </div>
+
+  <div class="resultado__detalhes">
+    <div class="detalhe">
+      <p class="eyebrow">Identificação do estudante</p>
+      <p class="detalhe__principal"><%= acesso.user.nome %></p>
+      <p class="detalhe__secundario">Matrícula: <%= acesso.identificacao %></p>
+    </div>
+    <div class="detalhe">
+      <p class="eyebrow">Débito financeiro</p>
+      <p class="detalhe__principal"><%= reais(acesso.valor_centavos) %></p>
+      <% if acesso.confirmado? %>
+        <p class="detalhe__sucesso">Saldo restante: <%= reais(acesso.user.saldo_centavos) %></p>
+      <% else %>
+        <p class="detalhe__secundario">Debitado na passagem · saldo atual <%= reais(acesso.user.saldo_centavos) %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <% if acesso.liberado? %>
+    <%= button_to operador_acesso_passagem_path(acesso), class: "button button--primary button--block" do %>
+      <%= icon(:check_circle) %>
+      Confirmar passagem
+    <% end %>
+    <p class="resultado__nota">Simula o sensor da catraca, que avisa quando o estudante passou.</p>
+  <% end %>
+<% else %>
+  <div class="veredito veredito--erro">
+    <span class="veredito__icone"><%= icon(:block) %></span>
+    <div>
+      <p class="veredito__titulo">Acesso negado</p>
+      <p class="veredito__texto"><%= acesso.saldo_insuficiente? ? "Saldo insuficiente" : "Estudante não encontrado" %></p>
+    </div>
+  </div>
+
+  <div class="resultado__detalhes">
+    <div class="detalhe">
+      <p class="eyebrow">Identificação lida</p>
+      <p class="detalhe__principal"><%= acesso.user&.nome || acesso.identificacao %></p>
+      <p class="detalhe__secundario">Matrícula: <%= acesso.identificacao %></p>
+    </div>
+    <% if acesso.user %>
+      <div class="detalhe">
+        <p class="eyebrow">Saldo do estudante</p>
+        <p class="detalhe__principal"><%= reais(acesso.user.saldo_centavos) %></p>
+        <p class="detalhe__erro">Tarifa da refeição: <%= reais(acesso.valor_centavos) %></p>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,22 @@
+<% content_for :title, "Autenticação do Operador · RU UnB" %>
+
+<section class="card auth-card">
+  <span class="auth-card__icon"><%= icon(:badge) %></span>
+  <h1 class="auth-card__title">Autenticação do Operador</h1>
+  <p class="auth-card__subtitle">
+    Informe suas credenciais funcionais para iniciar a sessão segura e liberar o terminal de catraca.
+  </p>
+
+  <%= form_with model: @login, url: operador_login_path, class: "auth-form" do |form| %>
+    <%= render "shared/field", form:, attribute: :matricula, label: "Matrícula SIAPE ou Usuário SIGAA / gov.br",
+          icon_name: :person, placeholder: "Ex: 1984201 ou operador.darcy", autocomplete: "username" %>
+
+    <%= render "shared/field", form:, attribute: :password, label: "Senha de Acesso", icon_name: :lock,
+          type: :password_field, placeholder: "Digite sua senha de operador", autocomplete: "current-password" %>
+
+    <%= form.button class: "button button--primary" do %>
+      <%= icon(:login) %>
+      Entrar no Sistema
+    <% end %>
+  <% end %>
+</section>

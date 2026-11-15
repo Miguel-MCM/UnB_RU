@@ -1,0 +1,87 @@
+<% content_for :title, "Restaurantes e Catracas · RU UnB" %>
+<% total_catracas = @restaurantes.sum { |restaurante| restaurante.catracas.size } %>
+
+<div class="gestao">
+  <header class="gestao__cabecalho">
+    <div>
+      <p class="selo selo--modulo">Módulo de administração</p>
+      <h1 class="gestao__titulo">Gestão de Restaurantes e Catracas Físicas</h1>
+    </div>
+    <%= link_to new_admin_restaurante_path, class: "button button--primary" do %>
+      <%= icon(:restaurant) %>
+      Cadastrar Restaurante
+    <% end %>
+  </header>
+
+  <div class="gestao__totais">
+    <div class="card total">
+      <div>
+        <p class="eyebrow">Total de restaurantes</p>
+        <p class="total__valor"><%= pluralize(@restaurantes.size, "Unidade", plural: "Unidades") %></p>
+      </div>
+      <span class="total__icone"><%= icon(:restaurant) %></span>
+    </div>
+    <div class="card total">
+      <div>
+        <p class="eyebrow">Catracas cadastradas</p>
+        <p class="total__valor total__valor--sucesso"><%= pluralize(total_catracas, "Catraca", plural: "Catracas") %></p>
+      </div>
+      <span class="total__icone"><%= icon(:sensors) %></span>
+    </div>
+  </div>
+
+  <h2 class="gestao__subtitulo">Unidades Cadastradas</h2>
+
+  <% if @restaurantes.empty? %>
+    <p class="card gestao__vazio">Nenhum restaurante cadastrado. Cadastre o primeiro para associar catracas a ele.</p>
+  <% end %>
+
+  <% @restaurantes.each.with_index(1) do |restaurante, posicao| %>
+    <section class="card unidade" id="<%= dom_id(restaurante) %>">
+      <header class="unidade__cabecalho">
+        <span class="unidade__numero"><%= posicao %></span>
+        <div class="unidade__texto">
+          <h3 class="unidade__nome"><%= restaurante.nome %></h3>
+          <p class="unidade__detalhe">Catracas ativas: <%= restaurante.catracas.size %></p>
+        </div>
+        <div class="unidade__acoes">
+          <%= link_to "Editar unidade", edit_admin_restaurante_path(restaurante), class: "button button--claro button--small" %>
+          <%= button_to "Remover unidade", admin_restaurante_path(restaurante), method: :delete,
+                class: "button button--perigo button--small",
+                form: { data: { turbo_confirm: "Remover #{restaurante.nome} e todas as catracas dele?" } } %>
+        </div>
+      </header>
+
+      <div class="unidade__corpo">
+        <% if restaurante.catracas.any? %>
+          <ul class="catracas">
+            <% restaurante.catracas.each do |catraca| %>
+              <li class="catraca" id="<%= dom_id(catraca) %>">
+                <div>
+                  <p class="catraca__nome"><%= catraca.nome %></p>
+                  <p class="catraca__status">Disponível para seleção</p>
+                </div>
+                <div class="catraca__acoes">
+                  <%= link_to "Editar", edit_admin_catraca_path(catraca), class: "link" %>
+                  <%= button_to "Remover", admin_catraca_path(catraca), method: :delete, class: "catraca__remover",
+                        form: { data: { turbo_confirm: "Remover a catraca #{catraca.nome}?" } } %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="unidade__vazio">Nenhuma catraca associada a esta unidade.</p>
+        <% end %>
+
+        <%= form_with model: [ :admin, restaurante, Catraca.new ], class: "nova-catraca" do |form| %>
+          <%= form.label :nome, "Nova catraca", for: dom_id(restaurante, :nova_catraca), class: "field__label" %>
+          <div class="nova-catraca__linha">
+            <%= form.text_field :nome, id: dom_id(restaurante, :nova_catraca), class: "field__input nova-catraca__input",
+                  placeholder: "Ex: Entrada 1", required: true %>
+            <%= form.button "Adicionar catraca", class: "button button--primary button--small" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
