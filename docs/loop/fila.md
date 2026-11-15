@@ -10,8 +10,8 @@ formando uma cadeia. A integração do grupo é a `sprint2`: a partir do item 3,
 Atenção: as tags `@issue_N` dos `.feature` usam a numeração do repositório principal (neatzzy);
 a numeração do fork aparece no título de cada item.
 
-**Regressão:** Cucumber completo com 0 falhas e pelo menos 69 cenários passando (após a #10;
-baseline da sprint2 em 181256a era 65); RSpec 225 exemplos, 0 falhas.
+**Regressão:** Cucumber completo com 0 falhas e pelo menos 77 cenários passando (após a #21;
+baseline da sprint2 em 181256a era 65); RSpec 251 exemplos, 0 falhas.
 
 ---
 
@@ -89,7 +89,16 @@ baseline da sprint2 em 181256a era 65); RSpec 225 exemplos, 0 falhas.
   - `Acesso.registrar_leitura!` já aceita `restaurante:` (relatório #14): passar o restaurante da
     sessão; `Acesso` deve ficar associado ao restaurante selecionado.
 
-## [ ] 4. Validação Rigorosa do FastPass — issue #21
+## [x] 4. Validação Rigorosa do FastPass — issue #21
+
+> **Feito.** 8/8 cenários; regressão 69/69; RSpec 251/0. Entrada do FastPass no terminal
+> (`modalidade=fastpass` no mesmo POST de leitura); regras em `Acesso` (status `sem_fastpass`,
+> `fora_do_time_frame`, `fastpass_utilizado`), escolha da inscrição em `InscricaoFastpass.contemplada_de`
+> e janela inclusiva em `HorarioEmMinutos#cobre?`. Débito e inscrição `utilizado` na mesma transação
+> da confirmação. Revisor achou 1 bloqueante (FK sem regra de exclusão → 500 ao remover restaurante
+> ou usuário com acesso FastPass), corrigido com `dependent: :nullify` + `on_delete: :nullify`.
+> Não aplicado: relatórios mostram o status cru (pré-existente). Passo reaproveitável pela #20:
+> "que o estudante "X" (não )?foi sorteado para o FastPass do <turno>[ no time-frame das A às B]".
 
 - Tag Cucumber: `@issue_bonus_2` — `features/validacao_FastPass_bonus.feature` (7 cenários, 8 com o esquema)
 - Branch: `feat/validacao-fastpass` (a partir de `feat/ponto-de-acesso`)

@@ -11,7 +11,8 @@ module Operador
         params[:identificacao],
         funcionario: current_funcionario,
         restaurante: current_restaurante,
-        catraca: current_catraca
+        catraca: current_catraca,
+        modalidade: params[:modalidade].presence_in(Acesso.modalidades.keys) || "comum"
       )
       redirect_to operador_terminal_path(acesso:)
     end

@@ -17,4 +17,19 @@ RSpec.describe TimeFrame, type: :model do
 
     expect(time_frame).to have_attributes(hora_inicio: "11:00", hora_fim: "11:15", horario: "11:00 às 11:15")
   end
+
+  describe "#cobre?" do
+    let(:time_frame) { turno.time_frames.new(numero: 1, hora_inicio: "11:00", hora_fim: "11:15") }
+
+    it "cobre do minuto de início ao de término, inclusive" do
+      expect(time_frame.cobre?(660)).to be(true)
+      expect(time_frame.cobre?(665)).to be(true)
+      expect(time_frame.cobre?(675)).to be(true)
+    end
+
+    it "não cobre minutos fora do intervalo" do
+      expect(time_frame.cobre?(659)).to be(false)
+      expect(time_frame.cobre?(676)).to be(false)
+    end
+  end
 end

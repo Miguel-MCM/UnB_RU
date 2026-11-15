@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_14_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_200712) do
   create_table "acessos", force: :cascade do |t|
     t.integer "user_id"
     t.integer "funcionario_id", null: false
@@ -22,8 +22,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_220000) do
     t.integer "restaurante_id"
     t.string "refeicao"
     t.integer "catraca_id"
+    t.string "modalidade", default: "comum", null: false
+    t.integer "inscricao_fastpass_id"
     t.index ["catraca_id"], name: "index_acessos_on_catraca_id"
     t.index ["funcionario_id"], name: "index_acessos_on_funcionario_id"
+    t.index ["inscricao_fastpass_id"], name: "index_acessos_on_inscricao_fastpass_id"
     t.index ["restaurante_id"], name: "index_acessos_on_restaurante_id"
     t.index ["user_id"], name: "index_acessos_on_user_id"
   end
@@ -146,6 +149,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_220000) do
 
   add_foreign_key "acessos", "catracas"
   add_foreign_key "acessos", "funcionarios"
+  add_foreign_key "acessos", "inscricoes_fastpass", on_delete: :nullify
   add_foreign_key "acessos", "restaurantes"
   add_foreign_key "acessos", "users"
   add_foreign_key "catracas", "restaurantes"

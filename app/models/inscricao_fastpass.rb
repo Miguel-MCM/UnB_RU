@@ -4,6 +4,7 @@ class InscricaoFastpass < ApplicationRecord
   belongs_to :user
   belongs_to :sorteio
   belongs_to :time_frame
+  has_many :acessos, dependent: :nullify
 
   enum :status, {
     inscrito: "inscrito",
@@ -18,6 +19,24 @@ class InscricaoFastpass < ApplicationRecord
 
   scope :do_dia, ->(data = Date.current) { joins(:sorteio).where(sorteios: { data_refeicao: data }) }
   scope :do_turno, ->(turno) { joins(:sorteio).where(sorteios: { turno_id: turno }) }
+  scope :contempladas, -> { where(status: %w[sorteado utilizado]) }
+  scope :do_restaurante, ->(restaurante) { joins(sorteio: :turno).where(turnos: { restaurante_id: restaurante }) }
+
+  # Inscrição contemplada no sorteio (sorteada ou já utilizada) do estudante no
+  # restaurante e no dia do momento. Prefere a do time-frame que cobre o
+  # momento, depois a do turno que cobre o momento e, por fim, a de horário
+  # mais próximo — assim quem chega fora do time-frame é identificado como tal.
+  # Caso de borda: entre dois turnos, a mais próxima pode ser uma inscrição já
+  # utilizada, e a leitura resulta em "FastPass já foi utilizado".
+  def self.contemplada_de(user, restaurante, momento)
+    minutos = HorarioEmMinutos.minutos_do(momento)
+    inscricoes = where(user:).do_dia(momento.to_date).do_restaurante(restaurante).contempladas
+                   .includes(:time_frame, sorteio: :turno).to_a
+
+    inscricoes.find { |inscricao| inscricao.time_frame.cobre?(minutos) } ||
+      inscricoes.find { |inscricao| inscricao.sorteio.turno.cobre?(minutos) } ||
+      inscricoes.min_by { |inscricao| inscricao.time_frame.distancia_de(minutos) }
+  end
 
   # Inscreve o estudante no sorteio do dia do turno do time-frame. Não cobra
   # nada. O turno fica travado para não concorrer com a redivisão dos

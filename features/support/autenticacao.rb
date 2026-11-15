@@ -20,7 +20,7 @@ module AutenticacaoHelpers
 
   def configurar_ponto_de_acesso(nome)
     entrar_como_funcionario unless @funcionario
-    Restaurante.find_or_create_by!(nome:)
+    @restaurante = Restaurante.find_or_create_by!(nome:)
     selecionar_restaurante(nome)
   end
 

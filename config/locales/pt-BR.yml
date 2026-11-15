@@ -1,4 +1,13 @@
 pt-BR:
+  operador:
+    acesso:
+      motivos:
+        saldo_insuficiente: Saldo insuficiente
+        nao_encontrado: Estudante não encontrado
+        fora_do_time_frame: Fora do time-frame do FastPass
+        sem_fastpass: Não possui FastPass para o turno vigente
+        fastpass_utilizado: FastPass já foi utilizado
+        voltar_para_fila: O estudante deve voltar para o final da fila.
   activerecord:
     models:
       inscricao_fastpass: Inscrição no FastPass

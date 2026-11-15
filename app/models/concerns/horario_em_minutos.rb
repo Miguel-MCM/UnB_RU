@@ -25,6 +25,20 @@ module HorarioEmMinutos
     horas * 60 + minutos if horas && horas < 24 && minutos < 60
   end
 
+  def self.minutos_do(momento)
+    momento.hour * 60 + momento.min
+  end
+
+  # O intervalo vale do minuto de início ao de término, inclusive.
+  def cobre?(minutos)
+    minutos.between?(hora_inicio_min, hora_fim_min)
+  end
+
+  # Minutos entre `minutos` e o intervalo (zero quando o intervalo o cobre).
+  def distancia_de(minutos)
+    [ hora_inicio_min - minutos, minutos - hora_fim_min, 0 ].max
+  end
+
   def horario
     "#{hora_inicio} às #{hora_fim}"
   end

@@ -53,4 +53,56 @@ RSpec.describe InscricaoFastpass, type: :model do
     expect(inscricao).not_to be_valid
     expect(inscricao.errors[:base]).to include("O time-frame não pertence ao turno do sorteio")
   end
+
+  describe "contempladas" do
+    let(:gama) { Restaurante.create!(nome: "Gama") }
+    let(:momento) { Time.zone.local(2026, 11, 16, 11, 5) }
+    let(:inscricao) do
+      travel_to(momento.change(hour: 8)) { inscrever(almoco.time_frames.first) }
+    end
+
+    it "considera contempladas as inscrições sorteadas ou utilizadas" do
+      inscricao.sorteado!
+      expect(InscricaoFastpass.contempladas).to eq([ inscricao ])
+
+      inscricao.utilizado!
+      expect(InscricaoFastpass.contempladas).to eq([ inscricao ])
+
+      inscricao.nao_sorteado!
+      expect(InscricaoFastpass.contempladas).to be_empty
+    end
+
+    it "filtra as inscrições do restaurante" do
+      expect(InscricaoFastpass.do_restaurante(darcy)).to eq([ inscricao ])
+      expect(InscricaoFastpass.do_restaurante(gama)).to be_empty
+    end
+
+    describe ".contemplada_de" do
+      before { inscricao.sorteado! }
+
+      it "encontra a inscrição sorteada do estudante no restaurante e no dia" do
+        expect(InscricaoFastpass.contemplada_de(estudante, darcy, momento)).to eq(inscricao)
+      end
+
+      it "encontra a inscrição mesmo fora do time-frame, para identificar o atraso" do
+        expect(InscricaoFastpass.contemplada_de(estudante, darcy, momento.change(hour: 10, min: 55))).to eq(inscricao)
+        expect(InscricaoFastpass.contemplada_de(estudante, darcy, momento.change(min: 20))).to eq(inscricao)
+      end
+
+      it "prefere a inscrição do turno que cobre o momento" do
+        do_jantar = travel_to(momento.change(hour: 8)) { inscrever(jantar.time_frames.last) }.tap(&:sorteado!)
+
+        expect(InscricaoFastpass.contemplada_de(estudante, darcy, momento.change(hour: 18))).to eq(do_jantar)
+        expect(InscricaoFastpass.contemplada_de(estudante, darcy, momento.change(hour: 12))).to eq(inscricao)
+      end
+
+      it "ignora inscrições não sorteadas, de outro restaurante ou de outro dia" do
+        expect(InscricaoFastpass.contemplada_de(estudante, gama, momento)).to be_nil
+        expect(InscricaoFastpass.contemplada_de(estudante, darcy, momento + 1.day)).to be_nil
+
+        inscricao.nao_sorteado!
+        expect(InscricaoFastpass.contemplada_de(estudante, darcy, momento)).to be_nil
+      end
+    end
+  end
 end
