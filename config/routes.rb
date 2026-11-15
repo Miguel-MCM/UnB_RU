@@ -1,13 +1,5 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   get "cadastro", to: "users#new", as: :signup
   post "cadastro", to: "users#create"
@@ -16,13 +8,18 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   resource :recarga, only: %i[show create]
+  resource :fastpass, only: :show, controller: "fastpass"
+  resources :inscricoes_fastpass, only: :create, path: "fastpass/inscricoes"
+  resources :notificacoes, only: :index
 
   namespace :operador do
     get "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
 
+    resource :ponto_de_acesso, only: %i[show update], controller: "pontos_de_acesso"
     resource :terminal, only: :show, controller: "terminal"
+    resource :historico, only: :show, controller: "historicos"
     resources :acessos, only: :create do
       resource :passagem, only: :create, controller: "passagens"
     end
@@ -31,11 +28,25 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :restaurantes, except: :show do
       resources :catracas, only: :create
+      resources :turnos, only: %i[index create]
     end
     resources :catracas, only: %i[edit update destroy]
+    resources :turnos, only: [] do
+      resources :time_frames, only: :create
+    end
   end
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  resources :access_reports, path: "relatorio_acessos", only: [ :index ]
+  get "/cardapio_atual", to: "menus#current", as: :current_menu
+
+  resources :access_reports, path: "relatorio_acessos", only: [ :index ] do
+    collection do
+      get :export_pdf
+    end
+  end
+
+  resources :statements, path: "extrato", only: [ :index ] do
+    collection do
+      get :export_pdf
+    end
+  end
 end

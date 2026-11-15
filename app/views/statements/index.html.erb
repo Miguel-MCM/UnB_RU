@@ -1,0 +1,114 @@
+<% content_for :title, "Extrato · RU UnB Digital" %>
+<% filtros = { periodo: @extrato.periodo, tipo: @extrato.tipo } %>
+<% lancamentos = @extrato.lancamentos %>
+
+<div class="extrato">
+  <header class="extrato__cabecalho">
+    <div>
+      <p class="trilha">Portal do Estudante / Prestação de contas</p>
+      <h1 class="extrato__titulo">Extrato e Histórico de Refeições</h1>
+    </div>
+    <div class="extrato__acoes" data-controller="impressao">
+      <%= link_to export_pdf_statements_path(filtros), class: "button button--claro button--small" do %>
+        <%= icon(:download) %>
+        Exportar PDF
+      <% end %>
+      <button type="button" class="button button--claro button--small" data-action="impressao#imprimir">
+        <%= icon(:print) %>
+        Imprimir
+      </button>
+    </div>
+  </header>
+
+  <section class="indicadores" aria-label="Indicadores do mês">
+    <div class="card indicador">
+      <div class="indicador__topo">
+        <p class="eyebrow">Total Gasto no Mês</p>
+        <span class="indicador__icone indicador__icone--gasto"><%= icon(:receipt) %></span>
+      </div>
+      <p class="indicador__valor"><%= reais(@extrato.total_gasto_no_mes) %></p>
+      <p class="indicador__rodape">
+        <span><%= resumo_de_debitos(@extrato.debitos_no_mes, @extrato.total_gasto_no_mes) %></span>
+        <span class="indicador__nota indicador__nota--gasto">Total consumido</span>
+      </p>
+    </div>
+
+    <div class="card indicador">
+      <div class="indicador__topo">
+        <p class="eyebrow">Refeições Realizadas</p>
+        <span class="indicador__icone indicador__icone--refeicoes"><%= icon(:restaurant) %></span>
+      </div>
+      <p class="indicador__valor"><%= @extrato.debitos_no_mes %> <small>refeições</small></p>
+      <p class="indicador__rodape">
+        <span><%= frequencia_de_refeicoes(@extrato.refeicoes_no_mes) %></span>
+      </p>
+    </div>
+
+    <div class="card indicador">
+      <div class="indicador__topo">
+        <p class="eyebrow">Total Recarregado</p>
+        <span class="indicador__icone indicador__icone--recarga"><%= icon(:wallet) %></span>
+      </div>
+      <p class="indicador__valor indicador__valor--sucesso"><%= reais(@extrato.total_recarregado_no_mes) %></p>
+      <p class="indicador__rodape">
+        <span><%= pluralize(@extrato.recargas_no_mes, "recarga", plural: "recargas") %> no mês</span>
+        <span class="indicador__nota">Saldo restante: <%= reais(current_user.saldo_centavos) %></span>
+      </p>
+    </div>
+  </section>
+
+  <%= form_with url: statements_path, method: :get, class: "card filtros" do |form| %>
+    <div class="filtros__cabecalho">
+      <h2 class="painel__titulo"><%= icon(:tune) %> Filtros de auditoria e consulta</h2>
+      <%= link_to "Limpar filtros", statements_path, class: "link" %>
+    </div>
+    <div class="filtros__campos">
+      <div class="filtros__campo">
+        <%= form.label :periodo, "Período de referência", class: "field__label" %>
+        <%= form.select :periodo, Extrato.opcoes_de_periodo, { selected: @extrato.periodo }, class: "filtros__select" %>
+      </div>
+      <div class="filtros__campo">
+        <%= form.label :tipo, "Tipo de refeição", class: "field__label" %>
+        <%= form.select :tipo, Extrato::OPCOES_DE_TIPO, { selected: @extrato.tipo }, class: "filtros__select" %>
+      </div>
+      <%= form.button "Aplicar filtros", name: nil, class: "button button--primary button--small" %>
+    </div>
+  <% end %>
+
+  <section class="card lancamentos" id="lancamentos">
+    <div class="lancamentos__cabecalho">
+      <h2 class="painel__titulo">Lançamentos Contábeis e Registros de Catraca</h2>
+      <span class="selo selo--modulo"><%= pluralize(lancamentos.size, "lançamento", plural: "lançamentos") %></span>
+    </div>
+
+    <% if lancamentos.any? %>
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th scope="col">Data e hora</th>
+            <th scope="col">Refeição / Evento</th>
+            <th scope="col">Método</th>
+            <th scope="col" class="tabela__numero">Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% lancamentos.each do |lancamento| %>
+            <tr class="<%= "lancamento--credito" if lancamento.credito? %>">
+              <td>
+                <strong><%= momento_do_lancamento(lancamento.momento) %></strong>
+                <small class="lancamento__detalhe"><%= detalhe_do_lancamento(lancamento.momento) %></small>
+              </td>
+              <td><span class="evento evento--<%= lancamento.evento %>"><%= lancamento.descricao %></span></td>
+              <td><%= lancamento.metodo %></td>
+              <td class="tabela__numero <%= lancamento.credito? ? "valor--credito" : "valor--debito" %>">
+                <%= lancamento.valor_formatado %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="painel__vazio">Nenhum lançamento encontrado para os filtros selecionados.</p>
+    <% end %>
+  </section>
+</div>

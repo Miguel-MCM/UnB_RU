@@ -1,12 +1,38 @@
 pt-BR:
+  notificacoes:
+    contemplado: "Você ganhou o FastPass do %{turno} de %{data}! Seu time-frame é das %{horario}."
+    nao_contemplado: "Você não ganhou o FastPass do %{turno} de %{data}. Entre pela fila comum."
+  operador:
+    acesso:
+      motivos:
+        saldo_insuficiente: Saldo insuficiente
+        nao_encontrado: Estudante não encontrado
+        fora_do_time_frame: Fora do time-frame do FastPass
+        sem_fastpass: Não possui FastPass para o turno vigente
+        fastpass_utilizado: FastPass já foi utilizado
+        voltar_para_fila: O estudante deve voltar para o final da fila.
   activerecord:
     models:
+      inscricao_fastpass: Inscrição no FastPass
+      notificacao: Notificação
+      sorteio: Sorteio
       user: Usuário
     attributes:
       catraca:
         nome: Nome
       restaurante:
         nome: Nome
+      time_frame:
+        numero: Número
+        hora_inicio_min: Horário de início
+        hora_fim_min: Horário de término
+      turno:
+        nome: Nome do turno
+        hora_inicio: Horário de início
+        hora_inicio_min: Horário de início
+        hora_fim: Horário de término
+        hora_fim_min: Horário de término
+        duracao_time_frame_min: Duração do time-frame
       user:
         nome: Nome Completo
         matricula: Matrícula
@@ -14,6 +40,23 @@ pt-BR:
         password_confirmation: Confirmar Senha
     errors:
       models:
+        acesso:
+          attributes:
+            catraca:
+              restaurante_divergente: não pertence ao restaurante do ponto de acesso
+        inscricao_fastpass:
+          attributes:
+            base:
+              inscricoes_encerradas: As inscrições para o turno estão encerradas
+              um_time_frame_por_turno: Só é permitido um time-frame por turno
+              time_frame_de_outro_turno: O time-frame não pertence ao turno do sorteio
+        turno:
+          attributes:
+            base:
+              fim_antes_do_inicio: O horário de término deve ser posterior ao de início
+              conflito: O horário conflita com o turno %{turno}
+              duracao_maior_que_turno: A duração do time-frame não pode ser maior que a duração do turno
+              possui_inscricoes: Não é possível redividir um turno que já possui inscrições no FastPass
         user:
           attributes:
             matricula:
@@ -21,6 +64,12 @@ pt-BR:
               taken: já possui uma conta cadastrada
             password_confirmation:
               confirmation: As senhas não conferem
+  date:
+    abbr_day_names: [Dom, Seg, Ter, Qua, Qui, Sex, Sáb]
+    abbr_month_names: [~, Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez]
+    day_names: [Domingo, Segunda-feira, Terça-feira, Quarta-feira, Quinta-feira, Sexta-feira, Sábado]
+    month_names: [~, Janeiro, Fevereiro, Março, Abril, Maio, Junho, Julho, Agosto, Setembro, Outubro, Novembro, Dezembro]
+    order: [day, month, year]
   number:
     currency:
       format:

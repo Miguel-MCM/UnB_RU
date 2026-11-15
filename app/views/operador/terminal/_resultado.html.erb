@@ -11,7 +11,10 @@
   <div class="veredito veredito--sucesso">
     <span class="veredito__icone"><%= icon(:check_circle) %></span>
     <div>
-      <p class="veredito__titulo"><%= acesso.confirmado? ? "Passagem confirmada" : "Acesso liberado" %></p>
+      <p class="veredito__titulo">
+        <%= acesso.confirmado? ? "Passagem confirmada" : "Acesso liberado" %>
+        <% if acesso.modalidade_fastpass? %><span class="selo selo--sucesso">FastPass</span><% end %>
+      </p>
       <p class="veredito__texto">
         <%= acesso.confirmado? ? "Débito de #{reais(acesso.valor_centavos)} efetuado" : "Catraca liberada · aguardando a passagem" %>
       </p>
@@ -47,7 +50,10 @@
     <span class="veredito__icone"><%= icon(:block) %></span>
     <div>
       <p class="veredito__titulo">Acesso negado</p>
-      <p class="veredito__texto"><%= acesso.saldo_insuficiente? ? "Saldo insuficiente" : "Estudante não encontrado" %></p>
+      <p class="veredito__texto"><%= motivo_bloqueio(acesso) %></p>
+      <% if acesso.fora_do_time_frame? %>
+        <p class="veredito__texto"><%= t("operador.acesso.motivos.voltar_para_fila") %></p>
+      <% end %>
     </div>
   </div>
 

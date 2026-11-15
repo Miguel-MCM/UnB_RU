@@ -27,6 +27,27 @@ RSpec.describe "Autenticação do operador", type: :request do
       expect(response.body).to include("Carlos Mendes", "Terminal liberado para operação")
     end
 
+    it "leva direto à seleção do restaurante, sem alerta, quando há restaurantes cadastrados" do
+      Restaurante.create!(nome: "Darcy Ribeiro")
+
+      entrar
+
+      expect(response).to redirect_to(operador_ponto_de_acesso_path)
+      expect(flash[:alert]).to be_nil
+      follow_redirect!
+      expect(response.body).to include("Selecione o restaurante")
+      expect(response.body).not_to include("Selecione o restaurante antes de iniciar a operação.")
+    end
+
+    it "leva o administrador à gestão de restaurantes mesmo com restaurantes cadastrados" do
+      Restaurante.create!(nome: "Darcy Ribeiro")
+      Funcionario.create!(nome: "Fernando Albuquerque", matricula: "1083921", password: "Operador123", administrador: true)
+
+      entrar(matricula: "1083921")
+
+      expect(response).to redirect_to(admin_restaurantes_path)
+    end
+
     it "mostra as mensagens de campo obrigatório quando os campos vêm em branco" do
       entrar(matricula: "", password: "")
 

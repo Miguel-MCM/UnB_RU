@@ -1,0 +1,31 @@
+<% content_for :title, "FastPass · RU UnB" %>
+
+<div class="gestao">
+  <header class="gestao__cabecalho">
+    <div>
+      <p class="eyebrow">Inscrição no sorteio</p>
+      <h1 class="gestao__titulo">FastPass</h1>
+    </div>
+  </header>
+
+  <% @restaurantes.each do |restaurante| %>
+    <h2 class="gestao__subtitulo"><%= restaurante.nome %></h2>
+
+    <% restaurante.turnos.each do |turno| %>
+      <section class="card unidade turno" id="<%= dom_id(turno) %>">
+        <header class="unidade__cabecalho">
+          <div class="unidade__texto">
+            <h3 class="unidade__nome turno__nome"><%= turno.nome %></h3>
+            <p class="unidade__detalhe turno__horario"><%= turno.horario %></p>
+          </div>
+        </header>
+        <div class="unidade__corpo">
+          <% if @turnos_inscritos.include?(turno.id) %>
+            <p class="turno__inscricao">Você está participando do sorteio do FastPass deste turno.</p>
+          <% end %>
+          <%= render "fastpass/time_frames", turno:, inscricoes: @inscricoes %>
+        </div>
+      </section>
+    <% end %>
+  <% end %>
+</div>

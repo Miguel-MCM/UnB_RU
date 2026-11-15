@@ -73,6 +73,12 @@
   gap: 20px;
 }
 
+.terminal__entradas {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .painel {
   display: flex;
   flex-direction: column;

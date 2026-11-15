@@ -3,7 +3,9 @@ Dado("que o valor vigente da refeição é de {reais}") do |centavos|
 end
 
 Dado("que o estudante {string} possui saldo de {reais}") do |matricula, centavos|
-  @estudante = User.create!(nome: "Mariana Souza Silva", matricula:, password: "Senha123", saldo_centavos: centavos)
+  @estudante = User.find_or_initialize_by(matricula:)
+  @estudante.assign_attributes(nome: "Mariana Souza Silva", password: "Senha123") if @estudante.new_record?
+  @estudante.update!(saldo_centavos: centavos)
   @saldo_inicial = centavos
 end
 

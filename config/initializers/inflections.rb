@@ -14,3 +14,8 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular "inscricao_fastpass", "inscricoes_fastpass"
+  inflect.irregular "notificacao", "notificacoes"
+end

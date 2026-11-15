@@ -6,6 +6,26 @@ class AccessReportsController < ApplicationController
     load_report_data
   end
 
+  def export_pdf
+    load_report_data
+
+    if @error_message.present?
+      redirect_to access_reports_path(request.query_parameters), alert: @error_message
+      return
+    end
+
+    if @acessos.empty?
+      redirect_to access_reports_path(request.query_parameters), alert: "Não há dados para exportar"
+      return
+    end
+
+    pdf_data = OperationReportPdf.new(@acessos, restaurante_filtro: @restaurante&.nome).render
+    send_data pdf_data,
+              filename: "relatorio_operacao.pdf",
+              type: "application/pdf",
+              disposition: "attachment"
+  end
+
   private
     def load_report_data
       @restaurantes = Restaurante.ordenados

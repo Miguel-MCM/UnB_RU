@@ -46,6 +46,9 @@
         <div>
           <%= submit_tag "Filtrar", style: "background-color: #0b5ed7; color: #ffffff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;" %>
         </div>
+        <div>
+          <%= link_to "Exportar PDF", export_pdf_access_reports_path(request.query_parameters), style: "display: inline-block; background-color: #003b7a; color: #ffffff; text-decoration: none; padding: 9px 18px; border-radius: 8px; font-weight: 600; font-size: 14px;" %>
+        </div>
       <% end %>
     </div>
 

@@ -27,4 +27,25 @@ RSpec.describe Restaurante, type: :model do
 
     expect(Restaurante.ordenados.map(&:nome)).to eq([ "Darcy Ribeiro", "Gama" ])
   end
+
+  it "lista só os restaurantes com turnos cadastrados" do
+    darcy = Restaurante.create!(nome: "Darcy Ribeiro")
+    Restaurante.create!(nome: "Gama")
+    darcy.turnos.create!(nome: "almoço", hora_inicio: "11:00", hora_fim: "14:00")
+    darcy.turnos.create!(nome: "jantar", hora_inicio: "18:00", hora_fim: "20:00")
+
+    expect(Restaurante.com_turnos).to eq([ darcy ])
+  end
+
+  describe ".selecao_obrigatoria?" do
+    it "não exige a seleção quando não há restaurantes" do
+      expect(Restaurante.selecao_obrigatoria?).to be(false)
+    end
+
+    it "exige a seleção quando há restaurantes cadastrados" do
+      Restaurante.create!(nome: "Darcy Ribeiro")
+
+      expect(Restaurante.selecao_obrigatoria?).to be(true)
+    end
+  end
 end

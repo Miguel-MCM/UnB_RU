@@ -1,0 +1,171 @@
+<% saldo_reais = (current_user&.saldo_centavos.to_i / 100.0) %>
+<% refeicoes_restantes = (current_user&.saldo_centavos.to_i / 450) %>
+
+<div style="background-color: #f4f6f9; min-height: 100vh; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1e293b;">
+  <header style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 32px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="background-color: #003b7a; color: #ffffff; font-weight: 800; font-size: 14px; padding: 10px 8px; border-radius: 6px;">UnB</div>
+        <div>
+          <div style="font-size: 16px; font-weight: 800; color: #003b7a; line-height: 1.1;">RU UnB Digital</div>
+          <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px;">Portal do Estudante</div>
+        </div>
+      </div>
+
+      <nav style="display: flex; align-items: center; gap: 16px; margin-left: 28px; border-left: 1px solid #e2e8f0; padding-left: 24px;">
+        <%= link_to "Início", current_menu_path, style: "text-decoration: none; background-color: #e8f0fe; color: #003b7a; font-size: 14px; font-weight: 700; padding: 8px 14px; border-radius: 8px;" %>
+        <%= link_to "Recarga", recarga_path, style: "text-decoration: none; color: #475569; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 8px;" %>
+        <a href="#" style="text-decoration: none; color: #475569; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 8px;">Extrato</a>
+      </nav>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="text-align: right; font-size: 12px;">
+        <strong style="display: block; color: #1e293b; font-size: 13px;"><%= current_user&.nome %></strong>
+        <span style="color: #64748b;">Matrícula: <%= current_user&.matricula %></span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; text-align: right;">
+        <small style="display: block; font-size: 9px; color: #64748b; text-transform: uppercase;">Saldo RU</small>
+        <strong style="color: #15803d; font-size: 14px;">R$ <%= format("%.2f", saldo_reais).tr(".", ",") %></strong>
+        <span style="display: block; font-size: 10px; color: #64748b;">(<%= refeicoes_restantes %> refeiç.)</span>
+      </div>
+      <div style="width: 34px; height: 34px; border-radius: 50%; background-color: #003b7a;"></div>
+      <%= button_to "Sair", logout_path, method: :delete, style: "background: none; border: none; color: #dc2626; font-size: 13px; font-weight: 600; cursor: pointer;" %>
+    </div>
+  </header>
+
+  <main style="max-width: 980px; margin: 28px auto; padding: 0 20px 48px;">
+    <div style="background: #ffffff; border-radius: 14px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 44px; height: 44px; background-color: #0b5ed7; color: #ffffff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">RU</div>
+        <div>
+          <p style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Conta do Estudante</p>
+          <p style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 2px 0 0;"><%= current_user&.nome %></p>
+        </div>
+      </div>
+      <div style="background: #f8fafc; border-radius: 10px; padding: 10px 18px; text-align: right;">
+        <p style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Saldo Atual</p>
+        <p style="font-size: 20px; font-weight: 800; color: #15803d; margin: 2px 0 0;">
+          R$ <%= format("%.2f", saldo_reais).tr(".", ",") %>
+          <span style="font-size: 12px; color: #64748b; font-weight: 500;">(<%= refeicoes_restantes %> refs)</span>
+        </p>
+      </div>
+    </div>
+
+    <h1 style="font-size: 28px; font-weight: 800; color: #003b7a; margin: 0 0 6px;">Cardápio da Refeição Atual</h1>
+    <p style="font-size: 14px; color: #64748b; margin: 0 0 24px;">Consulte as opções servidas agora no Restaurante Universitário.</p>
+
+    <% if @current_meal_type.nil? %>
+      <div style="background: #ffffff; border-radius: 14px; padding: 36px 24px; text-align: center; border: 1px dashed #cbd5e1; color: #475569; font-size: 16px; font-weight: 600;">
+        <p id="no-meal-message">Não há refeição sendo servida no momento</p>
+      </div>
+    <% elsif @menu.nil? %>
+      <div style="background: #ffffff; border-radius: 14px; padding: 36px 24px; text-align: center; border: 1px dashed #cbd5e1; color: #475569; font-size: 16px; font-weight: 600;">
+        <p id="unavailable-menu-message">O cardápio do <%= @meal_label %> não está disponível</p>
+      </div>
+    <% else %>
+      <section id="active-meal-cardapio" style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 24px; align-items: start;">
+        <div style="background: #ffffff; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+            <span style="width: 24px; height: 24px; border-radius: 50%; background-color: #0b5ed7; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">1</span>
+            <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Cardápio do <%= @meal_label %></h2>
+          </div>
+
+          <% if @current_meal_type == "cafe_da_manha" %>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Padrão</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Complemento padrão: <%= @menu.standard_dish %></p>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Ovolactovegetariano</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Complemento ovolactovegetariano: <%= @menu.ovolacto_dish %></p>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Vegetariano Estrito</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Complemento vegetariano estrito: <%= @menu.vegan_dish %></p>
+              </div>
+            </div>
+
+            <% if @menu.extra_option.present? %>
+              <div style="margin-top: 16px;">
+                <p id="extra-option" style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px; color: #334155;">Opção extra: <%= @menu.extra_option %></p>
+              </div>
+            <% end %>
+
+          <% elsif @current_meal_type == "almoco" %>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Padrão</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Opção padrão: <%= @menu.standard_dish %></p>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Ovolactovegetariana</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Opção ovolactovegetariana: <%= @menu.ovolacto_dish %></p>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Vegetariana Estrita</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Opção vegetariana estrita: <%= @menu.vegan_dish %></p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin: 24px 0 14px;">
+              <span style="width: 24px; height: 24px; border-radius: 50%; background-color: #0b5ed7; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">2</span>
+              <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Guarnição e Acompanhamentos</h3>
+            </div>
+            <div>
+              <p style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px;">Saladas: <%= @menu.salads %></p>
+              <p style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px;">Guarnição: <%= @menu.garnish %></p>
+              <p style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px;">Acompanhamentos: <%= @menu.side_dishes %></p>
+              <p style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px;">Sobremesa: <%= @menu.dessert %></p>
+              <p style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px;">Bebida: <%= @menu.beverage %></p>
+            </div>
+
+          <% elsif @current_meal_type == "jantar" %>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Padrão</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Opção padrão: <%= @menu.standard_dish %></p>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Ovolactovegetariana</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Opção ovolactovegetariana: <%= @menu.ovolacto_dish %></p>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #003b7a; background: #e8f0fe; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;">Vegetariana Estrita</span>
+                <p style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 4px 0 0;">Opção vegetariana estrita: <%= @menu.vegan_dish %></p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin: 24px 0 14px;">
+              <span style="width: 24px; height: 24px; border-radius: 50%; background-color: #0b5ed7; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">2</span>
+              <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Sopa e Acompanhamentos</h3>
+            </div>
+            <div>
+              <p style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px;">Sopa: <%= @menu.soup %></p>
+              <% if @menu.has_toast %>
+                <p style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 14px;">Acompanha: Torrada</p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <aside style="background: #ffffff; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 14px;">Resumo do Turno</h3>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid #f1f5f9;">
+            <span>Refeição:</span>
+            <strong><%= @meal_label.capitalize %></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid #f1f5f9;">
+            <span>Data:</span>
+            <strong><%= @menu.served_on.strftime("%d/%m/%Y") %></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px;">
+            <span>Modalidades:</span>
+            <strong>Padrão, Ovolacto e Vegana</strong>
+          </div>
+        </aside>
+      </section>
+    <% end %>
+  </main>
+</div>

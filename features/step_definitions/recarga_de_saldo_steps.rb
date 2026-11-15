@@ -1,14 +1,9 @@
 Dado("que o estudante está autenticado no Portal do Estudante RU UnB") do
-  @estudante = User.create!(nome: "Ana Beatriz Silva", matricula: "221045999", password: "Senha123", saldo_centavos: 1800)
-
-  visit login_path
-  fill_in "Matrícula SIGAA ou SIAPE", with: @estudante.matricula
-  fill_in "Senha de Acesso", with: "Senha123"
-  click_button "Entrar no Sistema"
+  entrar_como_estudante
 end
 
-Dado('acessou a seção de "Recarga"') do
-  within("nav") { click_link "Recarga" }
+Dado("acessou a seção de {string}") do |secao|
+  within("nav") { click_link secao }
 end
 
 Dado("que o estudante visualiza os pacotes de refeições disponíveis") do

@@ -1,0 +1,55 @@
+<% content_for :title, "Turnos · #{@restaurante.nome} · RU UnB" %>
+
+<div class="gestao">
+  <header class="gestao__cabecalho">
+    <div>
+      <p class="selo selo--modulo">Módulo de administração</p>
+      <h1 class="gestao__titulo">Turnos — <%= @restaurante.nome %></h1>
+    </div>
+    <%= link_to "Voltar aos restaurantes", admin_restaurantes_path, class: "button button--claro" %>
+  </header>
+
+  <section class="card novo-turno">
+    <h2 class="gestao__subtitulo">Novo turno</h2>
+    <%= form_with model: @turno, url: admin_restaurante_turnos_path(@restaurante), class: "novo-turno__form" do |form| %>
+      <%= render "shared/field", form:, attribute: :nome, label: "Nome do turno", icon_name: :restaurant,
+            placeholder: "Ex: almoço" %>
+      <%= render "shared/field", form:, attribute: :hora_inicio, label: "Horário de início", icon_name: :tune,
+            type: :time_field %>
+      <%= render "shared/field", form:, attribute: :hora_fim, label: "Horário de término", icon_name: :tune,
+            type: :time_field %>
+      <%= form.button "Cadastrar turno", class: "button button--primary" %>
+    <% end %>
+  </section>
+
+  <h2 class="gestao__subtitulo">Turnos cadastrados</h2>
+
+  <% if @turnos.empty? %>
+    <p class="card gestao__vazio">Nenhum turno cadastrado neste restaurante.</p>
+  <% end %>
+
+  <% @turnos.each do |turno| %>
+    <section class="card unidade turno" id="<%= dom_id(turno) %>">
+      <header class="unidade__cabecalho">
+        <div class="unidade__texto">
+          <h3 class="unidade__nome turno__nome"><%= turno.nome %></h3>
+          <p class="unidade__detalhe turno__horario"><%= turno.horario %></p>
+        </div>
+      </header>
+
+      <div class="unidade__corpo">
+        <%= render "turnos/time_frames", turno: %>
+
+        <%= form_with url: admin_turno_time_frames_path(turno), class: "nova-catraca" do |form| %>
+          <%= form.label :duracao_time_frame_min, "Duração do time-frame (minutos)", for: dom_id(turno, :duracao),
+                class: "field__label" %>
+          <div class="nova-catraca__linha">
+            <%= form.number_field :duracao_time_frame_min, id: dom_id(turno, :duracao), value: turno.duracao_time_frame_min,
+                  min: 1, required: true, class: "field__input nova-catraca__input" %>
+            <%= form.button "Dividir em time-frames", class: "button button--primary button--small" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

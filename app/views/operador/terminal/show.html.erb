@@ -10,6 +10,13 @@
       </h1>
       <p class="terminal__detalhe">
         Terminal liberado para operação por <strong><%= current_funcionario.nome %></strong>
+        <% if @restaurante %>
+          · <span id="ponto-de-acesso">Restaurante: <strong><%= @restaurante.nome %></strong></span>
+          (<%= link_to "Trocar restaurante", operador_ponto_de_acesso_path %>)
+        <% end %>
+        <% if @catraca %>
+          · Catraca: <strong><%= @catraca.nome %></strong>
+        <% end %>
         · <span class="terminal__tarifa">Tarifa vigente: <%= reais(@tarifa) %></span>
       </p>
     </div>
@@ -20,34 +27,56 @@
   </section>
 
   <div class="terminal__grid">
-    <section class="card painel leitor">
-      <h2 class="painel__titulo"><%= icon(:qr_code) %> Leitura Ótica do QR Code</h2>
+    <div class="terminal__entradas">
+      <section class="card painel leitor">
+        <h2 class="painel__titulo"><%= icon(:qr_code) %> Leitura Ótica do QR Code</h2>
 
-      <div class="leitor__area">
-        <%= icon(:qr_code, class: "leitor__qr") %>
-        <p class="leitor__status">Aguardando leitura do QR Code…</p>
-      </div>
-
-      <%= form_with url: operador_acessos_path, class: "leitor__form" do |form| %>
-        <%= form.label :identificacao, "Identificação do estudante", class: "field__label" %>
-        <div class="leitor__linha">
-          <%= form.text_field :identificacao, class: "field__input leitor__input", required: true, autofocus: true,
-                placeholder: "Matrícula lida no QR Code", inputmode: "numeric", autocomplete: "off" %>
-          <%= form.button class: "button button--primary" do %>
-            <%= icon(:qr_code) %>
-            Ler identificação
-          <% end %>
+        <div class="leitor__area">
+          <%= icon(:qr_code, class: "leitor__qr") %>
+          <p class="leitor__status">Aguardando leitura do QR Code…</p>
         </div>
-      <% end %>
-    </section>
+
+        <%= form_with url: operador_acessos_path, class: "leitor__form" do |form| %>
+          <%= form.label :identificacao, "Identificação do estudante", class: "field__label" %>
+          <div class="leitor__linha">
+            <%= form.text_field :identificacao, class: "field__input leitor__input", required: true, autofocus: true,
+                  placeholder: "Matrícula lida no QR Code", inputmode: "numeric", autocomplete: "off" %>
+            <%= form.button class: "button button--primary" do %>
+              <%= icon(:qr_code) %>
+              Ler identificação
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+
+      <section class="card painel" id="entrada-fastpass">
+        <h2 class="painel__titulo"><%= icon(:badge) %> Entrada do FastPass</h2>
+
+        <%= form_with url: operador_acessos_path, class: "leitor__form" do |form| %>
+          <%= form.hidden_field :modalidade, value: "fastpass", id: "modalidade_fastpass" %>
+          <%= form.label :identificacao, "Identificação no FastPass", for: "identificacao_fastpass", class: "field__label" %>
+          <div class="leitor__linha">
+            <%= form.text_field :identificacao, id: "identificacao_fastpass", class: "field__input leitor__input", required: true,
+                  placeholder: "Matrícula do estudante sorteado", inputmode: "numeric", autocomplete: "off" %>
+            <%= form.button class: "button button--primary" do %>
+              <%= icon(:badge) %>
+              Validar FastPass
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    </div>
 
     <section class="card painel" id="resultado" aria-live="polite">
       <%= render "resultado", acesso: @acesso %>
     </section>
   </div>
 
-  <section class="card painel validacoes">
-    <h2 class="painel__titulo"><%= icon(:receipt) %> Últimas Validações Registradas</h2>
+  <section class="card painel validacoes" id="historico">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h2 class="painel__titulo"><%= icon(:receipt) %> <%= @catraca ? "Histórico da Catraca (#{@catraca.nome})" : "Últimas Validações Registradas" %></h2>
+      <%= link_to "Consultar histórico local", operador_historico_path, class: "button button--secondary" %>
+    </div>
 
     <% if @ultimos_acessos.any? %>
       <table class="tabela">
