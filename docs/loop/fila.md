@@ -1,4 +1,4 @@
-# Fila do loop — Épico FastPass (#13)
+# Fila do loop — Épico FastPass (#18)
 
 Responsável: João Filipe. Cada iteração pega o **primeiro item com status `[ ]`**, implementa, e marca.
 Status: `[ ]` a fazer · `[x]` feito · `[!]` bloqueado (ver "Bloqueios" no fim do arquivo).
@@ -8,18 +8,18 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
 
 ---
 
-## [x] 1. Gestão de Turnos e Time-frames — issue #17
+## [x] 1. Gestão de Turnos e Time-frames — issue #22
 
 > **Feito.** 7/7 cenários; RSpec 132/0. Decisões: horários em minutos desde 00:00 (`*_min`,
 > concern `HorarioEmMinutos`) para evitar fuso em colunas `time`; helper de teste
 > `entrar_como_estudante` e ParameterType `{hora}` disponíveis para as próximas issues; página
-> `/fastpass` (só leitura) pronta para receber a inscrição da #14.
+> `/fastpass` (só leitura) pronta para receber a inscrição da #19.
 > Limitação conhecida: a não sobreposição de turnos só é garantida na aplicação (sem constraint no
 > banco) — aceitável porque só o administrador cadastra.
 
 - Tag Cucumber: `@issue_bonus_1` — `features/gestao_de_turnos_bonus.feature` (7 cenários)
 - Branch: `feat/gestao-de-turnos` (a partir de `dev`)
-- Commit: `feat: gestão de turnos e time-frames pelo administrador (#17)`
+- Commit: `feat: gestão de turnos e time-frames pelo administrador (#22)`
 - Notas de design:
   - `Turno` belongs_to `Restaurante`; `nome` ("almoço", "jantar", "café da manhã"), `hora_inicio`,
     `hora_fim`, `duracao_time_frame_min` (nullable). No ER: TURNO.
@@ -29,21 +29,21 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
   - `Turno#dividir_em_time_frames!(minutos)` recria os time-frames numa transação; se a duração for
     inválida, não altera nada.
   - Admin: `Admin::TurnosController` aninhado em restaurantes. Estudante: uma página do FastPass que
-    lista os time-frames do turno (base para a issue #14).
+    lista os time-frames do turno (base para a issue #19).
 
-## [x] 2. Inscrição Única no FastPass — issue #14
+## [x] 2. Inscrição Única no FastPass — issue #19
 
 > **Feito.** 5/5 cenários; RSpec 152/0. Decisões: o `Sorteio` do dia nasce `aberto` sob demanda
 > (`Sorteio.do_dia!`); encerrar só pelo model (`encerrar!`, sem tela); redividir um turno com
 > inscrições é recusado; inscrição trava o turno (`with_lock`). Steps reaproveitáveis: "que o
 > estudante ["matrícula"] está inscrito no time-frame das X às Y do <turno>" (cria o estudante se
 > não existir) e "que o turno X do restaurante Y está dividido em time-frames de N minutos".
-> Pendente para a #15: hoje dá para se inscrever num turno que já passou (o sorteio do dia nasce
+> Pendente para a #20: hoje dá para se inscrever num turno que já passou (o sorteio do dia nasce
 > aberto) — encerrar as inscrições quando o sorteio for realizado (T-60) resolve.
 
 - Tag Cucumber: `@issue_bonus_4` — `features/inscricao_unica_FastPass_bonus.feature` (5 cenários)
 - Branch: `feat/inscricao-fastpass` (a partir de `feat/gestao-de-turnos`)
-- Commit: `feat: inscrição única no sorteio do FastPass (#14)`
+- Commit: `feat: inscrição única no sorteio do FastPass (#19)`
 - Notas de design:
   - `Sorteio` belongs_to `Turno`; `data_refeicao`, `status` (`aberto`, `encerrado`, `realizado`);
     único por `[turno_id, data_refeicao]`. No ER: SORTEIO.
@@ -55,11 +55,11 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
     como em `features/support/autenticacao.rb`).
   - Fora do escopo: algoritmo de sorteio com peso "Pity" e bloqueio de 24h do ER.
 
-## [ ] 3. Validação Rigorosa do FastPass — issue #16
+## [ ] 3. Validação Rigorosa do FastPass — issue #21
 
 - Tag Cucumber: `@issue_bonus_2` — `features/validacao_FastPass_bonus.feature` (7 cenários, 8 com o esquema)
 - Branch: `feat/validacao-fastpass` (a partir de `feat/inscricao-fastpass`)
-- Commit: `feat: validação rigorosa do FastPass na catraca (#16)`
+- Commit: `feat: validação rigorosa do FastPass na catraca (#21)`
 - Notas de design:
   - Reaproveitar o fluxo de `Acesso` (leitura → `liberado` → `confirmar_passagem!` debita).
     Adicionar `modalidade` (`comum`, `fastpass`) e `inscricao_fastpass_id` opcional em `acessos`,
@@ -68,15 +68,15 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
   - Ao confirmar a passagem, marcar a inscrição como `utilizado` (bloqueia a 2ª entrada).
   - Terminal: uma "entrada do FastPass" no terminal do operador (botão/campo separado ou modo),
     sem quebrar os cenários de `@issue_6` (validação comum).
-  - "Ponto de acesso configurado para o restaurante" é a issue #5 (não implementada e não é sua):
-    o step só cria o restaurante; não implementar a #5.
+  - "Ponto de acesso configurado para o restaurante" é a issue #10 (não implementada e não é sua):
+    o step só cria o restaurante; não implementar a #10.
   - Reaproveitar os steps de `validacao_entrada_steps.rb` (saldo, tarifa, liberação, débito).
 
-## [ ] 4. Notificação de Sorteio — issue #15
+## [ ] 4. Notificação de Sorteio — issue #20
 
 - Tag Cucumber: `@issue_bonus_3` — `features/notificacoes_sorteio_bonus.feature` (5 cenários)
 - Branch: `feat/notificacao-sorteio` (a partir de `feat/validacao-fastpass`)
-- Commit: `feat: notificação do resultado do sorteio do FastPass (#15)`
+- Commit: `feat: notificação do resultado do sorteio do FastPass (#20)`
 - Notas de design:
   - `Notificacao` belongs_to `User` e `InscricaoFastpass`; `tipo` (`contemplado`, `nao_contemplado`),
     `mensagem`, `lida`; única por inscrição. No ER: NOTIFICACAO.
@@ -85,7 +85,7 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
   - Disparo periódico: job `NotificarSorteiosJob` registrado em `config/recurring.yml` (Solid Queue).
     No Cucumber, "Quando o horário atual for HH:MM" = `travel_to` + chamar o método do model.
   - Estudante vê as notificações no portal (mensagem do contemplado cita o time-frame).
-  - Herdado da #14: realizar o sorteio (status `realizado`) no T-60 deve encerrar as inscrições;
+  - Herdado da #19: realizar o sorteio (status `realizado`) no T-60 deve encerrar as inscrições;
     validar/ocultar a inscrição em turno que já começou. Testar os status `sorteado`/`nao_sorteado`.
 
 ---

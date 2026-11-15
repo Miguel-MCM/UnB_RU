@@ -1,7 +1,7 @@
 # UnB RU — regras do projeto
 
 Sistema do Restaurante Universitário da UnB. Rails 8.1, SQLite, Hotwire (Turbo + Stimulus), importmap.
-Issues: https://github.com/neatzzy/UnB_RU/issues — especificações BDD em `features/*.feature` (`# language: pt`).
+Issues: https://github.com/Miguel-MCM/UnB_RU/issues (numeração do fork; no repositório principal neatzzy/UnB_RU os números são outros) — especificações BDD em `features/*.feature` (`# language: pt`).
 
 ## Arquitetura (MVC — obrigatório)
 
