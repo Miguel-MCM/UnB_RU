@@ -83,4 +83,14 @@ RSpec.describe Extrato do
   it "nomeia o período com o mês atual" do
     expect(Extrato.opcoes_de_periodo(agora)).to include([ "Últimos 30 dias (Maio/2024)", "30_dias" ])
   end
+
+  describe "#vazio?" do
+    it "é verdadeiro quando não há lançamentos para os filtros" do
+      expect(extrato(tipo: "cafe_da_manha")).to be_vazio
+    end
+
+    it "é falso quando há lançamentos para os filtros" do
+      expect(extrato).not_to be_vazio
+    end
+  end
 end

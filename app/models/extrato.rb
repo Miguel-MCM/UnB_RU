@@ -70,7 +70,11 @@ class Extrato
   end
 
   def lancamentos
-    (lancamentos_de_refeicao + lancamentos_de_recarga).sort_by(&:momento).reverse
+    @lancamentos ||= (lancamentos_de_refeicao + lancamentos_de_recarga).sort_by(&:momento).reverse
+  end
+
+  def vazio?
+    lancamentos.empty?
   end
 
   private

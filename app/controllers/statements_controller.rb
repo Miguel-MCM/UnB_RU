@@ -6,6 +6,11 @@ class StatementsController < ApplicationController
   end
 
   def export_pdf
+    if @extrato.vazio?
+      return redirect_to statements_path(periodo: params[:periodo], tipo: params[:tipo]),
+                         alert: "Não há registros para exportar."
+    end
+
     send_data ExtratoPdf.new(@extrato, current_user).render,
               filename: "extrato-#{current_user.matricula}.pdf", type: "application/pdf", disposition: "attachment"
   end
