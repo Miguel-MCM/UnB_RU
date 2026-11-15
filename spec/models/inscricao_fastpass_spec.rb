@@ -105,4 +105,64 @@ RSpec.describe InscricaoFastpass, type: :model do
       end
     end
   end
+
+  describe "#notificar!" do
+    let(:dia) { Time.zone.local(2026, 11, 16, 8, 0) }
+    let(:agora) { dia.change(hour: 10) }
+    let(:inscricao) { travel_to(dia) { inscrever(almoco.time_frames.first) } }
+
+    it "notifica a inscrição sorteada como contemplada, citando o time-frame" do
+      inscricao.sorteado!
+      notificacao = inscricao.notificar!(agora)
+
+      expect(notificacao).to be_persisted
+      expect(notificacao).to be_contemplado
+      expect(notificacao.user).to eq(estudante)
+      expect(notificacao.enviada_em).to eq(agora)
+      expect(notificacao.mensagem).to eq("Você ganhou o FastPass do almoço de 16/11/2026! Seu time-frame é das 11:00 às 11:15.")
+    end
+
+    it "notifica a inscrição não sorteada como não contemplada" do
+      inscricao.nao_sorteado!
+      notificacao = inscricao.notificar!(agora)
+
+      expect(notificacao).to be_nao_contemplado
+      expect(notificacao.mensagem).to eq("Você não ganhou o FastPass do almoço de 16/11/2026. Entre pela fila comum.")
+    end
+
+    it "considera contemplada a inscrição já utilizada" do
+      inscricao.utilizado!
+
+      expect(inscricao.notificar!(agora)).to be_contemplado
+    end
+
+    it "é idempotente" do
+      inscricao.sorteado!
+      primeira = inscricao.notificar!(agora)
+
+      expect(InscricaoFastpass.find(inscricao.id).notificar!(agora + 1.minute)).to eq(primeira)
+      expect(Notificacao.count).to eq(1)
+    end
+  end
+
+  describe "scopes de notificação" do
+    let(:inscricao) { inscrever(almoco.time_frames.first) }
+
+    it "com_resultado ignora as inscrições ainda sem resultado" do
+      expect(InscricaoFastpass.com_resultado).to be_empty
+
+      %i[sorteado! nao_sorteado! utilizado!].each do |status|
+        inscricao.public_send(status)
+        expect(InscricaoFastpass.com_resultado).to eq([ inscricao ])
+      end
+    end
+
+    it "sem_notificacao ignora as inscrições já notificadas" do
+      inscricao.sorteado!
+      expect(InscricaoFastpass.sem_notificacao).to eq([ inscricao ])
+
+      inscricao.notificar!
+      expect(InscricaoFastpass.sem_notificacao).to be_empty
+    end
+  end
 end

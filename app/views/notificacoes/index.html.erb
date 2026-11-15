@@ -1,0 +1,24 @@
+<% content_for :title, "Notificações · RU UnB" %>
+
+<div class="gestao notificacoes">
+  <header class="gestao__cabecalho">
+    <div>
+      <p class="eyebrow">Resultado do sorteio</p>
+      <h1 class="gestao__titulo">Notificações</h1>
+    </div>
+  </header>
+
+  <% if @notificacoes.any? %>
+    <% @notificacoes.each do |notificacao| %>
+      <article class="card notificacao notificacao--<%= notificacao.tipo %>" id="<%= dom_id(notificacao) %>">
+        <span class="notificacao__icone"><%= icon(notificacao.contemplado? ? :check_circle : :block) %></span>
+        <div>
+          <p class="notificacao__mensagem"><%= notificacao.mensagem %></p>
+          <small class="notificacao__data"><%= l(notificacao.enviada_em, format: "%d/%m/%Y, %H:%M") %></small>
+        </div>
+      </article>
+    <% end %>
+  <% else %>
+    <p class="card painel__vazio">Você não tem notificações.</p>
+  <% end %>
+</div>

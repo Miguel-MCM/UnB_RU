@@ -5,6 +5,7 @@ class InscricaoFastpass < ApplicationRecord
   belongs_to :sorteio
   belongs_to :time_frame
   has_many :acessos, dependent: :nullify
+  has_one :notificacao, dependent: :destroy
 
   enum :status, {
     inscrito: "inscrito",
@@ -20,6 +21,8 @@ class InscricaoFastpass < ApplicationRecord
   scope :do_dia, ->(data = Date.current) { joins(:sorteio).where(sorteios: { data_refeicao: data }) }
   scope :do_turno, ->(turno) { joins(:sorteio).where(sorteios: { turno_id: turno }) }
   scope :contempladas, -> { where(status: %w[sorteado utilizado]) }
+  scope :com_resultado, -> { where(status: %w[sorteado nao_sorteado utilizado]) }
+  scope :sem_notificacao, -> { where.missing(:notificacao) }
   scope :do_restaurante, ->(restaurante) { joins(sorteio: :turno).where(turnos: { restaurante_id: restaurante }) }
 
   # Inscrição contemplada no sorteio (sorteada ou já utilizada) do estudante no
@@ -53,7 +56,29 @@ class InscricaoFastpass < ApplicationRecord
     inscricao
   end
 
+  # Notifica o estudante do resultado do sorteio (contemplado se sorteada ou já
+  # utilizada). Idempotente: se a inscrição já foi notificada, não faz nada e
+  # retorna a notificação existente.
+  def notificar!(agora = Time.current)
+    notificacao || create_notificacao!(user:, tipo: tipo_da_notificacao, mensagem: mensagem_da_notificacao, enviada_em: agora)
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+    reload.notificacao || raise
+  end
+
+  def contemplada?
+    sorteado? || utilizado?
+  end
+
   private
+    def tipo_da_notificacao
+      contemplada? ? :contemplado : :nao_contemplado
+    end
+
+    def mensagem_da_notificacao
+      I18n.t("notificacoes.#{tipo_da_notificacao}",
+             turno: sorteio.turno.nome, data: I18n.l(sorteio.data_refeicao, format: "%d/%m/%Y"), horario: time_frame.horario)
+    end
+
     def inscricoes_abertas
       errors.add(:base, :inscricoes_encerradas) if sorteio && !sorteio.inscricoes_abertas?
     end

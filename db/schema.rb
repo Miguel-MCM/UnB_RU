@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_200712) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_201917) do
   create_table "acessos", force: :cascade do |t|
     t.integer "user_id"
     t.integer "funcionario_id", null: false
@@ -79,6 +79,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_200712) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["served_on", "meal_type"], name: "index_menus_on_served_on_and_meal_type", unique: true
+  end
+
+  create_table "notificacoes", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "inscricao_fastpass_id", null: false
+    t.string "tipo", null: false
+    t.string "mensagem", null: false
+    t.boolean "lida", default: false, null: false
+    t.datetime "enviada_em", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inscricao_fastpass_id"], name: "index_notificacoes_on_inscricao_fastpass_id", unique: true
+    t.index ["user_id"], name: "index_notificacoes_on_user_id"
   end
 
   create_table "recargas", force: :cascade do |t|
@@ -156,6 +169,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_200712) do
   add_foreign_key "inscricoes_fastpass", "sorteios"
   add_foreign_key "inscricoes_fastpass", "time_frames"
   add_foreign_key "inscricoes_fastpass", "users"
+  add_foreign_key "notificacoes", "inscricoes_fastpass"
+  add_foreign_key "notificacoes", "users"
   add_foreign_key "recargas", "users"
   add_foreign_key "sorteios", "turnos"
   add_foreign_key "time_frames", "turnos"

@@ -10,8 +10,8 @@ formando uma cadeia. A integração do grupo é a `sprint2`: a partir do item 3,
 Atenção: as tags `@issue_N` dos `.feature` usam a numeração do repositório principal (neatzzy);
 a numeração do fork aparece no título de cada item.
 
-**Regressão:** Cucumber completo com 0 falhas e pelo menos 77 cenários passando (após a #21;
-baseline da sprint2 em 181256a era 65); RSpec 251 exemplos, 0 falhas.
+**Regressão:** Cucumber completo 82/82 com --strict (após a #20; baseline da sprint2 em 181256a
+era 65); RSpec 276 exemplos, 0 falhas.
 
 ---
 
@@ -116,7 +116,15 @@ baseline da sprint2 em 181256a era 65); RSpec 251 exemplos, 0 falhas.
   - O `Acesso` já tem `refeicao`, `catraca` e `restaurante` (PRs #32, #36, #31): use-os.
   - Reaproveitar os steps de `validacao_entrada_steps.rb` (saldo, tarifa, liberação, débito).
 
-## [ ] 5. Notificação de Sorteio — issue #20
+## [x] 5. Notificação de Sorteio — issue #20
+
+> **Feito.** 5/5 cenários; Cucumber completo 82/82 com --strict (rodado 2x, sem flakiness); RSpec
+> 276/0. `Sorteio.notificar_pendentes!` (job `NotificarSorteiosJob`, a cada minuto em production e
+> development) realiza o sorteio no T-60 — o que encerra as inscrições (pendência herdada da #19) —
+> e cria uma `Notificacao` por inscrição com resultado (índice único, idempotente). Inscrições ainda
+> "inscrito" não são notificadas (Pity fora do escopo). Página "Notificações" no portal. Erro num
+> turno não trava os outros (Rails.error.report). Não aplicado: steps também conferem o banco;
+> savepoint só seria necessário em PostgreSQL.
 
 - Tag Cucumber: `@issue_bonus_3` — `features/notificacoes_sorteio_bonus.feature` (5 cenários)
 - Branch: `feat/notificacao-sorteio` (a partir de `feat/validacao-fastpass`)

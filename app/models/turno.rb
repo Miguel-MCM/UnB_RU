@@ -24,6 +24,10 @@ class Turno < ApplicationRecord
       .where.not(id: turno.id)
   end
 
+  # Turnos cujo sorteio já deve ter sido realizado (1 hora antes do início)
+  # no minuto do dia `minutos`.
+  scope :com_sorteio_ate, ->(minutos) { where(hora_inicio_min: ..(minutos + Sorteio::ANTECEDENCIA_MIN)) }
+
   def duracao_total_min
     hora_fim_min - hora_inicio_min if horarios_informados?
   end

@@ -1,4 +1,7 @@
 pt-BR:
+  notificacoes:
+    contemplado: "Você ganhou o FastPass do %{turno} de %{data}! Seu time-frame é das %{horario}."
+    nao_contemplado: "Você não ganhou o FastPass do %{turno} de %{data}. Entre pela fila comum."
   operador:
     acesso:
       motivos:
@@ -11,6 +14,7 @@ pt-BR:
   activerecord:
     models:
       inscricao_fastpass: Inscrição no FastPass
+      notificacao: Notificação
       sorteio: Sorteio
       user: Usuário
     attributes:

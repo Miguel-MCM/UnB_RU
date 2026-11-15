@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_many :recargas, dependent: :destroy
   has_many :acessos, dependent: :nullify
   has_many :inscricoes_fastpass, dependent: :destroy
+  has_many :notificacoes, dependent: :destroy
 
   normalizes :matricula, with: ->(matricula) { matricula.strip }
 
