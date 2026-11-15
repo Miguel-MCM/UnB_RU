@@ -19,10 +19,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_220000) do
     t.integer "valor_centavos", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "restaurante_id"
     t.string "refeicao"
     t.integer "catraca_id"
     t.index ["catraca_id"], name: "index_acessos_on_catraca_id"
     t.index ["funcionario_id"], name: "index_acessos_on_funcionario_id"
+    t.index ["restaurante_id"], name: "index_acessos_on_restaurante_id"
     t.index ["user_id"], name: "index_acessos_on_user_id"
   end
 
@@ -144,6 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_220000) do
 
   add_foreign_key "acessos", "catracas"
   add_foreign_key "acessos", "funcionarios"
+  add_foreign_key "acessos", "restaurantes"
   add_foreign_key "acessos", "users"
   add_foreign_key "catracas", "restaurantes"
   add_foreign_key "inscricoes_fastpass", "sorteios"

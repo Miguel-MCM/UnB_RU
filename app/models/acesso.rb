@@ -1,6 +1,7 @@
 class Acesso < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :funcionario
+  belongs_to :restaurante, optional: true
   belongs_to :catraca, optional: true
 
   enum :status, {
@@ -14,6 +15,8 @@ class Acesso < ApplicationRecord
 
   validates :identificacao, presence: true
 
+  before_validation :sincronizar_restaurante_da_catraca
+
   def self.refeicao_do_horario(momento)
     minutos = momento.hour * 60 + momento.min
 
@@ -23,7 +26,7 @@ class Acesso < ApplicationRecord
     end
   end
 
-  def self.registrar_leitura!(identificacao, funcionario:, catraca: nil)
+  def self.registrar_leitura!(identificacao, funcionario:, restaurante: nil, catraca: nil)
     identificacao = identificacao.to_s.strip
     user = User.find_by(matricula: identificacao)
     tarifa = Tarifa.vigente_centavos
@@ -34,8 +37,16 @@ class Acesso < ApplicationRecord
       else :liberado
       end
 
-    create!(identificacao:, user:, funcionario:, catraca:, valor_centavos: tarifa, status:,
-            refeicao: refeicao_do_horario(Time.current))
+    create!(
+      identificacao:,
+      user:,
+      funcionario:,
+      restaurante: restaurante || catraca&.restaurante,
+      catraca:,
+      valor_centavos: tarifa,
+      status:,
+      refeicao: refeicao_do_horario(Time.current)
+    )
   end
 
   def liberou_catraca?
@@ -58,4 +69,9 @@ class Acesso < ApplicationRecord
       end
     end
   end
+
+  private
+    def sincronizar_restaurante_da_catraca
+      self.restaurante ||= catraca&.restaurante
+    end
 end

@@ -1,0 +1,94 @@
+<div style="background-color: #f4f6f9; min-height: 100vh; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1e293b;">
+  <header style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 32px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="background-color: #003b7a; color: #ffffff; font-weight: 800; font-size: 14px; padding: 10px 8px; border-radius: 6px;">UnB</div>
+      <div>
+        <div style="font-size: 16px; font-weight: 800; color: #003b7a; line-height: 1.1;">RU UnB Digital</div>
+        <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px;">Painel Administrativo</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="text-align: right; font-size: 12px;">
+        <strong style="display: block; color: #1e293b; font-size: 13px;"><%= current_funcionario&.nome %></strong>
+        <span style="color: #64748b;">Matrícula: <%= current_funcionario&.matricula %></span>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 980px; margin: 28px auto; padding: 0 20px 48px;">
+    <h1 style="font-size: 28px; font-weight: 800; color: #003b7a; margin: 0 0 6px;">Relatório Global de Acessos</h1>
+    <p style="font-size: 14px; color: #64748b; margin: 0 0 24px;">Visualize, filtre e agrupe os registros de acesso de todos os restaurantes e catracas do campus.</p>
+
+    <% if flash[:alert].present? %>
+      <div id="flash-alert" style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px;">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <div style="background: #ffffff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px;">
+      <%= form_with url: access_reports_path, method: :get, local: true, style: "display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;" do %>
+        <div>
+          <label for="restaurante_nome" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Restaurante</label>
+          <%= text_field_tag :restaurante_nome, params[:restaurante_nome], style: "padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px;" %>
+        </div>
+
+        <div>
+          <label for="catraca_nome" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Catraca</label>
+          <%= text_field_tag :catraca_nome, params[:catraca_nome], style: "padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px;" %>
+        </div>
+
+        <div>
+          <label for="group_by" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Agrupar por</label>
+          <%= select_tag :group_by, options_for_select([["Nenhum", ""], ["Restaurante", "restaurante"], ["Catraca", "catraca"]], params[:group_by]), style: "padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px;" %>
+        </div>
+
+        <div>
+          <%= submit_tag "Filtrar", style: "background-color: #0b5ed7; color: #ffffff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;" %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @error_message.present? %>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 16px; border-radius: 12px;">
+        <p id="report-error" style="margin: 0; font-weight: 600;"><%= @error_message %></p>
+      </div>
+    <% elsif @acessos.empty? %>
+      <div style="background: #ffffff; border-radius: 14px; padding: 36px 24px; text-align: center; border: 1px dashed #cbd5e1; color: #475569; font-weight: 600;">
+        <p id="empty-report" style="margin: 0;">Não há acessos para o filtro selecionado</p>
+      </div>
+    <% else %>
+      <% if @grouped_counts.present? %>
+        <div id="grouped-summary" style="background: #ffffff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px;">
+          <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 12px;">Total Agrupado</h2>
+          <% @grouped_counts.each do |group_name, total| %>
+            <p style="margin: 6px 0; font-size: 14px; font-weight: 600;"><%= group_name %>: <%= total %> acessos</p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div style="background: #ffffff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <table id="access-logs-table" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <thead>
+            <tr style="border-bottom: 2px solid #e2e8f0; text-align: left;">
+              <th style="padding: 10px 8px;">Restaurante</th>
+              <th style="padding: 10px 8px;">Catraca</th>
+              <th style="padding: 10px 8px;">Matrícula</th>
+              <th style="padding: 10px 8px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @acessos.each do |acesso| %>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 8px;"><%= acesso.restaurante&.nome %></td>
+                <td style="padding: 10px 8px;"><%= acesso.catraca&.nome %></td>
+                <td style="padding: 10px 8px;"><%= acesso.identificacao %></td>
+                <td style="padding: 10px 8px;"><%= acesso.status %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </main>
+</div>

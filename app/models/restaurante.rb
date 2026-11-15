@@ -1,6 +1,7 @@
 class Restaurante < ApplicationRecord
   has_many :catracas, -> { order(:nome) }, dependent: :destroy
   has_many :turnos, -> { ordenados }, dependent: :destroy
+  has_many :acessos, dependent: :nullify
 
   normalizes :nome, with: ->(nome) { nome.squish }
 
