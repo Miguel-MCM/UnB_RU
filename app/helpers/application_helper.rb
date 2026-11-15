@@ -26,6 +26,16 @@ module ApplicationHelper
     tag.svg(tag.path(d: ICONS.fetch(name)), viewBox: "0 0 24 24", fill: "currentColor", aria: { hidden: true }, **options)
   end
 
+  # Rótulo do topo do terminal: o restaurante gerenciado ou, nas telas de operação que exigem a
+  # seleção, o aviso de que o ponto de acesso ainda não foi configurado.
+  def local_do_ponto_de_acesso
+    return current_restaurante.nome if current_restaurante
+
+    return unless current_funcionario && controller_path.start_with?("operador/")
+
+    "Ponto de acesso não configurado" if Restaurante.selecao_obrigatoria?
+  end
+
   def reais(centavos)
     number_to_currency(centavos / 100.0)
   end

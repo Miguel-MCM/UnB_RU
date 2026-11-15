@@ -14,6 +14,7 @@ class Acesso < ApplicationRecord
   REFEICOES = { "cafe_da_manha" => "Café da Manhã", "almoco" => "Almoço", "jantar" => "Jantar" }.freeze
 
   validates :identificacao, presence: true
+  validate :catraca_do_restaurante
 
   before_validation :sincronizar_restaurante_da_catraca
 
@@ -73,5 +74,11 @@ class Acesso < ApplicationRecord
   private
     def sincronizar_restaurante_da_catraca
       self.restaurante ||= catraca&.restaurante
+    end
+
+    def catraca_do_restaurante
+      return if catraca.nil? || restaurante_id.nil?
+
+      errors.add(:catraca, :restaurante_divergente) if catraca.restaurante_id != restaurante_id
     end
 end

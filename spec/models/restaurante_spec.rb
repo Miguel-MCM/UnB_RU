@@ -36,4 +36,16 @@ RSpec.describe Restaurante, type: :model do
 
     expect(Restaurante.com_turnos).to eq([ darcy ])
   end
+
+  describe ".selecao_obrigatoria?" do
+    it "não exige a seleção quando não há restaurantes" do
+      expect(Restaurante.selecao_obrigatoria?).to be(false)
+    end
+
+    it "exige a seleção quando há restaurantes cadastrados" do
+      Restaurante.create!(nome: "Darcy Ribeiro")
+
+      expect(Restaurante.selecao_obrigatoria?).to be(true)
+    end
+  end
 end

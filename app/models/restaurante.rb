@@ -9,4 +9,9 @@ class Restaurante < ApplicationRecord
 
   scope :ordenados, -> { order(:nome) }
   scope :com_turnos, -> { where(id: Turno.select(:restaurante_id)) }
+
+  # O ponto de acesso só precisa ser configurado quando há restaurantes para escolher.
+  def self.selecao_obrigatoria?
+    exists?
+  end
 end

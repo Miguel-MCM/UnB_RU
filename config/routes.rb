@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
 
+    resource :ponto_de_acesso, only: %i[show update], controller: "pontos_de_acesso"
     resource :terminal, only: :show, controller: "terminal"
     resource :historico, only: :show, controller: "historicos"
     resources :acessos, only: :create do

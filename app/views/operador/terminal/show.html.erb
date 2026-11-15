@@ -10,6 +10,10 @@
       </h1>
       <p class="terminal__detalhe">
         Terminal liberado para operação por <strong><%= current_funcionario.nome %></strong>
+        <% if @restaurante %>
+          · <span id="ponto-de-acesso">Restaurante: <strong><%= @restaurante.nome %></strong></span>
+          (<%= link_to "Trocar restaurante", operador_ponto_de_acesso_path %>)
+        <% end %>
         <% if @catraca %>
           · Catraca: <strong><%= @catraca.nome %></strong>
         <% end %>

@@ -27,6 +27,10 @@ pt-BR:
         password_confirmation: Confirmar Senha
     errors:
       models:
+        acesso:
+          attributes:
+            catraca:
+              restaurante_divergente: não pertence ao restaurante do ponto de acesso
         inscricao_fastpass:
           attributes:
             base:

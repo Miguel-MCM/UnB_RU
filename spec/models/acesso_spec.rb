@@ -47,6 +47,41 @@ RSpec.describe Acesso, type: :model do
 
       expect(acesso.catraca).to eq(catraca)
     end
+
+    it "grava o restaurante do ponto de acesso" do
+      restaurante = Restaurante.create!(nome: "Darcy Ribeiro")
+      acesso = Acesso.registrar_leitura!("100001", funcionario:, restaurante:)
+
+      expect(acesso.restaurante).to eq(restaurante)
+    end
+  end
+
+  describe "coerência entre catraca e restaurante" do
+    let(:darcy) { Restaurante.create!(nome: "Darcy Ribeiro") }
+    let(:gama) { Restaurante.create!(nome: "Gama") }
+    let(:catraca) { darcy.catracas.create!(nome: "Entrada 1") }
+
+    def acesso(**atributos)
+      Acesso.new(identificacao: "100001", funcionario:, valor_centavos: 600, status: :liberado, **atributos)
+    end
+
+    it "aceita a catraca do mesmo restaurante" do
+      expect(acesso(catraca:, restaurante: darcy)).to be_valid
+    end
+
+    it "assume o restaurante da catraca quando ele não é informado" do
+      registro = acesso(catraca:)
+
+      expect(registro).to be_valid
+      expect(registro.restaurante).to eq(darcy)
+    end
+
+    it "rejeita uma catraca de outro restaurante" do
+      registro = acesso(catraca:, restaurante: gama)
+
+      expect(registro).not_to be_valid
+      expect(registro.errors[:catraca]).to include("não pertence ao restaurante do ponto de acesso")
+    end
   end
 
   describe ".refeicao_do_horario" do

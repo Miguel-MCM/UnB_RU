@@ -13,6 +13,17 @@ module AutenticacaoHelpers
     click_button "Entrar no Sistema"
   end
 
+  def selecionar_restaurante(nome)
+    visit operador_ponto_de_acesso_path
+    click_button nome
+  end
+
+  def configurar_ponto_de_acesso(nome)
+    entrar_como_funcionario unless @funcionario
+    Restaurante.find_or_create_by!(nome:)
+    selecionar_restaurante(nome)
+  end
+
   def entrar_como_estudante
     @estudante ||= User.create!(nome: "Ana Beatriz Silva", matricula: "221045999", password: "Senha123", saldo_centavos: 1800)
 

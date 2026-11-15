@@ -2,7 +2,7 @@ module Authentication
   extend ActiveSupport::Concern
 
   included do
-    helper_method :current_user, :current_funcionario, :current_catraca
+    helper_method :current_user, :current_funcionario, :current_catraca, :current_restaurante
   end
 
   private
@@ -16,6 +16,10 @@ module Authentication
 
     def current_catraca
       @current_catraca ||= Catraca.find_by(id: session[:catraca_id]) if session[:catraca_id]
+    end
+
+    def current_restaurante
+      @current_restaurante ||= Restaurante.find_by(id: session[:restaurante_id]) if session[:restaurante_id]
     end
 
     def require_login

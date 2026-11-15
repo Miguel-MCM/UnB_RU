@@ -10,8 +10,8 @@ formando uma cadeia. A integração do grupo é a `sprint2`: a partir do item 3,
 Atenção: as tags `@issue_N` dos `.feature` usam a numeração do repositório principal (neatzzy);
 a numeração do fork aparece no título de cada item.
 
-**Regressão (baseline em 181256a):** Cucumber completo com 0 falhas e pelo menos 65 cenários
-passando; RSpec 203 exemplos, 0 falhas.
+**Regressão:** Cucumber completo com 0 falhas e pelo menos 69 cenários passando (após a #10;
+baseline da sprint2 em 181256a era 65); RSpec 225 exemplos, 0 falhas.
 
 ---
 
@@ -62,7 +62,14 @@ passando; RSpec 203 exemplos, 0 falhas.
     como em `features/support/autenticacao.rb`).
   - Fora do escopo: algoritmo de sorteio com peso "Pity" e bloqueio de 24h do ER.
 
-## [ ] 3. Configuração de Ponto de Acesso — issue #10
+## [x] 3. Configuração de Ponto de Acesso — issue #10
+
+> **Feito.** 4/4 cenários; regressão 69/69 com --strict; RSpec 225/0. A seleção de restaurante só é
+> exigida quando há restaurantes (`Restaurante.selecao_obrigatoria?`); fica em `session[:restaurante_id]`
+> e escolher a catraca define o restaurante. Login do operador vai direto à seleção quando ela é
+> exigida. `Acesso` valida que a catraca pertence ao restaurante. Passo para a #21: "que o ponto de
+> acesso está configurado para o restaurante X". Não aplicado: os passos de associação do acesso ao
+> restaurante conferem pelo banco (o operador não tem tela que mostre isso).
 
 - Tag Cucumber: `@issue_5` — `features/configuracao_ponto_acesso.feature` (4 cenários)
 - Branch: `feat/ponto-de-acesso` (a partir de `origin/sprint2`)
