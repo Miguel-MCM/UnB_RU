@@ -140,7 +140,12 @@ era 65); RSpec 276 exemplos, 0 falhas.
   - Herdado da #19: realizar o sorteio (status `realizado`) no T-60 deve encerrar as inscrições;
     validar/ocultar a inscrição em turno que já começou. Testar os status `sorteado`/`nao_sorteado`.
 
-## [ ] 6. Wiki e diagrama ER — documentação da entrega
+## [x] 6. Wiki e diagrama ER — documentação da entrega
+
+> **Feito.** `wiki/Sprint-2.md`: seções das issues #10, #22, #19, #21 e #20 e da integração da
+> sprint2. `docs/modelo-er.md`: diagrama refeito a partir do `db/schema.rb` (13 tabelas) e lista de
+> diferenças em relação ao modelo original. Revisor conferiu hashes, issues, números e o diagrama;
+> 2 fatos errados e links para branches corrigidos antes do commit.
 
 - Sem tag Cucumber (só documentação). Branch: `docs/wiki-fastpass` (a partir de `feat/notificacao-sorteio`).
 - Commit: `docs: registra o FastPass e a #10 na wiki e atualiza o diagrama ER`

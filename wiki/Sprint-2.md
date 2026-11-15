@@ -31,7 +31,7 @@ Todos os jobs usam o Ruby definido em `.ruby-version` (3.3.8), com as gems em ca
 
 ## Decisões
 
-- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Hoje o CI mostra `82 scenarios (58 undefined, 24 passed)`: só os cenários do cadastro de usuário, da recarga de saldo, do extrato e histórico, da autenticação do funcionário, da validação de entrada e da gestão de restaurantes e catracas já têm step definitions.
+- **Passos do Cucumber ainda não implementados não quebram o CI.** O Cucumber roda com `--no-strict`: cenários com passos indefinidos ou pendentes aparecem no log, mas o CI só falha quando um passo implementado falha. Em 13/11, antes da integração dos PRs de 15/11, o CI mostrava `82 scenarios (58 undefined, 24 passed)`. Com a integração dos PRs na `sprint2` e o épico FastPass (seções abaixo), todos os 82 cenários têm step definitions e passam inclusive com `--strict`.
 - **Runner fixado em `ubuntu-24.04`.** O `ubuntu-latest` passou a ser o Ubuntu 26.04, que não oferece o Ruby 3.3.8. Para usar o `ubuntu-latest`, é preciso subir o Ruby do projeto para a versão 3.3 mais recente, em `.ruby-version` e no `Dockerfile`.
 - **`db/schema.rb` versionado.** Sem ele, `bin/rails db:test:prepare` falha. O arquivo é atualizado sempre que alguém roda `bin/rails db:migrate`.
 - **A Wiki acompanha a `sprint2`.** As páginas da Wiki ficam na pasta `wiki/` do repositório. Sempre que essa pasta muda na `sprint2`, o workflow `wiki.yml` copia as páginas para a Wiki do GitHub. Por isso, as páginas devem ser editadas na pasta `wiki/`, não direto na Wiki: uma edição feita só na Wiki é sobrescrita na próxima publicação. Quando o workflow chegar à `main`, ele também poderá ser rodado manualmente na aba Actions.
@@ -133,3 +133,103 @@ A issue foi desenvolvida por mim com o [Cursor](https://cursor.com), usando o ag
 O administrador é um funcionário com a marcação `administrador`, entra pelo mesmo login do operador e é levado para `/admin/restaurantes`, onde cadastra, renomeia e remove restaurantes e as catracas de cada um. Remover um restaurante remove também as catracas dele. A escolha do restaurante na Aplicação de Controle é a issue #10; os restaurantes e catracas cadastrados aqui são os que ela vai oferecer. Para testar localmente, `bin/rails db:seed` cria o administrador de matrícula `1083921` e senha `Admin123`.
 
 Todo o código gerado pelo agente foi revisado por mim.
+
+## Issue #10 — Configuração de Ponto de Acesso
+
+- **Issue:** [#10 Configuração de Ponto de Acesso](https://github.com/Miguel-MCM/UnB_RU/issues/10) (no repositório principal, [#5](https://github.com/neatzzy/UnB_RU/issues/5))
+- **Responsável:** João Filipe ([@joaofiulipe](https://github.com/joaofiulipe)). A issue não tinha responsável no grupo (na Sprint 1, a especificação foi do Miguel); eu a implementei para fechar a entrega e porque a validação do FastPass (#21) depende dela.
+- **Código:** sem PR próprio. Commit [278e308](https://github.com/Miguel-MCM/UnB_RU/commit/278e308b99cb265e783e8966dd5712e500f3a348) na branch `feat/ponto-de-acesso`, a primeira de uma cadeia (`feat/ponto-de-acesso` → `feat/validacao-fastpass` → `feat/notificacao-sorteio`) que vai para a `sprint2` junto com esta documentação.
+
+Desenvolvi esta issue e as do épico FastPass (#18 no fork, #13 no repositório principal) com o [Claude Code](https://claude.com/claude-code), pela extensão do VS Code, usando o modelo **Claude Opus 5.5**, da Anthropic, num loop de desenvolvimento. A fila de trabalho fica em [`docs/loop/fila.md`](https://github.com/Miguel-MCM/UnB_RU/blob/sprint2/docs/loop/fila.md): uma issue por item, com a tag do Cucumber, a branch, a mensagem do commit e as notas de design. O único prompt que eu envio é:
+
+> /loop Execute uma iteração conforme docs/loop/prompt.md
+
+A cada iteração, o loop segue [`docs/loop/prompt.md`](https://github.com/Miguel-MCM/UnB_RU/blob/sprint2/docs/loop/prompt.md): pega o primeiro item pendente da fila, cria a branch e só orquestra, delegando o trabalho a quatro agentes definidos em [`.claude/agents/`](https://github.com/Miguel-MCM/UnB_RU/tree/sprint2/.claude/agents):
+
+| Agente | O que faz |
+|---|---|
+| `especificador` | Lê o `.feature`, o diagrama ER, os steps e o código existentes e devolve um plano MVC (passos novos e reaproveitados, migrations, models, rotas, telas e mensagens), sem escrever código |
+| `implementador` | BDD/TDD: escreve os step definitions e as specs, confirma que falham pelo motivo certo e implementa na ordem migration → model → rotas → controller → view até a tag passar |
+| `testador` | Roda RSpec, Cucumber (`--strict` na tag e o conjunto completo, para pegar regressões), RuboCop e Brakeman, e confere se as migrations, rodadas do zero, geram o `db/schema.rb` commitado |
+| `revisor-mvc` | Revisa o diff de forma independente: bugs, segurança, MVC e convenções. Itens bloqueantes voltam ao implementador, seguidos de nova rodada do testador |
+
+As regras do projeto (MVC, nomes em português, dinheiro em centavos, mensagens no `pt-BR.yml` e definição de pronto) ficam no [`CLAUDE.md`](https://github.com/Miguel-MCM/UnB_RU/blob/sprint2/CLAUDE.md), que todos os agentes seguem. Como eu não tinha Ruby instalado na máquina, tudo roda no container do projeto, pelo script `bin/docker-run`. Ao fim de cada issue, o loop marca o item na fila com uma nota das decisões tomadas e faz um único commit, sem push.
+
+**Solução.** Depois do login, se há restaurantes cadastrados, o operador é levado direto à seleção do restaurante em `/operador/ponto_de_acesso`, que lista os restaurantes cadastrados. A escolha fica na sessão (`session[:restaurante_id]`) e convive com a escolha da catraca do histórico local (#12): escolher uma catraca também define o restaurante, e trocar de restaurante descarta a catraca de outro. Sem restaurante escolhido, o terminal e as leituras redirecionam para a seleção. O topo do terminal mostra o restaurante configurado, com o link "Trocar restaurante". Cada `Acesso` registra o restaurante selecionado, e o model valida que a catraca pertence a ele.
+
+Decisão: a seleção só é exigida quando existe algum restaurante cadastrado (`Restaurante.selecao_obrigatoria?`). Assim os cenários anteriores, que operam o terminal sem restaurantes (validação de entrada, autenticação do funcionário), continuam valendo sem mudança.
+
+**Testes.** Os 4 cenários de `@issue_5` (`features/configuracao_ponto_acesso.feature`) passam com `--strict`, nos passos de `features/step_definitions/configuracao_ponto_acesso_steps.rb`. No RSpec, criei `spec/requests/operador/pontos_de_acesso_spec.rb` e ampliei `spec/models/acesso_spec.rb`, `spec/models/restaurante_spec.rb` e `spec/requests/autenticacao_operador_spec.rb`. Ao fim da issue: 225 exemplos, 0 falhas.
+
+## Issue #22 — Gestão de Turnos e Time-frames
+
+- **Issue:** [#22 Gestão de Turnos e Time-frames](https://github.com/Miguel-MCM/UnB_RU/issues/22) (no repositório principal, [#17](https://github.com/neatzzy/UnB_RU/issues/17)), do épico FastPass ([#18](https://github.com/Miguel-MCM/UnB_RU/issues/18); no principal, [#13](https://github.com/neatzzy/UnB_RU/issues/13))
+- **Responsável:** João Filipe ([@joaofiulipe](https://github.com/joaofiulipe))
+- **Código:** sem PR próprio. Commit [4f592cf](https://github.com/Miguel-MCM/UnB_RU/commit/4f592cf4ab87563e93083179500a5b17f08ca810), integrado na `sprint2` com a #19 no merge [b7c9981](https://github.com/Miguel-MCM/UnB_RU/commit/b7c998116cb7177805c182129b2838e36708db40)
+
+A issue foi a primeira do loop descrito na issue #10: o mesmo prompt `/loop Execute uma iteração conforme docs/loop/prompt.md`, com o Claude Code e o modelo **Claude Opus 5.5**, passando pelo especificador, implementador, testador e revisor-mvc.
+
+**Solução.** Na lista de restaurantes do administrador, o botão "Turnos" abre a tela de turnos do restaurante, onde ele cadastra um turno (nome, início e término) e divide o turno em time-frames de N minutos. Os models são `Turno` (pertence a `Restaurante`) e `TimeFrame` (pertence a `Turno`, numerado). As regras ficam no model: o término precisa ser depois do início; um turno não pode se sobrepor a outro do mesmo restaurante, e a mensagem cita o turno conflitante; a duração do time-frame não pode passar da duração do turno. `Turno#dividir_em_time_frames!` recria os time-frames com o turno travado e, se a duração for inválida, não altera nada. Para o estudante, a página "FastPass" do portal lista os time-frames de cada turno.
+
+Decisão: os horários são guardados em minutos desde a meia-noite (colunas `hora_inicio_min` e `hora_fim_min`, concern `HorarioEmMinutos`), e não em colunas `time`, para não depender de fuso horário. A não sobreposição de turnos só é garantida pela aplicação, sem constraint no banco, o que é aceitável porque só o administrador cadastra turnos. A issue também deixou para as seguintes o helper de teste `entrar_como_estudante` e o parâmetro `{hora}` do Cucumber.
+
+**Testes.** Os 7 cenários de `@issue_bonus_1` (`features/gestao_de_turnos_bonus.feature`) passam com `--strict`, nos passos de `features/step_definitions/gestao_de_turnos_steps.rb`. No RSpec, criei `spec/models/turno_spec.rb`, `spec/models/time_frame_spec.rb`, `spec/requests/admin/turnos_spec.rb`, `spec/requests/admin/time_frames_spec.rb` e `spec/requests/fastpass_spec.rb`, e ampliei `spec/models/restaurante_spec.rb`. Ao fim da issue: 132 exemplos, 0 falhas.
+
+## Issue #19 — Inscrição Única no FastPass
+
+- **Issue:** [#19 Inscrição Única no FastPass](https://github.com/Miguel-MCM/UnB_RU/issues/19) (no repositório principal, [#14](https://github.com/neatzzy/UnB_RU/issues/14))
+- **Responsável:** João Filipe ([@joaofiulipe](https://github.com/joaofiulipe))
+- **Código:** sem PR próprio. Commit [78c29ee](https://github.com/Miguel-MCM/UnB_RU/commit/78c29eea4837aed8cb33f3b087cb07876364ce0b), integrado na `sprint2` com a #22 no merge [b7c9981](https://github.com/Miguel-MCM/UnB_RU/commit/b7c998116cb7177805c182129b2838e36708db40)
+
+A issue foi desenvolvida no mesmo loop da issue #10, com o mesmo prompt e os mesmos agentes. Nesta iteração, o testador passou também a rodar as migrations do zero, sem o `db/schema.rb`, para conferir que elas geram o schema commitado.
+
+**Solução.** Na página "FastPass", cada time-frame tem o botão "Inscrever-se", e a página indica em qual time-frame o estudante está inscrito. Os models são `Sorteio` (um por turno e dia de refeição, com status `aberto`, `encerrado` ou `realizado`) e `InscricaoFastpass` (estudante, sorteio e time-frame, com status `inscrito`, `sorteado`, `nao_sorteado` ou `utilizado`). O índice único `[user_id, sorteio_id]` garante um único time-frame por turno, e o model recusa, com mensagem, a inscrição com sorteio encerrado, a segunda inscrição no mesmo turno e um time-frame de outro turno. A inscrição é gratuita: não mexe no saldo.
+
+Decisão: o sorteio do dia nasce `aberto` sob demanda, na primeira inscrição (`Sorteio.do_dia!`). A inscrição trava o turno (`with_lock`), e redividir um turno que já tem inscrições é recusado. O encerramento das inscrições ficou só no model, sem tela; na #20 ele passou a acontecer quando o sorteio é realizado. O algoritmo do sorteio com peso "Pity" e o bloqueio de 24h do ER ficaram fora do escopo.
+
+**Testes.** Os 5 cenários de `@issue_bonus_4` (`features/inscricao_unica_FastPass_bonus.feature`) passam com `--strict`, nos passos de `features/step_definitions/inscricao_unica_fastpass_steps.rb`. No RSpec, criei `spec/models/sorteio_spec.rb`, `spec/models/inscricao_fastpass_spec.rb` e `spec/requests/inscricoes_fastpass_spec.rb`, e ampliei `spec/models/turno_spec.rb` e `spec/requests/fastpass_spec.rb`. Ao fim da issue: 152 exemplos, 0 falhas.
+
+## Issue #21 — Validação Rigorosa do FastPass
+
+- **Issue:** [#21 Validação Rigorosa FastPass](https://github.com/Miguel-MCM/UnB_RU/issues/21) (no repositório principal, [#16](https://github.com/neatzzy/UnB_RU/issues/16))
+- **Responsável:** João Filipe ([@joaofiulipe](https://github.com/joaofiulipe))
+- **Código:** sem PR próprio. Commit [9304c36](https://github.com/Miguel-MCM/UnB_RU/commit/9304c36d40c175c8d6e1d5f5e7f6454628b4afe5) na branch `feat/validacao-fastpass`, criada a partir de `feat/ponto-de-acesso`
+
+A issue foi desenvolvida no mesmo loop da issue #10, com o mesmo prompt e os mesmos agentes.
+
+**Solução.** O terminal do operador ganhou o quadro "Entrada do FastPass", separado da leitura comum, com o botão "Validar FastPass". A leitura reaproveita o fluxo do `Acesso` da validação de entrada (#11): a leitura só libera a catraca, e o débito acontece quando a passagem é confirmada. A entrada é liberada só para o estudante sorteado num turno do restaurante do ponto de acesso (#10), dentro da janela do time-frame e com saldo suficiente. Os bloqueios novos são status do `Acesso`: `fora_do_time_frame` (chegou antes ou depois do time-frame; o terminal avisa que o estudante deve voltar para o final da fila), `sem_fastpass` (não foi sorteado) e `fastpass_utilizado` (segunda entrada). A tabela `acessos` ganhou `modalidade` (`comum` ou `fastpass`) e `inscricao_fastpass_id`. Ao confirmar a passagem, o débito e a marcação da inscrição como `utilizado` acontecem na mesma transação, com travas no acesso, na inscrição e no saldo.
+
+Decisões: a janela é inclusiva nos dois limites (`HorarioEmMinutos#cobre?`), como pede o esquema do cenário. Quando o estudante tem mais de uma inscrição contemplada no dia, `InscricaoFastpass.contemplada_de` escolhe a do time-frame do momento, depois a do turno do momento e, por fim, a de horário mais próximo, para que quem chega fora do time-frame seja identificado como tal. O revisor-mvc encontrou um bloqueante: a nova FK de `acessos` para a inscrição não tinha regra de exclusão, e remover um restaurante ou um usuário com acesso pelo FastPass dava erro 500. A correção foi `dependent: :nullify` no model e `on_delete: :nullify` na FK, preservando o histórico de acessos.
+
+**Testes.** Os 8 cenários de `@issue_bonus_2` (`features/validacao_FastPass_bonus.feature`: 7 cenários, um deles um esquema com dois exemplos) passam com `--strict`, nos passos de `features/step_definitions/validacao_fastpass_steps.rb`. No RSpec, criei `spec/requests/operador/acessos_fastpass_spec.rb` e ampliei `spec/models/acesso_spec.rb`, `spec/models/inscricao_fastpass_spec.rb` e `spec/models/time_frame_spec.rb`. Ao fim da issue: 251 exemplos, 0 falhas.
+
+## Issue #20 — Notificação de Sorteio
+
+- **Issue:** [#20 Notificação de Sorteio](https://github.com/Miguel-MCM/UnB_RU/issues/20) (no repositório principal, [#15](https://github.com/neatzzy/UnB_RU/issues/15))
+- **Responsável:** João Filipe ([@joaofiulipe](https://github.com/joaofiulipe))
+- **Código:** sem PR próprio. Commit [b57bf15](https://github.com/Miguel-MCM/UnB_RU/commit/b57bf15ded73032e6f47daaaf9b9e83e67b86666) na branch `feat/notificacao-sorteio`, criada a partir de `feat/validacao-fastpass`
+
+A issue foi desenvolvida no mesmo loop da issue #10, com o mesmo prompt e os mesmos agentes.
+
+**Solução.** Uma hora antes do início de cada turno, `Sorteio.notificar_pendentes!` marca o sorteio do dia como `realizado`, o que encerra as inscrições, e cria uma `Notificacao` de "contemplado" ou "não contemplado" para cada inscrição com resultado. A mensagem do contemplado informa o time-frame. O método roda a cada minuto pelo job `NotificarSorteiosJob`, agendado no Solid Queue (`config/recurring.yml`, em development e production). O estudante vê as notificações na nova página "Notificações" do portal.
+
+Decisões: o envio é idempotente, com um índice único por inscrição em `notificacoes`, então rodar o job várias vezes não repete o aviso. Um erro num turno é reportado (`Rails.error.report`) e não impede os demais. Realizar o sorteio no T-60 resolveu a pendência deixada pela #19, que permitia se inscrever num turno que já tinha passado. O algoritmo que escolhe os sorteados (peso "Pity") continua fora do escopo: o job só notifica inscrições que já têm resultado (`sorteado`, `nao_sorteado` ou `utilizado`). As inscrições ainda `inscrito` não são notificadas, e nos testes o resultado é definido pelos passos do Cucumber.
+
+**Testes.** Os 5 cenários de `@issue_bonus_3` (`features/notificacoes_sorteio_bonus.feature`) passam com `--strict`, nos passos de `features/step_definitions/notificacoes_sorteio_steps.rb`. No RSpec, criei `spec/models/notificacao_spec.rb`, `spec/jobs/notificar_sorteios_job_spec.rb` e `spec/requests/notificacoes_spec.rb`, e ampliei `spec/models/sorteio_spec.rb` e `spec/models/inscricao_fastpass_spec.rb`. Com esta issue, todos os cenários do projeto passam: o Cucumber completo fica em 82/82 com `--strict` (rodado duas vezes, sem instabilidade) e o RSpec em 276 exemplos, 0 falhas.
+
+## Integração da sprint2
+
+Antes das issues #10, #21 e #20, integrei na `sprint2` os PRs abertos do grupo e as duas primeiras issues do FastPass, e atualizei o puma por causa de alertas do bundler-audit, resolvendo os conflitos com o mesmo Claude Code. As decisões estão nas mensagens dos commits:
+
+| Commit | O que entrou | Decisões |
+|---|---|---|
+| [4a709d3](https://github.com/Miguel-MCM/UnB_RU/commit/4a709d3e7ae83a4ee6b043dd608df9ca1fedaccf) | PR #36: histórico local da catraca (#12) | — |
+| [22274cd](https://github.com/Miguel-MCM/UnB_RU/commit/22274cd1e7c399d3d60b72b36793d57cc7e382ca) | PR #32: extrato e histórico (#8) | Conflito no `Acesso` com o PR #36: o acesso passou a registrar a catraca e a refeição |
+| [b7c9981](https://github.com/Miguel-MCM/UnB_RU/commit/b7c998116cb7177805c182129b2838e36708db40) | FastPass: #22 e #19 | Trouxe o diagrama ER, o `CLAUDE.md`, os agentes do loop e os scripts `bin/docker-run` e `bin/docker-dev`; conflito no menu do estudante (Extrato e FastPass); `db/schema.rb` regenerado |
+| [759c4e3](https://github.com/Miguel-MCM/UnB_RU/commit/759c4e308b5998614e218e155a7bcb715195b61a) | PR #31: relatório global de acessos (#14) | A migration do relatório cria só `restaurante_id`, porque `catraca_id` já vinha do PR #36. Remover catraca ou restaurante anula a referência nos acessos (`nullify`) em vez de apagá-los, para não perder o histórico usado pelo extrato |
+| [5558c10](https://github.com/Miguel-MCM/UnB_RU/commit/5558c105f13b731a5e8be5e48994b294e3677290) | PR #34: PDF do relatório de operação (#17) | — |
+| [38370c5](https://github.com/Miguel-MCM/UnB_RU/commit/38370c5323cb3ce1bde5d8350aca2eea2964759a) | PR #30: cardápio da refeição atual (#15) | Removida a migration `CreateMenus` duplicada da branch (duas migrations com o mesmo nome impedem o `db:migrate`). O passo "que o estudante está autenticado" só era definido se um grep, rodado no carregamento, não o achasse em outro arquivo; o grep casava com o passo da recarga e o passo nunca existia. Agora ele é definido direto, com o helper `entrar_como_estudante` |
+| [93fdf56](https://github.com/Miguel-MCM/UnB_RU/commit/93fdf565aa778027099fe4c56b7558b59d340ee7) | puma 8.1.1 | O puma 8.0.2 tinha 7 alertas do bundler-audit, que fariam o job `scan_ruby` do CI falhar |
+| [181256a](https://github.com/Miguel-MCM/UnB_RU/commit/181256a99763465b8e52f015663e2b94e665eb24) | PR #35: PDF do histórico do estudante (#16) | Mantida a implementação do extrato do PR #32 como a única do `/extrato`. Da branch da #16 ficaram os passos do Cucumber e o spec de request (renomeado para `spec/requests/extrato_pdf_spec.rb`), adaptados a ela, e saíram o controller, a view e o PDF duplicados. Regra nova: sem lançamentos para os filtros, o PDF não é gerado e aparece "Não há registros para exportar.". Saíram também o passo duplicado de "acessou a seção de Extrato" e o bloco que definia passos via grep, e as datas fixas dos testes passaram a usar a data corrente |
+
+Depois da integração, o Cucumber completo da `sprint2` passou com `--strict` nos 65 cenários que já tinham passos, e os 17 restantes eram as issues #10, #21 e #20, implementadas em seguida.
