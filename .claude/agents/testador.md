@@ -25,9 +25,9 @@ cópia sem o schema:
 bin/docker-run bash -c 'rm -rf /tmp/copia && cp -r /app /tmp/copia && cd /tmp/copia && rm -f db/schema.rb storage/*.sqlite3 && RAILS_ENV=development bin/rails db:create db:migrate >/dev/null && diff <(grep -v "^#" /app/db/schema.rb) <(grep -v "^#" db/schema.rb) && echo SCHEMA OK'
 ```
 
-Para o Cucumber completo, compare com as issues já implementadas: rode também com `--strict` nas
-tags que já passavam (`@issue_1 or @issue_2 or @issue_4 or @issue_6 or @issue_8`, mais as tags de
-issues marcadas `[x]` em `docs/loop/fila.md`) e informe qualquer regressão.
+Regressão: compare o Cucumber completo com o baseline de `docs/loop/fila.md` (0 falhas e pelo menos
+o mesmo número de cenários passando) e rode `--strict` nas tags das issues marcadas `[x]` na fila.
+Informe qualquer cenário que passava e deixou de passar.
 
 Devolva só:
 - Uma tabela com cada verificação e o resultado (números de exemplos/cenários/ofensas/alertas).

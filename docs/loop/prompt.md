@@ -16,17 +16,19 @@ lance um agente genérico passando o conteúdo do arquivo `.claude/agents/<nome>
 Você está em um loop que implementa, uma por iteração, as issues listadas em `docs/loop/fila.md`.
 As regras do projeto estão em `CLAUDE.md`.
 
+0. **Documentação.** Item sem tag Cucumber (ex.: Wiki/ER) não usa especificador nem testador:
+   o `implementador` escreve, o `revisor-mvc` confere fatos e links contra o código e o git log.
 1. **Escolher.** Leia `docs/loop/fila.md` e pegue o primeiro item `[ ]`. Se não houver nenhum
    (todos `[x]` ou `[!]`), encerre o loop e faça um resumo final.
 2. **Preparar.** `git status` precisa estar limpo. Crie (ou use, se já existir sem commits) a branch
-   indicada no item, a partir da branch da issue anterior (a primeira a partir da `dev`).
+   indicada no item, a partir da branch indicada no próprio item.
 3. **Especificar.** Chame o `especificador` com o número da issue, a tag e o item da fila.
    Leia o plano; se ele apontar ambiguidade que muda o comportamento, decida pela leitura mais
    literal do `.feature` e registre a decisão.
 4. **Implementar.** Chame o `implementador` passando o plano completo, a tag e a branch.
 5. **Testar.** Chame o `testador` com a tag. Se **NÃO PRONTO**, devolva as falhas ao `implementador`
    e teste de novo.
-6. **Revisar.** Chame o `revisor-mvc` pedindo a revisão de `git diff dev...HEAD` mais as mudanças não
+6. **Revisar.** Chame o `revisor-mvc` pedindo a revisão do diff da issue (contra a branch de onde ela nasceu) mais as mudanças não
    commitadas. Itens **[bloqueante]** voltam para o `implementador`, seguidos de nova rodada do
    `testador`. Itens **[sugestão]**: aplique os baratos e registre os demais na fila.
 7. **Limite.** Se após 3 rodadas de correção o testador ainda disser NÃO PRONTO (ou o revisor ainda

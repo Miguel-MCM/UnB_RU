@@ -3,8 +3,15 @@
 Responsável: João Filipe. Cada iteração pega o **primeiro item com status `[ ]`**, implementa, e marca.
 Status: `[ ]` a fazer · `[x]` feito · `[!]` bloqueado (ver "Bloqueios" no fim do arquivo).
 
-As issues dependem umas das outras, por isso cada branch nasce da branch da issue anterior
-(a primeira nasce da `dev`), formando uma cadeia — mesmo esquema usado pelo resto do grupo.
+As issues dependem umas das outras, por isso cada branch nasce da branch da issue anterior,
+formando uma cadeia. A integração do grupo é a `sprint2`: a partir do item 3, a cadeia nasce da
+`origin/sprint2` (os itens 1 e 2 já foram integrados nela em 181256a).
+
+Atenção: as tags `@issue_N` dos `.feature` usam a numeração do repositório principal (neatzzy);
+a numeração do fork aparece no título de cada item.
+
+**Regressão (baseline em 181256a):** Cucumber completo com 0 falhas e pelo menos 65 cenários
+passando; RSpec 203 exemplos, 0 falhas.
 
 ---
 
@@ -55,10 +62,30 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
     como em `features/support/autenticacao.rb`).
   - Fora do escopo: algoritmo de sorteio com peso "Pity" e bloqueio de 24h do ER.
 
-## [ ] 3. Validação Rigorosa do FastPass — issue #21
+## [ ] 3. Configuração de Ponto de Acesso — issue #10
+
+- Tag Cucumber: `@issue_5` — `features/configuracao_ponto_acesso.feature` (4 cenários)
+- Branch: `feat/ponto-de-acesso` (a partir de `origin/sprint2`)
+- Commit: `feat: configuração do ponto de acesso pelo funcionário (#10)`
+- Notas de design:
+  - Não tinha responsável no grupo (na Sprint 1 a especificação foi do Miguel); implementada para
+    fechar a entrega e porque a #21 depende dela.
+  - O terminal já guarda a catraca escolhida em `session[:catraca_id]` (histórico local, #12/PR #36:
+    `Operador::TerminalController`, `Operador::HistoricosController`, `current_catraca`). Leia esse
+    código antes: a seleção do restaurante deve conviver com a da catraca, sem duplicar.
+  - Após o login do operador, se não houver restaurante escolhido, pedir a seleção (lista dos
+    restaurantes cadastrados). Guardar em sessão (`session[:restaurante_id]`), com um helper
+    `current_restaurante` no concern de autenticação ou no `Operador::BaseController`.
+  - Bloquear as operações de controle de acesso (leitura no terminal) sem restaurante escolhido,
+    redirecionando para a seleção. Cuidado para não quebrar os cenários de `@issue_6`
+    (validação de entrada), `@issue_7` (histórico local) e `@issue_9` (relatório).
+  - `Acesso.registrar_leitura!` já aceita `restaurante:` (relatório #14): passar o restaurante da
+    sessão; `Acesso` deve ficar associado ao restaurante selecionado.
+
+## [ ] 4. Validação Rigorosa do FastPass — issue #21
 
 - Tag Cucumber: `@issue_bonus_2` — `features/validacao_FastPass_bonus.feature` (7 cenários, 8 com o esquema)
-- Branch: `feat/validacao-fastpass` (a partir de `feat/inscricao-fastpass`)
+- Branch: `feat/validacao-fastpass` (a partir de `feat/ponto-de-acesso`)
 - Commit: `feat: validação rigorosa do FastPass na catraca (#21)`
 - Notas de design:
   - Reaproveitar o fluxo de `Acesso` (leitura → `liberado` → `confirmar_passagem!` debita).
@@ -68,11 +95,12 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
   - Ao confirmar a passagem, marcar a inscrição como `utilizado` (bloqueia a 2ª entrada).
   - Terminal: uma "entrada do FastPass" no terminal do operador (botão/campo separado ou modo),
     sem quebrar os cenários de `@issue_6` (validação comum).
-  - "Ponto de acesso configurado para o restaurante" é a issue #10 (não implementada e não é sua):
-    o step só cria o restaurante; não implementar a #10.
+  - "Ponto de acesso configurado para o restaurante" usa a seleção de restaurante da #10 (item 3):
+    reaproveite os passos dela.
+  - O `Acesso` já tem `refeicao`, `catraca` e `restaurante` (PRs #32, #36, #31): use-os.
   - Reaproveitar os steps de `validacao_entrada_steps.rb` (saldo, tarifa, liberação, débito).
 
-## [ ] 4. Notificação de Sorteio — issue #20
+## [ ] 5. Notificação de Sorteio — issue #20
 
 - Tag Cucumber: `@issue_bonus_3` — `features/notificacoes_sorteio_bonus.feature` (5 cenários)
 - Branch: `feat/notificacao-sorteio` (a partir de `feat/validacao-fastpass`)
@@ -87,6 +115,22 @@ As issues dependem umas das outras, por isso cada branch nasce da branch da issu
   - Estudante vê as notificações no portal (mensagem do contemplado cita o time-frame).
   - Herdado da #19: realizar o sorteio (status `realizado`) no T-60 deve encerrar as inscrições;
     validar/ocultar a inscrição em turno que já começou. Testar os status `sorteado`/`nao_sorteado`.
+
+## [ ] 6. Wiki e diagrama ER — documentação da entrega
+
+- Sem tag Cucumber (só documentação). Branch: `docs/wiki-fastpass` (a partir de `feat/notificacao-sorteio`).
+- Commit: `docs: registra o FastPass e a #10 na wiki e atualiza o diagrama ER`
+- `wiki/Sprint-2.md`: uma seção por issue (#10, #22, #19, #21, #20), no mesmo formato das seções
+  existentes (#6 a #13 e as do João): link da issue no fork e no repositório principal, link do PR
+  (a integração foi feita direto na `sprint2`; cite os commits), solução adotada, testes (RSpec e
+  Cucumber, com números), e o relato de uso de IA — Claude Code (modelo Claude Opus 5.5) com o loop
+  de `docs/loop/` e os agentes de `.claude/agents/` (especificador, implementador, testador,
+  revisor-mvc), citando o prompt do loop. Registrar também as decisões da integração da `sprint2`
+  (mensagens dos merges em `origin/sprint2`).
+- `docs/modelo-er.md`: atualizar para o schema real (`db/schema.rb`): tabela `menus` (cardápio), as
+  colunas `restaurante_id`, `catraca_id` e `refeicao` em `acessos`, e as tabelas do FastPass como
+  implementadas (`turnos`, `time_frames`, `sorteios`, `inscricoes_fastpass`, `notificacoes`, horários
+  em minutos). Marcar o que do ER original ficou fora do escopo (ex.: Pity, bloqueio de 24h).
 
 ---
 
