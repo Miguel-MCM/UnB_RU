@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy"
 
     resource :terminal, only: :show, controller: "terminal"
+    resource :historico, only: :show, controller: "historicos"
     resources :acessos, only: :create do
       resource :passagem, only: :create, controller: "passagens"
     end

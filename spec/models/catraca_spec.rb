@@ -19,4 +19,9 @@ RSpec.describe Catraca, type: :model do
     expect(darcy.catracas.new(nome: "Entrada 1")).not_to be_valid
     expect(gama.catracas.new(nome: "Entrada 1")).to be_valid
   end
+
+  it "pode ter vários acessos associados" do
+    catraca = darcy.catracas.create!(nome: "Entrada 1")
+    expect(catraca.acessos).to be_empty
+  end
 end

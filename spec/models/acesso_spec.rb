@@ -39,6 +39,14 @@ RSpec.describe Acesso, type: :model do
       expect(acesso.user).to be_nil
       expect(acesso.identificacao).to eq("999999")
     end
+
+    it "permite associar uma catraca opcional na leitura" do
+      restaurante = Restaurante.create!(nome: "Darcy Ribeiro")
+      catraca = restaurante.catracas.create!(nome: "Entrada 1")
+      acesso = Acesso.registrar_leitura!("100001", funcionario:, catraca:)
+
+      expect(acesso.catraca).to eq(catraca)
+    end
   end
 
   describe "#confirmar_passagem!" do

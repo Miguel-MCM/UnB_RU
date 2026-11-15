@@ -5,7 +5,11 @@ module Operador
         return redirect_to operador_terminal_path, alert: "Informe a identificação do estudante."
       end
 
-      acesso = Acesso.registrar_leitura!(params[:identificacao], funcionario: current_funcionario)
+      acesso = Acesso.registrar_leitura!(
+        params[:identificacao],
+        funcionario: current_funcionario,
+        catraca: current_catraca
+      )
       redirect_to operador_terminal_path(acesso:)
     end
   end

@@ -1,0 +1,60 @@
+<% content_for :title, "Histórico Local da Catraca · RU UnB" %>
+
+<div class="terminal">
+  <section class="card terminal__cabecalho">
+    <span class="terminal__icone"><%= icon(:receipt) %></span>
+    <div class="terminal__texto">
+      <h1 class="terminal__titulo">
+        Histórico Local da Catraca
+        <% if @catraca %>
+          <span class="selo selo--sucesso"><%= @catraca.nome %></span>
+        <% end %>
+      </h1>
+      <p class="terminal__detalhe">
+        <% if @catraca %>
+          Catraca gerenciada por <strong><%= current_funcionario.nome %></strong>
+          · Unidade: <strong><%= @catraca.restaurante&.nome %></strong>
+        <% else %>
+          Operador: <strong><%= current_funcionario.nome %></strong>
+        <% end %>
+      </p>
+    </div>
+  </section>
+
+  <section class="card painel validacoes" id="historico">
+    <h2 class="painel__titulo"><%= icon(:receipt) %> Acessos Registrados na Catraca</h2>
+
+    <% if @catraca %>
+      <% if @acessos.any? %>
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th scope="col">Horário</th>
+              <th scope="col">Matrícula</th>
+              <th scope="col">Estudante</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Status da catraca</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @acessos.each do |acesso| %>
+              <tr id="<%= dom_id(acesso) %>">
+                <td class="tabela__hora"><%= l(acesso.created_at, format: "%H:%M:%S") %></td>
+                <td><%= acesso.identificacao %></td>
+                <td><%= acesso.user&.nome || "—" %></td>
+                <td class="<%= "tabela__debito" if acesso.confirmado? %>">
+                  <%= acesso.confirmado? ? "- #{reais(acesso.valor_centavos)}" : reais(0) %>
+                </td>
+                <td><%= status_acesso(acesso) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="painel__vazio">Nenhum acesso registrado.</p>
+      <% end %>
+    <% else %>
+      <p class="painel__vazio">Nenhuma catraca selecionada para gerenciamento.</p>
+    <% end %>
+  </section>
+</div>
