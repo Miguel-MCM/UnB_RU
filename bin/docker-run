@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Roda um comando do projeto dentro do container oficial do Ruby (para máquinas sem Ruby instalado).
+# Uso: bin/docker-run bundle exec rspec
+#      RAILS_ENV=development bin/docker-run bin/rails db:migrate
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+exec docker run --rm \
+  -v "$PWD":/app \
+  -v unb_ru_bundle:/usr/local/bundle \
+  -w /app \
+  -e RAILS_ENV="${RAILS_ENV:-test}" \
+  -e HOME=/tmp \
+  -u "$(id -u):$(id -g)" \
+  "ruby:$(sed 's/^ruby-//' .ruby-version | tr -d '[:space:]')" \
+  "$@"

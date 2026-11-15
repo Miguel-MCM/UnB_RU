@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Sobe o servidor de desenvolvimento em http://localhost:3000 dentro do container oficial do Ruby
+# (equivalente ao bin/dev para máquinas sem Ruby instalado). Ctrl+C para parar.
+# Uso: bin/docker-dev            # porta 3000
+#      PORT=4000 bin/docker-dev  # outra porta
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+PORT="${PORT:-3000}"
+
+exec docker run --rm -it \
+  -p "$PORT:3000" \
+  -v "$PWD":/app \
+  -v unb_ru_bundle:/usr/local/bundle \
+  -w /app \
+  -e RAILS_ENV=development \
+  -e HOME=/tmp \
+  -u "$(id -u):$(id -g)" \
+  "ruby:$(sed 's/^ruby-//' .ruby-version | tr -d '[:space:]')" \
+  bash -c "bundle install --quiet && bin/rails db:prepare && bin/rails db:seed && rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0 -p 3000"

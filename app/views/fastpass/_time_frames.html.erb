@@ -1,0 +1,18 @@
+<%# locals: (turno:, inscricoes:) -%>
+<% if turno.time_frames.any? %>
+  <ul class="time-frames">
+    <% turno.time_frames.each do |time_frame| %>
+      <li class="time-frame time-frame--inscricao" id="<%= dom_id(time_frame) %>">
+        <span class="time-frame__horario"><%= time_frame.horario %></span>
+        <% if inscricoes.key?(time_frame.id) %>
+          <span class="time-frame__inscrito">Inscrito</span>
+        <% else %>
+          <%= button_to "Inscrever-se", inscricoes_fastpass_path, params: { time_frame_id: time_frame.id },
+                class: "button button--primary button--small" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="unidade__vazio">Turno ainda não dividido em time-frames.</p>
+<% end %>

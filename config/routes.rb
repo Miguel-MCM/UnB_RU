@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   resource :recarga, only: %i[show create]
+  resource :fastpass, only: :show, controller: "fastpass"
+  resources :inscricoes_fastpass, only: :create, path: "fastpass/inscricoes"
 
   namespace :operador do
     get "login", to: "sessions#new"
@@ -24,8 +26,12 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :restaurantes, except: :show do
       resources :catracas, only: :create
+      resources :turnos, only: %i[index create]
     end
     resources :catracas, only: %i[edit update destroy]
+    resources :turnos, only: [] do
+      resources :time_frames, only: :create
+    end
   end
 
   get "/cardapio_atual", to: "menus#current", as: :current_menu

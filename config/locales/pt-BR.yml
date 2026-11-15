@@ -1,12 +1,25 @@
 pt-BR:
   activerecord:
     models:
+      inscricao_fastpass: Inscrição no FastPass
+      sorteio: Sorteio
       user: Usuário
     attributes:
       catraca:
         nome: Nome
       restaurante:
         nome: Nome
+      time_frame:
+        numero: Número
+        hora_inicio_min: Horário de início
+        hora_fim_min: Horário de término
+      turno:
+        nome: Nome do turno
+        hora_inicio: Horário de início
+        hora_inicio_min: Horário de início
+        hora_fim: Horário de término
+        hora_fim_min: Horário de término
+        duracao_time_frame_min: Duração do time-frame
       user:
         nome: Nome Completo
         matricula: Matrícula
@@ -14,6 +27,19 @@ pt-BR:
         password_confirmation: Confirmar Senha
     errors:
       models:
+        inscricao_fastpass:
+          attributes:
+            base:
+              inscricoes_encerradas: As inscrições para o turno estão encerradas
+              um_time_frame_por_turno: Só é permitido um time-frame por turno
+              time_frame_de_outro_turno: O time-frame não pertence ao turno do sorteio
+        turno:
+          attributes:
+            base:
+              fim_antes_do_inicio: O horário de término deve ser posterior ao de início
+              conflito: O horário conflita com o turno %{turno}
+              duracao_maior_que_turno: A duração do time-frame não pode ser maior que a duração do turno
+              possui_inscricoes: Não é possível redividir um turno que já possui inscrições no FastPass
         user:
           attributes:
             matricula:
