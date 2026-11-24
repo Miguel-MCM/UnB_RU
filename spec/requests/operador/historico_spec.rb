@@ -32,6 +32,23 @@ RSpec.describe "Histórico local da catraca", type: :request do
       expect(response.body).to include("Nenhum acesso registrado")
     end
 
+    it "não lista acessos quando nenhuma catraca foi selecionada" do
+      Acesso.create!(catraca: catraca1, user: estudante1, funcionario:, identificacao: "100001", status: :confirmado, valor_centavos: 600)
+
+      get operador_historico_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Nenhuma catraca selecionada")
+      expect(response.body).not_to include("100001")
+    end
+
+    it "ignora uma catraca inexistente" do
+      get operador_historico_path(catraca_id: 0)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Nenhuma catraca selecionada")
+    end
+
     it "exige autenticação do operador" do
       delete operador_logout_path
       get operador_historico_path

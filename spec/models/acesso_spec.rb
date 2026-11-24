@@ -84,6 +84,15 @@ RSpec.describe Acesso, type: :model do
     end
   end
 
+  describe ".recentes" do
+    it "ordena das leituras mais novas para as mais antigas" do
+      antiga = travel_to(Time.zone.local(2024, 5, 14, 11, 0)) { ler("100001") }
+      nova = travel_to(Time.zone.local(2024, 5, 14, 12, 0)) { ler("100001") }
+
+      expect(Acesso.recentes).to eq([ nova, antiga ])
+    end
+  end
+
   describe ".refeicao_do_horario" do
     it "classifica a leitura pelo turno do dia" do
       expect(Acesso.refeicao_do_horario(Time.zone.local(2024, 5, 14, 7, 45))).to eq("cafe_da_manha")
@@ -221,6 +230,24 @@ RSpec.describe Acesso, type: :model do
       expect(acesso.confirmar_passagem!).to be(false)
       expect(acesso.reload).to be_sem_fastpass
       expect(estudante.reload.saldo_centavos).to eq(1000)
+    end
+
+    it "não debita na confirmação se o FastPass foi usado entre a leitura e a passagem" do
+      acesso = ler_fastpass(11, 5)
+      inscricao.utilizado!
+
+      expect(acesso.confirmar_passagem!).to be(false)
+      expect(acesso.reload).to be_fastpass_utilizado
+      expect(estudante.reload.saldo_centavos).to eq(1000)
+    end
+
+    it "não marca o FastPass como utilizado quando falta saldo na confirmação" do
+      acesso = ler_fastpass(11, 5)
+      estudante.update!(saldo_centavos: 100)
+
+      expect(acesso.confirmar_passagem!).to be(false)
+      expect(acesso.reload).to be_saldo_insuficiente
+      expect(inscricao.reload).to be_sorteado
     end
 
     it "preserva o acesso ao excluir o restaurante, anulando a inscrição" do
