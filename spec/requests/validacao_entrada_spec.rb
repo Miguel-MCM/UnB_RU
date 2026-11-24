@@ -108,5 +108,22 @@ RSpec.describe "Validação de entrada no terminal", type: :request do
       expect(response).to have_http_status(:not_found)
       expect(estudante.reload.saldo_centavos).to eq(1000)
     end
+
+    it "responde 404 para uma leitura inexistente" do
+      post operador_acesso_passagem_path(acesso_id: 0)
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "não confirma passagens sem operador autenticado" do
+      ler("100001")
+      acesso = Acesso.last
+      delete operador_logout_path
+
+      post operador_acesso_passagem_path(acesso)
+
+      expect(response).to redirect_to(operador_login_path)
+      expect(estudante.reload.saldo_centavos).to eq(1000)
+    end
   end
 end

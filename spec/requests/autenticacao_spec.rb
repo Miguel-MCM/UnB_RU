@@ -28,6 +28,21 @@ RSpec.describe "Autenticação do estudante", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("Matrícula ou senha inválidas")
     end
+
+    it "recusa uma matrícula sem conta" do
+      post login_path, params: { matricula: "999999999", password: "Senha123" }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Matrícula ou senha inválidas")
+    end
+
+    it "recusa o login com os campos em branco" do
+      post login_path, params: { matricula: "", password: "" }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      get recarga_path
+      expect(response).to redirect_to(login_path)
+    end
   end
 
   describe "DELETE /logout" do

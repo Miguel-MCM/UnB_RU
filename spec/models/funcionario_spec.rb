@@ -39,5 +39,22 @@ RSpec.describe Funcionario, type: :model do
     it "devolve nil com a senha errada" do
       expect(Funcionario.autenticar("1984201", "errada")).to be_nil
     end
+
+    it "devolve nil com uma matrícula que não existe" do
+      expect(Funcionario.autenticar("0000000", "Operador123")).to be_nil
+    end
+
+    it "devolve nil sem matrícula ou sem senha" do
+      expect(Funcionario.autenticar(nil, "Operador123")).to be_nil
+      expect(Funcionario.autenticar("1984201", nil)).to be_nil
+    end
+  end
+
+  it "não pode ser removido enquanto tiver leituras registradas" do
+    funcionario = Funcionario.create!(atributos)
+    Acesso.create!(funcionario:, identificacao: "100001", status: :nao_encontrado, valor_centavos: 450)
+
+    expect(funcionario.destroy).to be(false)
+    expect(funcionario.errors).not_to be_empty
   end
 end
