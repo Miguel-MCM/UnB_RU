@@ -24,7 +24,7 @@ O trabalho foi dividido por área do sistema: cada grupo é dono de um conjunto 
 | Grupo | Área | Responsável | Pull Request | Situação |
 |---|---|---|---|---|
 | 1 | Relatórios e gestão de restaurantes e catracas | a definir | — | pendente |
-| 2 | Catraca, terminal do operador e autenticação | Miguel ([@Miguel-MCM](https://github.com/Miguel-MCM)) | [#39](https://github.com/Miguel-MCM/UnB_RU/pull/39) | concluído, aguardando merge |
+| 2 | Catraca, terminal do operador e autenticação | Miguel ([@Miguel-MCM](https://github.com/Miguel-MCM)) | [#39](https://github.com/Miguel-MCM/UnB_RU/pull/39) | concluído e mergeado na `sprint3` |
 | 3 | FastPass, turnos e sorteio | a definir | — | pendente |
 | 4 | Área do estudante: cardápio, recarga e extrato | a definir | — | pendente |
 
