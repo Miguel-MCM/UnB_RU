@@ -2,7 +2,7 @@ name: Wiki
 
 on:
   push:
-    branches: [ sprint2 ]
+    branches: [ sprint3 ]
     paths: [ "wiki/**" ]
   workflow_dispatch:
 
