@@ -58,6 +58,11 @@ group :development, :test do
 
   # Testes unitários e de integração [https://github.com/rspec/rspec-rails]
   gem "rspec-rails"
+
+  # Métricas de qualidade da Sprint 3: ABC score [https://github.com/whitesmith/rubycritic]
+  gem "rubycritic", require: false
+  # Documentação do código [https://github.com/ruby/rdoc]
+  gem "rdoc", require: false
 end
 
 group :development do
@@ -70,6 +75,8 @@ group :test do
   gem "cucumber-rails", require: false
   gem "database_cleaner-active_record"
   gem "pdf-reader"
+  # Cobertura dos testes RSpec [https://github.com/simplecov-ruby/simplecov]
+  gem "simplecov", require: false
 end
 
 gem "prawn", "~> 2.5"
