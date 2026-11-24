@@ -41,7 +41,7 @@ Sistema de gerenciamento para o Restaurante Universitário da UnB, desenvolvido 
 
 ### Com Ruby instalado
 
-Requisitos: Ruby 3.3.8 (ver `.ruby-version`) e Bundler. A aplicação usa Rails 8.1 com SQLite, então não precisa de servidor de banco.
+Requisitos: Ruby 3.3.14 (ver `.ruby-version`) e Bundler. A aplicação usa Rails 8.1 com SQLite, então não precisa de servidor de banco.
 
 ```bash
 bundle install

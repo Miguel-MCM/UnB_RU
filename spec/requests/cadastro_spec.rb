@@ -55,6 +55,24 @@ RSpec.describe "Cadastro de usuário", type: :request do
       expect(response.body).to include("já possui uma conta cadastrada")
     end
 
+    it "não cria a conta com os campos obrigatórios em branco" do
+      params_validos[:user].merge!(nome: "", matricula: "", password: "", password_confirmation: "")
+
+      expect { post signup_path, params: params_validos }.not_to change(User, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("não pode ficar em branco")
+    end
+
+    it "não cria a conta com letras na matrícula" do
+      params_validos[:user][:matricula] = "2023ABC"
+
+      expect { post signup_path, params: params_validos }.not_to change(User, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("deve conter apenas números")
+    end
+
     it "mantém os dados preenchidos, menos as senhas, quando há erro" do
       params_validos[:user][:password_confirmation] = "OutraSenha Diferente"
 

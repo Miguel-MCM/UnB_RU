@@ -1,3 +1,5 @@
+# Base de todos os controllers. Inclui as sessões de Authentication e só
+# atende navegadores modernos.
 class ApplicationController < ActionController::Base
   include Authentication
 
