@@ -31,4 +31,23 @@ RSpec.describe "FastPass", type: :request do
 
     expect(response.body).to include("Inscrito", "Você está participando do sorteio do FastPass deste turno.")
   end
+  it "exibe estado vazio quando não há turnos disponíveis" do
+    Turno.destroy_all
+    post login_path, params: { matricula: "221045999", password: "Senha123" }
+
+    get fastpass_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include("Darcy Ribeiro", "Inscrever-se")
+  end
+
+  it "não exibe botão de inscrição para turno sem time-frames configurados" do
+    almoco.time_frames.destroy_all
+    post login_path, params: { matricula: "221045999", password: "Senha123" }
+
+    get fastpass_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include("Inscrever-se")
+  end
 end

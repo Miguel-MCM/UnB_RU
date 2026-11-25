@@ -28,6 +28,19 @@ RSpec.describe InscricaoFastpass, type: :model do
     expect(estudante.inscricoes_fastpass.count).to eq(1)
   end
 
+  it "trata violação de unicidade no banco ao inscrever" do
+    allow(InscricaoFastpass).to receive(:new).and_wrap_original do |metodo, **kwargs|
+      metodo.call(**kwargs).tap do |registro|
+        allow(registro).to receive(:save).and_raise(ActiveRecord::RecordNotUnique)
+      end
+    end
+
+    inscricao = inscrever(almoco.time_frames.first)
+
+    expect(inscricao).not_to be_persisted
+    expect(inscricao.errors[:base]).to include("Só é permitido um time-frame por turno")
+  end
+
   it "permite inscrições em turnos diferentes" do
     inscrever(almoco.time_frames.first)
 
@@ -142,6 +155,24 @@ RSpec.describe InscricaoFastpass, type: :model do
 
       expect(InscricaoFastpass.find(inscricao.id).notificar!(agora + 1.minute)).to eq(primeira)
       expect(Notificacao.count).to eq(1)
+    end
+
+    it "retorna a notificação existente quando ocorre corrida na criação" do
+      inscricao.sorteado!
+      instancia_desatualizada = InscricaoFastpass.find(inscricao.id)
+      instancia_desatualizada.notificacao # carrega nil em memória antes da corrida
+
+      primeira = inscricao.notificar!(agora)
+
+      expect(instancia_desatualizada.notificar!(agora + 1.minute)).to eq(primeira)
+      expect(Notificacao.count).to eq(1)
+    end
+
+    it "propaga o erro se falhar a criação sem existir notificação prévia" do
+      inscricao.sorteado!
+      allow(inscricao).to receive(:mensagem_da_notificacao).and_return("")
+
+      expect { inscricao.notificar!(agora) }.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 
