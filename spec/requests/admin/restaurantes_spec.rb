@@ -25,6 +25,15 @@ RSpec.describe "Gestão de restaurantes e catracas", type: :request do
       expect(response).to redirect_to(operador_terminal_path)
     end
 
+    it "não deixa um operador comum editar nem remover restaurantes" do
+      entrar(operador, "Operador123")
+
+      patch admin_restaurante_path(darcy), params: { restaurante: { nome: "Outro" } }
+      expect(darcy.reload.nome).to eq("Darcy Ribeiro")
+
+      expect { delete admin_restaurante_path(darcy) }.not_to change(Restaurante, :count)
+    end
+
     it "leva o administrador para a gestão depois do login" do
       entrar(administrador, "Admin123")
 
@@ -72,6 +81,42 @@ RSpec.describe "Gestão de restaurantes e catracas", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(darcy.reload.nome).to eq("Darcy Ribeiro")
+    end
+
+    it "exibe o formulário de cadastro" do
+      get new_admin_restaurante_path
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "exibe o formulário de edição" do
+      get edit_admin_restaurante_path(darcy)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Darcy Ribeiro")
+    end
+
+    it "não cadastra um restaurante com nome em branco" do
+      expect { post admin_restaurantes_path, params: { restaurante: { nome: "" } } }.not_to change(Restaurante, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "não renomeia para um nome já usado" do
+      Restaurante.create!(nome: "Gama")
+
+      patch admin_restaurante_path(darcy), params: { restaurante: { nome: "Gama" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(darcy.reload.nome).to eq("Darcy Ribeiro")
+    end
+
+    it "responde 404 para restaurante inexistente" do
+      get edit_admin_restaurante_path(id: 0)
+      expect(response).to have_http_status(:not_found)
+
+      delete admin_restaurante_path(id: 0)
+      expect(response).to have_http_status(:not_found)
     end
 
     it "remove um restaurante e as catracas dele" do

@@ -72,6 +72,23 @@ RSpec.describe "Exportação em PDF do Relatório de Operação (Issue #17)", ty
     expect(response.body).to include("Não há dados para exportar")
   end
 
+  it "não gera PDF e avisa quando a catraca não pertence ao restaurante (caminho triste)" do
+    Acesso.create!(funcionario: admin, restaurante: darcy, catraca: entrada1, identificacao: "231012345", status: :confirmado, valor_centavos: 450)
+
+    get export_pdf_access_reports_path, params: { restaurante_nome: "Gama", catraca_nome: "Entrada 1" }
+    expect(response).to redirect_to(access_reports_path(restaurante_nome: "Gama", catraca_nome: "Entrada 1"))
+    follow_redirect!
+    expect(response.body).to include("A catraca Entrada 1 não pertence ao restaurante Gama")
+  end
+
+  it "mostra \"Todos\" no filtro e o total de acessos no PDF (caminho feliz)" do
+    Acesso.create!(funcionario: admin, restaurante: darcy, catraca: entrada1, identificacao: "231012345", status: :confirmado, valor_centavos: 450)
+
+    get export_pdf_access_reports_path
+    texto = PDF::Reader.new(StringIO.new(response.body.b)).pages.map(&:text).join("\n")
+    expect(texto).to include("Filtro de Restaurante: Todos", "Total de acessos exportados: 1")
+  end
+
   it "bloqueia a exportação por funcionário sem perfil de administrador (caminho triste)" do
     login_como_operador(operador_comum)
     get export_pdf_access_reports_path

@@ -52,19 +52,19 @@
       <% end %>
     </div>
 
-    <% if @error_message.present? %>
+    <% if @relatorio.erro.present? %>
       <div style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 16px; border-radius: 12px;">
-        <p id="report-error" style="margin: 0; font-weight: 600;"><%= @error_message %></p>
+        <p id="report-error" style="margin: 0; font-weight: 600;"><%= @relatorio.erro %></p>
       </div>
-    <% elsif @acessos.empty? %>
+    <% elsif @relatorio.vazio? %>
       <div style="background: #ffffff; border-radius: 14px; padding: 36px 24px; text-align: center; border: 1px dashed #cbd5e1; color: #475569; font-weight: 600;">
         <p id="empty-report" style="margin: 0;">Não há acessos para o filtro selecionado</p>
       </div>
     <% else %>
-      <% if @grouped_counts.present? %>
+      <% if @relatorio.totais_agrupados.present? %>
         <div id="grouped-summary" style="background: #ffffff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px;">
           <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 12px;">Total Agrupado</h2>
-          <% @grouped_counts.each do |group_name, total| %>
+          <% @relatorio.totais_agrupados.each do |group_name, total| %>
             <p style="margin: 6px 0; font-size: 14px; font-weight: 600;"><%= group_name %>: <%= total %> acessos</p>
           <% end %>
         </div>
@@ -81,7 +81,7 @@
             </tr>
           </thead>
           <tbody>
-            <% @acessos.each do |acesso| %>
+            <% @relatorio.acessos.each do |acesso| %>
               <tr style="border-bottom: 1px solid #f1f5f9;">
                 <td style="padding: 10px 8px;"><%= acesso.restaurante&.nome %></td>
                 <td style="padding: 10px 8px;"><%= acesso.catraca&.nome %></td>
