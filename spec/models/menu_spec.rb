@@ -20,6 +20,18 @@ RSpec.describe Menu, type: :model do
     end
   end
 
+  describe ".meal_label" do
+    it "retorna o rótulo em português para tipos válidos (caminho feliz)" do
+      expect(Menu.meal_label("cafe_da_manha")).to eq("café da manhã")
+      expect(Menu.meal_label("almoco")).to eq("almoço")
+      expect(Menu.meal_label("jantar")).to eq("jantar")
+    end
+
+    it "retorna nil para tipo desconhecido (caminho triste)" do
+      expect(Menu.meal_label("ceia")).to be_nil
+    end
+  end
+
   describe "validações" do
     it "é inválido com tipo de refeição desconhecido (caminho triste)" do
       menu = Menu.new(

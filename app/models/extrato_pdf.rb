@@ -1,11 +1,25 @@
+# Gera o documento PDF do extrato financeiro e histórico de refeições do estudante.
 class ExtratoPdf
+  # Colunas exibidas na tabela de lançamentos do extrato em PDF.
   CABECALHO = [ "Data e hora", "Refeição / Evento", "Método", "Valor" ].freeze
 
+  # Inicializa o gerador de PDF com o extrato filtrado e o estudante.
+  #
+  # Argumentos::
+  #   +extrato+:: (+Extrato+) objeto contendo os indicadores e lançamentos filtrados.
+  #   +user+:: (+User+) estudante titular do extrato.
+  # Retorno:: nova instância de +ExtratoPdf+.
+  # Efeitos colaterais:: nenhum.
   def initialize(extrato, user)
     @extrato = extrato
     @user = user
   end
 
+  # Renderiza o relatório de extrato em formato PDF binário.
+  #
+  # Argumentos:: nenhum.
+  # Retorno:: +String+ binária contendo o documento PDF pronto para download.
+  # Efeitos colaterais:: nenhum.
   def render
     Prawn::Document.new(page_size: "A4", margin: 40, info: { Title: "Extrato e Histórico de Refeições" }) do |pdf|
       cabecalho(pdf)
@@ -15,10 +29,22 @@ class ExtratoPdf
   end
 
   private
+    # Formata um valor em centavos para moeda em reais.
+    #
+    # Argumentos::
+    #   +centavos+:: (+Integer+) valor em centavos.
+    # Retorno:: +String+ formatada em reais (ex.: "R$ 4,50").
+    # Efeitos colaterais:: nenhum.
     def reais(centavos)
       ActiveSupport::NumberHelper.number_to_currency(centavos / 100.0)
     end
 
+    # Escreve o cabeçalho institucional, identificação do estudante e filtros ativos no PDF.
+    #
+    # Argumentos::
+    #   +pdf+:: (+Prawn::Document+) documento PDF em construção.
+    # Retorno:: +nil+.
+    # Efeitos colaterais:: adiciona blocos de texto e espaçamento vertical ao documento +pdf+.
     def cabecalho(pdf)
       pdf.text "RU UnB Digital · Portal do Estudante", size: 9, style: :bold, color: "1351B4"
       pdf.text "Extrato e Histórico de Refeições", size: 18, style: :bold
@@ -28,6 +54,12 @@ class ExtratoPdf
       pdf.move_down 16
     end
 
+    # Escreve os indicadores consolidados do mês e o saldo restante no PDF.
+    #
+    # Argumentos::
+    #   +pdf+:: (+Prawn::Document+) documento PDF em construção.
+    # Retorno:: +nil+.
+    # Efeitos colaterais:: adiciona linhas de resumo financeiro ao documento +pdf+.
     def indicadores(pdf)
       pdf.text "Total gasto no mês: #{reais(@extrato.total_gasto_no_mes)} (#{@extrato.debitos_no_mes} débitos)", size: 10
       pdf.text "Total recarregado no mês: #{reais(@extrato.total_recarregado_no_mes)} · " \
@@ -35,14 +67,39 @@ class ExtratoPdf
       pdf.move_down 16
     end
 
+    # Renderiza a lista de lançamentos em tabela ou uma mensagem quando vazia.
+    #
+    # Argumentos::
+    #   +pdf+:: (+Prawn::Document+) documento PDF em construção.
+    # Retorno:: objeto retornado por +pdf.text+ ou +pdf.table+.
+    # Efeitos colaterais:: desenha a tabela ou texto de aviso no documento +pdf+.
     def lancamentos(pdf)
-      lancamentos = @extrato.lancamentos
-      return pdf.text("Nenhum lançamento encontrado para os filtros selecionados.", size: 10) if lancamentos.empty?
+      itens = @extrato.lancamentos
+      return pdf.text("Nenhum lançamento encontrado para os filtros selecionados.", size: 10) if itens.empty?
 
-      linhas = lancamentos.map do |lancamento|
+      renderizar_tabela(pdf, linhas_da_tabela(itens))
+    end
+
+    # Converte os lançamentos do extrato em linhas formatadas para a tabela do PDF.
+    #
+    # Argumentos::
+    #   +itens+:: (+Array<Extrato::Lancamento>+) lista de lançamentos a exibir.
+    # Retorno:: +Array<Array<String>>+ com as células de cada linha da tabela.
+    # Efeitos colaterais:: nenhum.
+    def linhas_da_tabela(itens)
+      itens.map do |lancamento|
         [ I18n.l(lancamento.momento, format: "%d/%m/%Y %H:%M"), lancamento.descricao, lancamento.metodo, lancamento.valor_formatado ]
       end
+    end
 
+    # Desenha e estiliza a tabela de lançamentos no documento PDF.
+    #
+    # Argumentos::
+    #   +pdf+:: (+Prawn::Document+) documento PDF em construção.
+    #   +linhas+:: (+Array<Array<String>>+) linhas formatadas dos lançamentos.
+    # Retorno:: instância da tabela renderizada pelo Prawn.
+    # Efeitos colaterais:: adiciona a tabela estilizada ao documento +pdf+.
+    def renderizar_tabela(pdf, linhas)
       pdf.table([ CABECALHO, *linhas ], header: true, width: pdf.bounds.width,
                 cell_style: { size: 9, borders: [ :bottom ], border_color: "EFE9E7", padding: [ 6, 8 ] }) do
         row(0).font_style = :bold

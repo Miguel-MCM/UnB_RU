@@ -1,6 +1,13 @@
+# Controlador responsável pela exibição do cardápio da refeição em andamento para o estudante.
 class MenusController < ApplicationController
   before_action :require_login
 
+  # Carrega o turno da refeição atual e o respectivo cardápio do dia para exibição.
+  #
+  # Argumentos:: nenhum (utiliza o horário e a data correntes).
+  # Retorno:: +nil+ (renderiza a view +menus/current+).
+  # Efeitos colaterais:: define +@current_meal_type+, +@meal_label+ e +@menu+ para a view;
+  #                      redireciona para o login se o estudante não estiver autenticado.
   def current
     @current_meal_type = Menu.current_meal_type(Time.current)
     return if @current_meal_type.nil?

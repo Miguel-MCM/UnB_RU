@@ -26,25 +26,25 @@ O trabalho foi dividido por área do sistema: cada grupo é dono de um conjunto 
 | 1 | Relatórios e gestão de restaurantes e catracas | a definir | — | pendente |
 | 2 | Catraca, terminal do operador e autenticação | Miguel ([@Miguel-MCM](https://github.com/Miguel-MCM)) | [#39](https://github.com/Miguel-MCM/UnB_RU/pull/39) | concluído e mergeado na `sprint3` |
 | 3 | FastPass, turnos e sorteio | a definir | — | pendente |
-| 4 | Área do estudante: cardápio, recarga e extrato | a definir | — | pendente |
+| 4 | Área do estudante: cardápio, recarga e extrato | Matheus ([@matheusgit](https://github.com/matheusgit)) | branch `sprint3-area-do-estudante` | concluído |
 
 ## Resumo geral
 
-A coluna "Depois do grupo 2" foi medida na branch do PR #39. A coluna final será preenchida depois do merge dos quatro grupos.
+A coluna "Depois do grupo 2" foi medida na branch do PR #39. A coluna "Depois do grupo 4" reflete o avanço com a refatoração e documentação da Área do Estudante na branch `sprint3-area-do-estudante`. A coluna final será preenchida depois do merge dos quatro grupos.
 
-| Métrica | Antes | Depois do grupo 2 | Final |
-|---|---|---|---|
-| Score do RubyCritic | 93.23 | 93.24 | — |
-| Cobertura do RSpec, total | 98.40% | 98.56% | — |
-| Cobertura dos models | 98.98% | 99.00% | — |
-| Cobertura dos controllers | 98.26% | 98.63% | — |
-| Arquivos de model ou controller abaixo de 90% | 1 | 0 | — |
-| Métodos com Flog ≥ 20 | 10 | 8 | — |
-| Métodos com Flog ≥ 18 | 16 | 13 | — |
-| Métodos com ABC ≥ 20 | 3 | 2 | — |
-| RDoc de `app/models` e `app/controllers` | 10.95% | 36.96% | — |
-| Exemplos do RSpec | 276 | 290 | — |
-| Cenários do Cucumber passando | 82 de 82 | 82 de 82 | — |
+| Métrica | Antes | Depois do grupo 2 | Depois do grupo 4 | Final |
+|---|---|---|---|---|
+| Score do RubyCritic | 93.23 | 93.24 | 93.32 | — |
+| Cobertura do RSpec, total | 98.40% | 98.56% | 98.71% | — |
+| Cobertura dos models | 98.98% | 99.00% | 99.27% | — |
+| Cobertura dos controllers | 98.26% | 98.63% | 98.64% | — |
+| Arquivos de model ou controller abaixo de 90% | 1 | 0 | 0 | — |
+| Métodos com Flog ≥ 20 | 10 | 8 | 5 | — |
+| Métodos com Flog ≥ 18 | 16 | 13 | 8 | — |
+| Métodos com ABC ≥ 20 | 3 | 2 | 2 | — |
+| RDoc de `app/models` e `app/controllers` | 10.95% | 36.96% | 68.57% | — |
+| Exemplos do RSpec | 276 | 290 | 293 | — |
+| Cenários do Cucumber passando | 82 de 82 | 82 de 82 | 82 de 82 | — |
 
 O score do RubyCritic é uma média por arquivo e quase não se move até que os métodos mais complexos, que são dos grupos 1, 3 e 4, sejam refatorados.
 
@@ -155,7 +155,109 @@ def confirmar_passagem!
 
 Durante a sprint saiu o Brakeman 8.1.1, que acusa uma vulnerabilidade crítica de execução remota de código no Ruby 3.3.8 (CVE-2026-132825). Como o `bin/brakeman` exige a versão mais recente da gem, o job `scan_ruby` do CI falharia em qualquer PR. O PR #39 sobe o Ruby do projeto para 3.3.14 (`.ruby-version` e `Dockerfile`), o Brakeman para 8.1.1 e o Puma para 8.1.2, que corrige dois alertas do `bundler-audit`.
 
-## Grupos 1, 3 e 4 — pendentes
+## Grupo 4 — Área do estudante: cardápio, recarga e extrato
+
+- **Responsável:** Matheus ([@matheusgit](https://github.com/matheusgit))
+- **Código:** branch `sprint3-area-do-estudante`
+
+### Refatoração
+
+| Método | Flog antes | Flog depois | ABC antes | ABC depois |
+|---|---|---|---|---|
+| `Menu.current_meal_type` | **27.9** | 10.1 | 16.31 | 8.06 |
+| `RecargasHelper#codigo_pix` | **22.9** | 6.8 | **18.25** | 6.40 |
+| `RecargasController#create` | **20.0** | 15.0 | 14.04 | 9.49 |
+| `ExtratoPdf#lancamentos` | 19.6 | 5.8 | **19.08** | 6.08 |
+| `Extrato#lancamentos_de_refeicao` | 18.3 | 5.9 | 14.25 | 5.39 |
+
+O que mudou em cada método e por quê:
+
+- **`Menu.current_meal_type`** concentrava múltiplos condicionais encadeados e literais para testar janelas de horário e dias úteis vs. fins de semana. A lógica foi simplificada com a introdução da constante mapeada `MEAL_WINDOWS`, substituindo ramificações aninhadas por uma busca declarativa `find`, reduzindo drasticamente atribuições e desvios.
+- **`RecargasHelper#codigo_pix`** continha toda a montagem manual de strings, payload TLV (Tag-Length-Value) e cálculo de CRC16 em um único bloco monolítico. A formatação de campos EMV foi isolada no helper privado `campo_emv` e a geração dos campos chave no helper `campos_pix`, mantendo `codigo_pix` apenas como orquestrador claro.
+- **`RecargasController#create`** combinava a instanciação da recarga com parsing condicional de parâmetros, verificação de valor e a construção da mensagem de feedback flash. A formatação da mensagem foi extraída para o método privado `mensagem_confirmacao`.
+- **`ExtratoPdf#lancamentos`** misturava a iteração sobre os lançamentos, verificação de tipo (refeição vs recarga), formatação de valores e montagem da tabela visual com estilos Prawn. A lógica de linhas foi extraída para `linhas_da_tabela` e a estilização/renderização para o método privado `renderizar_tabela`.
+- **`Extrato#lancamentos_de_refeicao`** acumulava queries no banco de dados com múltiplos relacionamentos aninhados e conversão de dados para a struct `Lancamento`. A consulta foi dividida em `escopo_de_refeicoes` e o mapeamento unitário em `acesso_para_lancamento`.
+
+Métodos privados criados na refatoração:
+
+| Método | Flog | ABC | O que faz |
+|---|---|---|---|
+| `ExtratoPdf#renderizar_tabela` | 9.2 | 9.06 | Aplica estilos visuais, larguras de coluna e cabeçalho na tabela Prawn |
+| `Extrato#escopo_de_refeicoes` | 8.3 | 7.21 | Monta query com joins, includes e filtros temporais de acessos confirmados |
+| `RecargasHelper#campos_pix` | 7.8 | 7.07 | Monta array de pares [tag, valor] para a composição do payload Pix |
+| `ExtratoPdf#linhas_da_tabela` | 6.8 | 5.10 | Mapeia cada lançamento em linha textual com data, tipo, detalhes e valor |
+| `Extrato#acesso_para_lancamento` | 6.1 | 5.39 | Converte uma instância de Acesso confirmado em struct Lancamento |
+| `RecargasController#mensagem_confirmacao` | 6.0 | 5.10 | Formata mensagem de sucesso ou erro com valor monetário e recarga simulada |
+| `RecargasHelper#campo_emv` | 3.0 | 3.00 | Formata uma tag EMV no padrão Tag-Length-Value com 2 dígitos de tamanho |
+| `Recarga#calcular_valor_centavos` | 2.0 | 2.00 | Callback privado para sincronizar valor monetário digitado com centavos |
+
+Depois da refatoração, o maior Flog dos arquivos do grupo é 17.6 (`StatementsController#export_pdf`) e o maior ABC é 15.39 (`Extrato#inicio`), ambos com margem segura abaixo do limite de 18/20.
+
+No RubyCritic, todos os arquivos do grupo possuem nota A. O score geral do RubyCritic no projeto subiu de 93.24 para 93.32.
+
+### Cobertura dos testes
+
+| Arquivo | Antes | Depois |
+|---|---|---|
+| `app/models/extrato.rb` | 98.40% | **100%** |
+| `app/models/extrato_pdf.rb` | 100% | 100% |
+| `app/models/menu.rb` | 100% | 100% |
+| `app/models/recarga.rb` | 100% | 100% |
+| `app/models/tarifa.rb` | 100% | 100% |
+| `app/models/user.rb` | 100% | 100% |
+| `app/controllers/menus_controller.rb` | 100% | 100% |
+| `app/controllers/recargas_controller.rb` | 100% | 100% |
+| `app/controllers/statements_controller.rb` | 100% | 100% |
+| `app/helpers/recargas_helper.rb` | 100% | 100% |
+| `app/helpers/statements_helper.rb` | 100% | 100% |
+
+Todos os 11 arquivos de responsabilidade do Grupo 4 possuem 100% de cobertura de código.
+
+### Happy path e sad path
+
+Todas as funcionalidades da Área do Estudante possuem seus caminhos de sucesso e de falha estritamente cobertos em testes automatizados, e os arquivos `.feature` do Cucumber foram mantidos intactos.
+
+| Spec | Happy path | Sad path |
+|---|---|---|
+| `spec/models/menu_spec.rb` | Retorno do cardápio da refeição correta nos horários e dias (café, almoço, jantar); rótulo legível em `Menu.meal_label` | Horários fora de qualquer janela de atendimento (`meal_type: nil`); refeições inexistentes ou inválidas tratadas com fallback por `Menu.meal_label` (**novos testes**) |
+| `spec/models/extrato_spec.rb` | Consulta de lançamentos nos filtros padrão (últimos 30 dias); união ordenada de recargas e acessos | Filtros por `90_dias`, `tudo` e período desconhecido/inválido com fallback para 30 dias (**novos testes protegendo 100% dos ramos de `Extrato#inicio`**) |
+| `spec/models/recarga_spec.rb` | Criação com valor monetário e cálculo de centavos | Recarga sem valor, valor zero ou negativo, e valor não numérico |
+| `spec/models/tarifa_spec.rb` | Retorno do valor vigente configurado ou padrão de R$ 6,10 | Ausência de registro no banco com fallback para valor padrão |
+| `spec/requests/recargas_spec.rb` | Simulação e confirmação de recarga via Pix com atualização imediata de saldo | Tentativa de recarga com valor inválido ou negativo; acesso sem autenticação de estudante |
+| `spec/requests/statements_spec.rb` | Visualização web do extrato de transações e exportação em PDF estruturado | Acesso deslogado redirecionando para login; filtros vazios ou fora do padrão |
+| `spec/requests/menus_spec.rb` | Exibição do cardápio vigente em requisições web | Consulta quando não há cardápio cadastrado para a refeição atual |
+
+Ao todo, foram adicionados 3 novos exemplos ao RSpec, elevando o total do projeto de 290 para 293 exemplos (todos passando com 0 falhas).
+
+### RDoc
+
+Todos os 11 arquivos do grupo (models, controllers e helpers) foram integralmente documentados com padrão RDoc rigoroso, cobrindo 100% de classes, módulos, constantes e métodos (públicos e privados), detalhando:
+1. Breve descrição da responsabilidade ou comportamento.
+2. Argumentos esperados e tipos.
+3. Retornos possíveis (sucesso e falhas).
+4. Efeitos colaterais (acesso a banco, transações, alterações em sessão ou flash).
+
+Exemplo (`RecargasController#create`):
+
+```ruby
+# Processa a criação e confirmação da recarga via formulário web.
+#
+# Argumentos:: nenhum diretamente (lê +params[:recarga][:valor]+ e a sessão do estudante).
+# Retorno:: redireciona para a página de recarga (+recarga_path+).
+# Efeitos colaterais:: em caso de sucesso, chama +User#recarregar!+, gerando um registro
+#                      de +Recarga+ no banco de dados, incrementando o saldo do estudante
+#                      em centavos e definindo +flash[:notice]+. Em caso de valor inválido
+#                      ou falha de persistência, define +flash[:alert]+ e não altera o saldo.
+def create
+```
+
+| Medição | Antes | Depois |
+|---|---|---|
+| 11 arquivos do Grupo 4, itens públicos | 0% (0 de 47) | **100% (47 de 47)** |
+| 11 arquivos do Grupo 4, incluindo métodos privados | 0% (0 de 74) | **100% (74 de 74)** |
+| Projeto (`rdoc -C app/models app/controllers`) | 36.96% | **68.57%** |
+
+## Grupos 1 e 3 — pendentes
 
 Estas seções serão preenchidas com os resultados de cada grupo. Os valores de antes, do baseline, são:
 
@@ -163,4 +265,3 @@ Estas seções serão preenchidas com os resultados de cada grupo. Os valores de
 |---|---|---|---|
 | 1 | `AccessReportsController#load_report_data` (67.7), `OperationReportPdf#render` (49.1), `AccessReportsController#export_pdf` (19.7), `Admin::CatracasController#create` (18.6) | `access_reports_controller.rb` (94.6%), `admin/catracas_controller.rb` (95.2%), `admin/restaurantes_controller.rb` (96.0%) | 8 |
 | 3 | `InscricaoFastpass.contemplada_de` (26.1), `HorarioEmMinutos#horario` (21.0), `InscricoesFastpassController#create` (20.3), `Admin::TimeFramesController#create` (19.6) | `inscricao_fastpass.rb` (93.8%) | 11 |
-| 4 | `Menu.current_meal_type` (27.9), `RecargasHelper#codigo_pix` (22.9), `RecargasController#create` (20.0), `ExtratoPdf#lancamentos` (19.6), `Extrato#lancamentos_de_refeicao` (18.3) | `extrato.rb` (98.4%) | 11 |
