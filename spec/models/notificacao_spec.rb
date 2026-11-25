@@ -24,6 +24,11 @@ RSpec.describe Notificacao, type: :model do
     expect(notificacao(enviada_em: nil)).not_to be_valid
   end
 
+  it "exige usuário e inscrição" do
+    expect(notificacao(user: nil)).not_to be_valid
+    expect(notificacao(inscricao_fastpass: nil)).not_to be_valid
+  end
+
   it "é única por inscrição" do
     notificacao.save!
 

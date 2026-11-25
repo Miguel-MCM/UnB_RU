@@ -1,3 +1,5 @@
+# Subintervalo sequencial de horário dentro de um +Turno+, no qual estudantes
+# podem se inscrever para concorrer ao FastPass.
 class TimeFrame < ApplicationRecord
   include HorarioEmMinutos
 
