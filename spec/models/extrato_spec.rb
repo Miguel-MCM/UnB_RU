@@ -65,6 +65,13 @@ RSpec.describe Extrato do
       expect(extrato(periodo: "30_dias").lancamentos.size).to eq(4)
     end
 
+    it "filtra os últimos 90 dias" do
+      refeicao!("almoco", em: Time.zone.local(2024, 1, 15, 12, 0))
+
+      expect(extrato(periodo: "90_dias").lancamentos.size).to eq(5)
+      expect(extrato(periodo: "tudo").lancamentos.size).to eq(6)
+    end
+
     it "filtra pelo tipo de refeição" do
       lancamentos = extrato(periodo: "30_dias", tipo: "almoco").lancamentos
 
