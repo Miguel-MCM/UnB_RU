@@ -157,7 +157,7 @@ Durante a sprint saiu o Brakeman 8.1.1, que acusa uma vulnerabilidade crítica d
 
 ## Grupo 4 — Área do estudante: cardápio, recarga e extrato
 
-- **Responsável:** Matheus ([@matheusgit](https://github.com/matheusgit))
+- **Responsável:** Matheus ([@matheusindio](https://github.com/matheusindio))
 - **Código:** branch `sprint3-area-do-estudante`
 
 ### Refatoração
