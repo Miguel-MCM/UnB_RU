@@ -23,28 +23,28 @@ O trabalho foi dividido por área do sistema: cada grupo é dono de um conjunto 
 
 | Grupo | Área | Responsável | Pull Request | Situação |
 |---|---|---|---|---|
-| 1 | Relatórios e gestão de restaurantes e catracas | a definir | — | pendente |
+| 1 | Relatórios e gestão de restaurantes e catracas | João Filipe ([@joaofiulipe](https://github.com/joaofiulipe)) | [#41](https://github.com/Miguel-MCM/UnB_RU/pull/41) | concluído e mergeado na `sprint3` |
 | 2 | Catraca, terminal do operador e autenticação | Miguel ([@Miguel-MCM](https://github.com/Miguel-MCM)) | [#39](https://github.com/Miguel-MCM/UnB_RU/pull/39) | concluído e mergeado na `sprint3` |
-| 3 | FastPass, turnos e sorteio | a definir | — | pendente |
-| 4 | Área do estudante: cardápio, recarga e extrato | Matheus ([@matheusgit](https://github.com/matheusgit)) | branch `sprint3-area-do-estudante` | concluído |
+| 3 | FastPass, turnos e sorteio | João Borges ([@jpbsaraiva](https://github.com/jpbsaraiva)) | [#42](https://github.com/Miguel-MCM/UnB_RU/pull/42) | concluído e mergeado na `sprint3` |
+| 4 | Área do estudante: cardápio, recarga e extrato | Matheus ([@matheusindio](https://github.com/matheusindio)) | [#43](https://github.com/Miguel-MCM/UnB_RU/pull/43) | concluído e mergeado na `sprint3` |
 
 ## Resumo geral
 
-A coluna "Depois do grupo 2" foi medida na branch do PR #39. A coluna "Depois do grupo 4" reflete o avanço com a refatoração e documentação da Área do Estudante na branch `sprint3-area-do-estudante`. A coluna final será preenchida depois do merge dos quatro grupos.
+As colunas intermediárias mostram o avanço progressivo com as refatorações. A coluna **Final** consolida o resultado após o merge dos quatro grupos na branch `sprint3`.
 
 | Métrica | Antes | Depois do grupo 2 | Depois do grupo 4 | Final |
 |---|---|---|---|---|
-| Score do RubyCritic | 93.23 | 93.24 | 93.32 | — |
-| Cobertura do RSpec, total | 98.40% | 98.56% | 98.71% | — |
-| Cobertura dos models | 98.98% | 99.00% | 99.27% | — |
-| Cobertura dos controllers | 98.26% | 98.63% | 98.64% | — |
-| Arquivos de model ou controller abaixo de 90% | 1 | 0 | 0 | — |
-| Métodos com Flog ≥ 20 | 10 | 8 | 5 | — |
-| Métodos com Flog ≥ 18 | 16 | 13 | 8 | — |
-| Métodos com ABC ≥ 20 | 3 | 2 | 2 | — |
-| RDoc de `app/models` e `app/controllers` | 10.95% | 36.96% | 68.57% | — |
-| Exemplos do RSpec | 276 | 290 | 293 | — |
-| Cenários do Cucumber passando | 82 de 82 | 82 de 82 | 82 de 82 | — |
+| Score do RubyCritic | 93.23 | 93.24 | 93.32 | **93.61** |
+| Cobertura do RSpec, total | 98.40% | 98.56% | 98.71% | **99.63%** |
+| Cobertura dos models | 98.98% | 99.00% | 99.27% | **100%** |
+| Cobertura dos controllers | 98.26% | 98.63% | 98.64% | **100%** |
+| Arquivos de model ou controller abaixo de 90% | 1 | 0 | 0 | **0** |
+| Métodos com Flog ≥ 20 | 10 | 8 | 5 | **0** |
+| Métodos com Flog ≥ 18 | 16 | 13 | 8 | **0** |
+| Métodos com ABC ≥ 20 | 3 | 2 | 2 | **0** |
+| RDoc de `app/models` e `app/controllers` | 10.95% | 36.96% | 68.57% | **99.34%** (100% dos métodos) |
+| Exemplos do RSpec | 276 | 290 | 293 | **341** |
+| Cenários do Cucumber passando | 82 de 82 | 82 de 82 | 82 de 82 | **82 de 82** |
 
 O score do RubyCritic é uma média por arquivo e quase não se move até que os métodos mais complexos, que são dos grupos 1, 3 e 4, sejam refatorados.
 
@@ -257,11 +257,13 @@ def create
 | 11 arquivos do Grupo 4, incluindo métodos privados | 0% (0 de 74) | **100% (74 de 74)** |
 | Projeto (`rdoc -C app/models app/controllers`) | 36.96% | **68.57%** |
 
-## Grupos 1 e 3 — pendentes
+## Conclusão da Sprint 3
 
-Estas seções serão preenchidas com os resultados de cada grupo. Os valores de antes, do baseline, são:
+Todos os 4 grupos concluíram suas refatorações, testes e documentações, com os respectivos Pull Requests mergeados na branch principal de entrega (`sprint3`):
 
-| Grupo | Métodos a refatorar (Flog antes) | Cobertura abaixo de 100% (antes) | Arquivos para RDoc |
-|---|---|---|---|
-| 1 | `AccessReportsController#load_report_data` (67.7), `OperationReportPdf#render` (49.1), `AccessReportsController#export_pdf` (19.7), `Admin::CatracasController#create` (18.6) | `access_reports_controller.rb` (94.6%), `admin/catracas_controller.rb` (95.2%), `admin/restaurantes_controller.rb` (96.0%) | 8 |
-| 3 | `InscricaoFastpass.contemplada_de` (26.1), `HorarioEmMinutos#horario` (21.0), `InscricoesFastpassController#create` (20.3), `Admin::TimeFramesController#create` (19.6) | `inscricao_fastpass.rb` (93.8%) | 11 |
+1. **Grupo 1:** [PR #41](https://github.com/Miguel-MCM/UnB_RU/pull/41) — Relatórios e gestão de restaurantes e catracas (João Filipe)
+2. **Grupo 2:** [PR #39](https://github.com/Miguel-MCM/UnB_RU/pull/39) — Catraca, terminal do operador e autenticação (Miguel)
+3. **Grupo 3:** [PR #42](https://github.com/Miguel-MCM/UnB_RU/pull/42) — FastPass, turnos e sorteio (João Borges)
+4. **Grupo 4:** [PR #43](https://github.com/Miguel-MCM/UnB_RU/pull/43) — Área do estudante: cardápio, recarga e extrato (Matheus)
+
+Com isso, o projeto atingiu **100% de cobertura nos models e controllers**, **zero métodos com Flog ou ABC ≥ 18**, **100% dos métodos documentados com RDoc**, todas as auditorias de segurança (Brakeman, Bundler-Audit) zeradas, RuboCop sem nenhuma ofensa e a suíte completa de 82 cenários BDD preservada e passando.
