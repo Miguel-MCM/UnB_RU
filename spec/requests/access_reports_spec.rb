@@ -79,6 +79,28 @@ RSpec.describe "Relatório Global de Acessos", type: :request do
     expect(response.body).to include("A catraca Entrada 1 não pertence ao restaurante Gama")
   end
 
+  it "mostra o relatório vazio quando o restaurante filtrado não existe (caminho triste)" do
+    get access_reports_path, params: { restaurante_nome: "Inexistente" }
+    expect(response.body).to include("Não há acessos para o filtro selecionado")
+  end
+
+  it "mostra o relatório vazio quando a catraca filtrada não existe (caminho triste)" do
+    get access_reports_path, params: { catraca_nome: "Fantasma" }
+    expect(response.body).to include("Não há acessos para o filtro selecionado")
+  end
+
+  it "ignora um agrupamento desconhecido (caminho triste)" do
+    get access_reports_path, params: { group_by: "status" }
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include("Total Agrupado")
+  end
+
+  it "exige autenticação (caminho triste)" do
+    delete operador_logout_path
+    get access_reports_path
+    expect(response).to redirect_to(operador_login_path)
+  end
+
   it "bloqueia funcionário que não é administrador (caminho triste)" do
     login_como_operador(operador_comum)
     get access_reports_path

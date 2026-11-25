@@ -1,4 +1,7 @@
+# Helpers de visão usados por todas as páginas: ícones SVG, rótulo do ponto de acesso e
+# formatação de valores em reais.
 module ApplicationHelper
+  # Caminhos SVG (viewBox 24x24) dos ícones, indexados pelo nome usado em #icon.
   ICONS = {
     add: "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
     check_circle: "M16.59 7.58 10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z",
@@ -22,12 +25,25 @@ module ApplicationHelper
     visibility: "M12 6c3.79 0 7.17 2.13 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5C4.83 8.13 8.21 6 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5c1.38 0 2.5 1.12 2.5 2.5S13.38 14 12 14s-2.5-1.12-2.5-2.5S10.62 9 12 9m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"
   }.freeze
 
+  # Desenha um ícone SVG inline.
+  #
+  # Argumentos::
+  #   +name+ (Symbol):: chave de ICONS (ex.: +:restaurant+).
+  #   +options+:: atributos HTML extras do +<svg>+ (ex.: +class:+).
+  # Retorno:: +ActiveSupport::SafeBuffer+ com o +<svg>+ (preenchido com +currentColor+ e
+  #           +aria-hidden+).
+  # Efeitos colaterais:: nenhum. Levanta +KeyError+ se o ícone não existe.
   def icon(name, **options)
     tag.svg(tag.path(d: ICONS.fetch(name)), viewBox: "0 0 24 24", fill: "currentColor", aria: { hidden: true }, **options)
   end
 
   # Rótulo do topo do terminal: o restaurante gerenciado ou, nas telas de operação que exigem a
   # seleção, o aviso de que o ponto de acesso ainda não foi configurado.
+  #
+  # Argumentos:: nenhum (usa +current_restaurante+, +current_funcionario+ e +controller_path+).
+  # Retorno:: o nome do restaurante; <tt>"Ponto de acesso não configurado"</tt> em tela de
+  #           operador com restaurantes cadastrados e nenhum selecionado; +nil+ nos demais casos.
+  # Efeitos colaterais:: pode consultar o banco (+Restaurante.selecao_obrigatoria?+).
   def local_do_ponto_de_acesso
     return current_restaurante.nome if current_restaurante
 
@@ -36,10 +52,20 @@ module ApplicationHelper
     "Ponto de acesso não configurado" if Restaurante.selecao_obrigatoria?
   end
 
+  # Formata centavos como moeda.
+  #
+  # Argumentos:: +centavos+ (Integer).
+  # Retorno:: +String+ no formato da localidade (ex.: <tt>"R$ 4,50"</tt>).
+  # Efeitos colaterais:: nenhum.
   def reais(centavos)
     number_to_currency(centavos / 100.0)
   end
 
+  # Descreve um saldo em número de refeições e em reais.
+  #
+  # Argumentos:: +centavos+ (Integer):: saldo em centavos.
+  # Retorno:: +String+ como <tt>"3 refs (R$ 13,50)"</tt> (refeições inteiras pela tarifa vigente).
+  # Efeitos colaterais:: consulta a tarifa vigente no banco.
   def saldo_em_refeicoes(centavos)
     "#{centavos / Tarifa.vigente_centavos} refs (#{reais(centavos)})"
   end

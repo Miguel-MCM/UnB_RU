@@ -1,61 +1,46 @@
+# Relatório global de acessos (apenas administradores): lista, filtra, agrupa e exporta em
+# PDF os acessos de todos os restaurantes e catracas. A regra fica em +RelatorioAcessos+.
 class AccessReportsController < ApplicationController
   before_action :require_operador
   before_action :require_administrador
+  before_action :carregar_relatorio
 
+  # Exibe o relatório com os filtros dos parâmetros.
+  #
+  # Argumentos:: parâmetros opcionais +restaurante_nome+, +catraca_nome+ e +group_by+.
+  # Retorno:: renderiza a página (sem valor relevante).
+  # Efeitos colaterais:: nenhum (somente leitura).
   def index
-    load_report_data
   end
 
+  # Exporta o relatório filtrado em PDF.
+  #
+  # Argumentos:: os mesmos filtros de #index.
+  # Retorno:: sem valor relevante.
+  # Efeitos colaterais:: com filtro inconsistente ou sem acessos, redireciona para o
+  #                      relatório com um alerta; caso contrário envia
+  #                      <tt>relatorio_operacao.pdf</tt> como anexo.
   def export_pdf
-    load_report_data
-
-    if @error_message.present?
-      redirect_to access_reports_path(request.query_parameters), alert: @error_message
-      return
+    if (impedimento = @relatorio.impedimento_de_exportacao)
+      redirect_to access_reports_path(request.query_parameters), alert: impedimento
+    else
+      enviar_pdf
     end
-
-    if @acessos.empty?
-      redirect_to access_reports_path(request.query_parameters), alert: "Não há dados para exportar"
-      return
-    end
-
-    pdf_data = OperationReportPdf.new(@acessos, restaurante_filtro: @restaurante&.nome).render
-    send_data pdf_data,
-              filename: "relatorio_operacao.pdf",
-              type: "application/pdf",
-              disposition: "attachment"
   end
 
   private
-    def load_report_data
-      @restaurantes = Restaurante.ordenados
-      @catracas = Catraca.order(:nome)
-      @acessos = Acesso.includes(:restaurante, :catraca, :user).order(created_at: :desc)
+    # +before_action+ que monta o +RelatorioAcessos+ (+@relatorio+) a partir dos parâmetros.
+    def carregar_relatorio
+      @relatorio = RelatorioAcessos.new(
+        restaurante_nome: params[:restaurante_nome],
+        catraca_nome: params[:catraca_nome],
+        agrupar_por: params[:group_by]
+      )
+    end
 
-      if params[:restaurante_nome].present?
-        @restaurante = Restaurante.find_by(nome: params[:restaurante_nome])
-        @acessos = @restaurante ? @acessos.where(restaurante_id: @restaurante.id) : Acesso.none
-      end
-
-      if params[:catraca_nome].present?
-        if @restaurante.present?
-          @catraca = @restaurante.catracas.find_by(nome: params[:catraca_nome])
-          if @catraca.nil? && Catraca.exists?(nome: params[:catraca_nome])
-            @error_message = "A catraca #{params[:catraca_nome]} não pertence ao restaurante #{@restaurante.nome}"
-            @acessos = Acesso.none
-            return
-          end
-        else
-          @catraca = Catraca.find_by(nome: params[:catraca_nome])
-        end
-        @acessos = @catraca ? @acessos.where(catraca_id: @catraca.id) : Acesso.none
-      end
-
-      @group_by = params[:group_by]
-      if @group_by == "restaurante"
-        @grouped_counts = @acessos.reorder(nil).joins(:restaurante).group("restaurantes.nome").count
-      elsif @group_by == "catraca"
-        @grouped_counts = @acessos.reorder(nil).joins(:catraca).group("catracas.nome").count
-      end
+    # Envia o PDF do relatório atual como anexo.
+    def enviar_pdf
+      pdf = OperationReportPdf.new(@relatorio.acessos, restaurante_filtro: @relatorio.restaurante&.nome)
+      send_data pdf.render, filename: "relatorio_operacao.pdf", type: "application/pdf", disposition: "attachment"
     end
 end
