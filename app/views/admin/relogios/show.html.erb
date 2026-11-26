@@ -1,0 +1,33 @@
+<% content_for :title, "Horário do sistema · RU UnB" %>
+
+<div class="gestao">
+  <header class="gestao__cabecalho">
+    <div>
+      <p class="selo selo--modulo">Módulo de administração</p>
+      <h1 class="gestao__titulo">Horário do sistema</h1>
+    </div>
+    <%= render "operador/relogio" %>
+    <%= link_to "Voltar aos restaurantes", admin_restaurantes_path, class: "button button--claro" %>
+  </header>
+
+  <section class="card novo-turno">
+    <p id="horario-do-sistema">
+      Agora, para o sistema: <strong><%= l(@relogio.horario_do_sistema, format: "%d/%m/%Y %H:%M:%S") %></strong>
+      <%= Relogio.ajustado? ? "(horário simulado)" : "(horário real)" %>
+    </p>
+    <p class="painel__ajuda">
+      Ajuste só para demonstrações: turnos, FastPass, catraca, extrato e relatórios passam a usar este horário.
+      O relógio continua andando a partir do horário escolhido.
+    </p>
+
+    <%= form_with model: @relogio, url: admin_relogio_path, method: :patch, class: "novo-turno__form" do |form| %>
+      <%= render "shared/field", form:, attribute: :horario_simulado, label: "Data e hora do sistema", icon_name: :tune,
+            type: :datetime_local_field, value: @relogio.horario_simulado.presence || @relogio.horario_do_sistema.strftime("%Y-%m-%dT%H:%M") %>
+      <%= form.button "Ajustar horário", class: "button button--primary" %>
+    <% end %>
+
+    <% if Relogio.ajustado? %>
+      <%= button_to "Voltar ao horário real", admin_relogio_path, method: :delete, class: "button button--claro" %>
+    <% end %>
+  </section>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_201917) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_010339) do
   create_table "acessos", force: :cascade do |t|
     t.integer "user_id"
     t.integer "funcionario_id", null: false
@@ -102,6 +102,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_201917) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_recargas_on_user_id"
+  end
+
+  create_table "relogios", force: :cascade do |t|
+    t.integer "deslocamento_segundos", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "restaurantes", force: :cascade do |t|

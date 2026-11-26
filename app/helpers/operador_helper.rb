@@ -32,4 +32,28 @@ module OperadorHelper
   def motivo_bloqueio(acesso)
     t("operador.acesso.motivos.#{acesso.status}")
   end
+
+  # Links para trocar a catraca gerenciada, um por catraca do restaurante.
+  #
+  # Argumentos:: +restaurante+ (Restaurante), +atual+ (Catraca ou +nil+) e
+  #              +rota+ (Symbol): helper de rota que recebe +catraca_id:+
+  #              (ex.: <tt>:operador_terminal_path</tt>).
+  # Retorno:: SafeBuffer com um link por catraca (a atual, em texto simples),
+  #           separados por " · "; os nomes são escapados.
+  # Efeitos colaterais:: nenhum.
+  def links_de_catracas(restaurante, atual, rota)
+    links = restaurante.catracas.map do |catraca|
+      link_to_unless(catraca == atual, catraca.nome, public_send(rota, catraca_id: catraca.id))
+    end
+    safe_join(links, " · ")
+  end
+
+  # Indica se as setas de ajuste do horário aparecem ao lado do relógio.
+  #
+  # Argumentos:: nenhum (usa +current_funcionario+).
+  # Retorno:: +true+ para administrador, com o ajuste de horário ligado.
+  # Efeitos colaterais:: nenhum.
+  def ajuste_de_horario_visivel?
+    Relogio.ajustavel? && current_funcionario&.administrador?
+  end
 end

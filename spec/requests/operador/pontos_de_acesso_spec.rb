@@ -148,4 +148,45 @@ RSpec.describe "Configuração do ponto de acesso", type: :request do
       expect(Acesso.last.restaurante).to be_nil
     end
   end
+
+  describe "seletor de catraca no terminal" do
+    before do
+      entrar
+      selecionar(darcy)
+    end
+
+    it "lista as catracas do restaurante para escolher" do
+      entrada = darcy.catracas.create!(nome: "Entrada 1")
+      darcy.catracas.create!(nome: "Entrada 2")
+
+      get operador_terminal_path
+
+      expect(response.body).to include("Entrada 1", "Entrada 2", operador_terminal_path(catraca_id: entrada.id))
+    end
+
+    it "mostra a catraca atual em texto simples e as demais como link" do
+      atual = darcy.catracas.create!(nome: "Entrada 1")
+      outra = darcy.catracas.create!(nome: "Entrada 2")
+
+      get operador_terminal_path(catraca_id: atual.id)
+
+      expect(response.body).to include(operador_terminal_path(catraca_id: outra.id))
+      expect(response.body).not_to include(%(href="#{operador_terminal_path(catraca_id: atual.id)}"))
+    end
+
+    it "escapa o nome da catraca" do
+      darcy.catracas.create!(nome: "<b>Entrada</b>")
+
+      get operador_terminal_path
+
+      expect(response.body).to include("&lt;b&gt;Entrada&lt;/b&gt;")
+      expect(response.body).not_to include("<b>Entrada</b>")
+    end
+
+    it "não mostra o seletor quando o restaurante não tem catracas" do
+      get operador_terminal_path
+
+      expect(response.body).not_to include("Catraca:")
+    end
+  end
 end

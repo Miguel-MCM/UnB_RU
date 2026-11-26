@@ -20,6 +20,8 @@ pt-BR:
     attributes:
       catraca:
         nome: Nome
+      relogio:
+        horario_simulado: Data e hora do sistema
       restaurante:
         nome: Nome
       time_frame:
@@ -50,6 +52,11 @@ pt-BR:
               inscricoes_encerradas: As inscrições para o turno estão encerradas
               um_time_frame_por_turno: Só é permitido um time-frame por turno
               time_frame_de_outro_turno: O time-frame não pertence ao turno do sorteio
+        relogio:
+          attributes:
+            horario_simulado:
+              blank: Informe a data e a hora
+              invalid: Data ou hora inválida
         turno:
           attributes:
             base:

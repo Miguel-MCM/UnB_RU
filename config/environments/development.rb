@@ -7,6 +7,12 @@ Rails.application.configure do
 
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Não há sorteio real do FastPass: em desenvolvimento, quem se inscreve já sai sorteado.
+  config.x.fastpass.sorteio_automatico = true
+
+  # O administrador pode ajustar o horário do sistema (ver Relogio), útil em demonstrações.
+  config.x.relogio.ajustavel = true
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 
