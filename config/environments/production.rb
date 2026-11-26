@@ -1,6 +1,9 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  # Cardápio do dia gerado a partir do cardapio.json quando ainda não existe no banco.
+  config.x.cardapio.gerar_do_json = true
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.

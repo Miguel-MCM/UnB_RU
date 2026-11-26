@@ -13,6 +13,9 @@ Rails.application.configure do
   # O administrador pode ajustar o horário do sistema (ver Relogio), útil em demonstrações.
   config.x.relogio.ajustavel = true
 
+  # Cardápio do dia gerado a partir do cardapio.json quando ainda não existe no banco.
+  config.x.cardapio.gerar_do_json = true
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 

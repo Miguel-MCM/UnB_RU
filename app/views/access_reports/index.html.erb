@@ -1,30 +1,8 @@
-<div style="background-color: #f4f6f9; min-height: 100vh; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1e293b;">
-  <header style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 32px; display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <div style="background-color: #003b7a; color: #ffffff; font-weight: 800; font-size: 14px; padding: 10px 8px; border-radius: 6px;">UnB</div>
-      <div>
-        <div style="font-size: 16px; font-weight: 800; color: #003b7a; line-height: 1.1;">RU UnB Digital</div>
-        <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px;">Painel Administrativo</div>
-      </div>
-    </div>
+<% content_for :title, "Relatório de Acessos · RU UnB" %>
 
-    <div style="display: flex; align-items: center; gap: 16px;">
-      <div style="text-align: right; font-size: 12px;">
-        <strong style="display: block; color: #1e293b; font-size: 13px;"><%= current_funcionario&.nome %></strong>
-        <span style="color: #64748b;">Matrícula: <%= current_funcionario&.matricula %></span>
-      </div>
-    </div>
-  </header>
-
-  <main style="max-width: 980px; margin: 28px auto; padding: 0 20px 48px;">
+  <div style="width: min(100%, 980px);">
     <h1 style="font-size: 28px; font-weight: 800; color: #003b7a; margin: 0 0 6px;">Relatório Global de Acessos</h1>
     <p style="font-size: 14px; color: #64748b; margin: 0 0 24px;">Visualize, filtre e agrupe os registros de acesso de todos os restaurantes e catracas do campus.</p>
-
-    <% if flash[:alert].present? %>
-      <div id="flash-alert" style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px;">
-        <%= flash[:alert] %>
-      </div>
-    <% end %>
 
     <div style="background: #ffffff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px;">
       <%= form_with url: access_reports_path, method: :get, local: true, style: "display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;" do %>
@@ -93,5 +71,4 @@
         </table>
       </div>
     <% end %>
-  </main>
-</div>
+  </div>

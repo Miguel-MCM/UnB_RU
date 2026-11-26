@@ -106,4 +106,25 @@ RSpec.describe "Relatório Global de Acessos", type: :request do
     get access_reports_path
     expect(response).to redirect_to(operador_terminal_path)
   end
+
+  describe "acesso pelo menu do administrador" do
+    it "mostra o link Relatório de Acessos ao administrador e usa o layout do operador" do
+      login_como_operador(admin)
+
+      get access_reports_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(href="#{access_reports_path}"), "Terminal de Validação")
+      expect(response.body.scan('class="topbar"').size).to eq(1)
+    end
+
+    it "não mostra o link a operadores comuns" do
+      login_como_operador(operador_comum)
+
+      get operador_ponto_de_acesso_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include(access_reports_path)
+    end
+  end
 end

@@ -1,6 +1,8 @@
 # Relatório global de acessos (apenas administradores): lista, filtra, agrupa e exporta em
 # PDF os acessos de todos os restaurantes e catracas. A regra fica em +RelatorioAcessos+.
 class AccessReportsController < ApplicationController
+  layout "operador"
+
   before_action :require_operador
   before_action :require_administrador
   before_action :carregar_relatorio

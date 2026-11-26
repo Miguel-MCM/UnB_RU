@@ -1,0 +1,53 @@
+.cardapio__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.cardapio__principal,
+.cardapio__resumo {
+  padding: 24px;
+}
+
+.cardapio__pratos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.cardapio__prato {
+  padding: 16px;
+  border: 1px solid var(--color-muted-surface);
+  border-radius: 12px;
+  background: var(--color-page);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cardapio__linha {
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--color-page);
+  font-size: 14px;
+}
+
+.cardapio__resumo dl div {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.cardapio__resumo dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .cardapio__grade {
+    grid-template-columns: 1fr;
+  }
+}

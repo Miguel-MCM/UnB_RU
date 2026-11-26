@@ -63,4 +63,24 @@ RSpec.describe "Cardápio da Refeição Atual (Issue #15)", type: :request do
 
     expect(response).to redirect_to(login_path)
   end
+
+  it "tem o link Cardápio no menu do estudante e usa o layout padrão do portal" do
+    travel_to Time.zone.local(2026, 11, 9, 12, 0, 0)
+
+    get recarga_path
+    expect(response.body).to include(%(href="#{current_menu_path}"), "Cardápio")
+
+    get current_menu_path
+    expect(response.body.scan('class="topbar"').size).to eq(1)
+    expect(response.body).to include('aria-current="page"')
+  end
+
+  it "mostra o cardápio gerado do cardapio.json quando a geração automática está ligada" do
+    allow(Rails.configuration.x.cardapio).to receive(:gerar_do_json).and_return(true)
+    travel_to Time.zone.local(2026, 11, 9, 12, 0, 0)
+
+    get current_menu_path
+
+    expect(response.body).to include("Opção padrão: Frango assado com manjericão", "Guarnição: Jardineira verde (Chuchu e abobrinha)")
+  end
 end

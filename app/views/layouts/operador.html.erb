@@ -31,6 +31,8 @@
           <% if current_funcionario.administrador? %>
             <%= link_to "Restaurantes e Catracas", admin_restaurantes_path, class: "topbar__link topbar__link--destaque",
                   aria: { current: ("page" if controller_path.start_with?("admin/") && controller_name != "relogios") } %>
+            <%= link_to "Relatório de Acessos", access_reports_path, class: "topbar__link topbar__link--destaque",
+                  aria: { current: ("page" if controller_path == "access_reports") } %>
             <% if Relogio.ajustavel? %>
               <%= link_to "Horário do Sistema", admin_relogio_path, class: "topbar__link topbar__link--destaque",
                     aria: { current: ("page" if current_page?(admin_relogio_path)) } %>
