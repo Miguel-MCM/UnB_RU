@@ -13,8 +13,17 @@
         <% if @restaurante %>
           · <span id="ponto-de-acesso">Restaurante: <strong><%= @restaurante.nome %></strong></span>
           (<%= link_to "Trocar restaurante", operador_ponto_de_acesso_path %>)
-        <% end %>
-        <% if @catraca %>
+          <% if @restaurante.catracas.any? %>
+            · <span>Catraca:
+              <% if @catraca %>
+                <strong><%= @catraca.nome %></strong>
+                (<%= @restaurante.catracas.map { |c| link_to_unless(c == @catraca, c.nome, operador_terminal_path(catraca_id: c.id)) }.join(" · ").html_safe %>)
+              <% else %>
+                <%= @restaurante.catracas.map { |c| link_to(c.nome, operador_terminal_path(catraca_id: c.id)) }.join(" · ").html_safe %>
+              <% end %>
+            </span>
+          <% end %>
+        <% elsif @catraca %>
           · Catraca: <strong><%= @catraca.nome %></strong>
         <% end %>
         · <span class="terminal__tarifa">Tarifa vigente: <%= reais(@tarifa) %></span>
@@ -75,7 +84,7 @@
   <section class="card painel validacoes" id="historico">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
       <h2 class="painel__titulo"><%= icon(:receipt) %> <%= @catraca ? "Histórico da Catraca (#{@catraca.nome})" : "Últimas Validações Registradas" %></h2>
-      <%= link_to "Consultar histórico local", operador_historico_path, class: "button button--secondary" %>
+      <%= link_to "Consultar histórico local", (@catraca ? operador_historico_path(catraca_id: @catraca.id) : operador_historico_path), class: "button button--secondary" %>
     </div>
 
     <% if @ultimos_acessos.any? %>

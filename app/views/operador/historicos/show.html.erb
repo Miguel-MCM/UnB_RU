@@ -57,4 +57,23 @@
       <p class="painel__vazio">Nenhuma catraca selecionada para gerenciamento.</p>
     <% end %>
   </section>
+
+  <% if current_restaurante && current_restaurante.catracas.any? %>
+    <section class="card painel" id="selecionar-catraca" style="margin-top: 1.5rem;">
+      <h2 class="painel__titulo"><%= icon(:sensors) %> Catracas do restaurante <%= current_restaurante.nome %></h2>
+      <p style="margin-bottom: 1rem; color: #64748b; font-size: 0.95rem;">
+        Selecione a catraca que deseja gerenciar ou auditar o histórico local:
+      </p>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <% current_restaurante.catracas.each do |catraca| %>
+          <%= link_to operador_historico_path(catraca_id: catraca.id),
+                class: "button #{catraca == @catraca ? 'button--primary' : 'button--secondary'}" do %>
+            <%= icon(:sensors) %>
+            <%= catraca.nome %>
+            <%= "(Selecionada)" if catraca == @catraca %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
 </div>
