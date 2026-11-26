@@ -17,6 +17,11 @@ class InscricoesFastpassController < ApplicationController
     time_frame = TimeFrame.find(params.expect(:time_frame_id))
     inscricao = InscricaoFastpass.inscrever!(user: current_user, time_frame:)
 
+    if Rails.env.development? && inscricao.persisted?
+      inscricao.sorteado!
+      inscricao.notificar!
+    end
+
     redirect_to fastpass_path, **flash_da_inscricao(inscricao, time_frame)
   end
 
