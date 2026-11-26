@@ -6,6 +6,7 @@
       <p class="selo selo--modulo">Módulo de administração</p>
       <h1 class="gestao__titulo">Turnos — <%= @restaurante.nome %></h1>
     </div>
+    <%= render "operador/relogio" %>
     <%= link_to "Voltar aos restaurantes", admin_restaurantes_path, class: "button button--claro" %>
   </header>
 

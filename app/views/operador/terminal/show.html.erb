@@ -17,9 +17,9 @@
             · <span>Catraca:
               <% if @catraca %>
                 <strong><%= @catraca.nome %></strong>
-                (<%= @restaurante.catracas.map { |c| link_to_unless(c == @catraca, c.nome, operador_terminal_path(catraca_id: c.id)) }.join(" · ").html_safe %>)
+                (<%= links_de_catracas(@restaurante, @catraca, :operador_terminal_path) %>)
               <% else %>
-                <%= @restaurante.catracas.map { |c| link_to(c.nome, operador_terminal_path(catraca_id: c.id)) }.join(" · ").html_safe %>
+                <%= links_de_catracas(@restaurante, nil, :operador_terminal_path) %>
               <% end %>
             </span>
           <% end %>
@@ -29,10 +29,7 @@
         · <span class="terminal__tarifa">Tarifa vigente: <%= reais(@tarifa) %></span>
       </p>
     </div>
-    <div class="relogio">
-      <p class="eyebrow">Horário oficial</p>
-      <p class="relogio__hora"><%= l(Time.current, format: "%H:%M") %></p>
-    </div>
+    <%= render "operador/relogio" %>
   </section>
 
   <div class="terminal__grid">

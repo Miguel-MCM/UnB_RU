@@ -19,6 +19,29 @@ RSpec.describe InscricaoFastpass, type: :model do
     expect(estudante.inscricoes_fastpass.do_dia.do_turno(almoco)).to eq([ inscricao ])
   end
 
+  it "não sorteia a inscrição quando o sorteio automático está desligado" do
+    expect(inscrever(almoco.time_frames.first)).to be_inscrito
+  end
+
+  it "sorteia e notifica a inscrição quando o sorteio automático está ligado" do
+    allow(Rails.configuration.x.fastpass).to receive(:sorteio_automatico).and_return(true)
+
+    inscricao = inscrever(almoco.time_frames.first)
+
+    expect(inscricao).to be_sorteado
+    expect(inscricao.notificacao).to be_contemplado
+  end
+
+  it "não sorteia a inscrição recusada com o sorteio automático ligado" do
+    allow(Rails.configuration.x.fastpass).to receive(:sorteio_automatico).and_return(true)
+    inscrever(almoco.time_frames.first)
+
+    recusada = inscrever(almoco.time_frames.last)
+
+    expect(recusada).not_to be_persisted
+    expect(recusada.errors).not_to be_empty
+  end
+
   it "recusa um segundo time-frame no mesmo turno" do
     inscrever(almoco.time_frames.first)
     segunda = inscrever(almoco.time_frames.last)

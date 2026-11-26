@@ -10,6 +10,9 @@
           <span class="brand__linha">
             <strong class="brand__name">RU UnB</strong>
             <span class="selo selo--sucesso">Operacional</span>
+            <% if Relogio.ajustado? %>
+              <span class="selo selo--modulo">Horário simulado</span>
+            <% end %>
           </span>
           <% if (local = local_do_ponto_de_acesso) %>
             <small class="brand__local"><%= local %></small>
@@ -27,7 +30,11 @@
                 aria: { current: ("page" if current_page?(operador_historico_path)) } %>
           <% if current_funcionario.administrador? %>
             <%= link_to "Restaurantes e Catracas", admin_restaurantes_path, class: "topbar__link topbar__link--destaque",
-                  aria: { current: ("page" if controller_path.start_with?("admin/")) } %>
+                  aria: { current: ("page" if controller_path.start_with?("admin/") && controller_name != "relogios") } %>
+            <% if Relogio.ajustavel? %>
+              <%= link_to "Horário do Sistema", admin_relogio_path, class: "topbar__link topbar__link--destaque",
+                    aria: { current: ("page" if current_page?(admin_relogio_path)) } %>
+            <% end %>
           <% end %>
         </nav>
 

@@ -307,3 +307,54 @@
     grid-template-columns: 1fr;
   }
 }
+
+.painel--espaco {
+  margin-top: 1.5rem;
+}
+
+.painel__ajuda {
+  margin-bottom: 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.painel__opcoes {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.relogio__linha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.relogio__form {
+  display: contents;
+}
+
+.relogio__botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--color-primary);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.relogio__botao:hover {
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.relogio__botao svg {
+  width: 16px;
+  height: 16px;
+}

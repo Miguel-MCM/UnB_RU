@@ -1,0 +1,18 @@
+<div class="relogio">
+  <p class="eyebrow">Horário oficial</p>
+  <div class="relogio__linha">
+    <% if ajuste_de_horario_visivel? %>
+      <%= button_to deslocar_admin_relogio_path, method: :patch, params: { sentido: "menos" }, class: "relogio__botao",
+            form: { class: "relogio__form" }, title: "Voltar 30 minutos", aria: { label: "Voltar 30 minutos" } do %>
+        <%= icon(:remove) %>
+      <% end %>
+    <% end %>
+    <p class="relogio__hora"><%= l(Time.current, format: "%H:%M") %></p>
+    <% if ajuste_de_horario_visivel? %>
+      <%= button_to deslocar_admin_relogio_path, method: :patch, params: { sentido: "mais" }, class: "relogio__botao",
+            form: { class: "relogio__form" }, title: "Avançar 30 minutos", aria: { label: "Avançar 30 minutos" } do %>
+        <%= icon(:add) %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

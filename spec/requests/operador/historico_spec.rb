@@ -49,6 +49,12 @@ RSpec.describe "Histórico local da catraca", type: :request do
       expect(response.body).to include("Nenhuma catraca selecionada")
     end
 
+    it "lista as catracas do restaurante para trocar a catraca gerenciada" do
+      get operador_historico_path(catraca_id: catraca1.id)
+
+      expect(response.body).to include("selecionar-catraca", "(Selecionada)", operador_historico_path(catraca_id: catraca2.id))
+    end
+
     it "exige autenticação do operador" do
       delete operador_logout_path
       get operador_historico_path

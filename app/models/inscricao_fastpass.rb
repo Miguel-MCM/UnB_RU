@@ -80,17 +80,33 @@ class InscricaoFastpass < ApplicationRecord
   #           com os erros preenchidos em +#errors+ quando recusada.
   # Efeitos colaterais:: adquire lock no registro do +Turno+, pode criar o
   #                      +Sorteio+ do dia e grava a +InscricaoFastpass+ no banco
-  #                      quando as validações passam.
+  #                      quando as validações passam. Com
+  #                      <tt>config.x.fastpass.sorteio_automatico</tt> ligado
+  #                      (só em desenvolvimento), a inscrição criada já é
+  #                      sorteada e notificada (ver #sortear_e_notificar!).
   def self.inscrever!(user:, time_frame:)
     inscricao = nil
     time_frame.turno.with_lock do
       inscricao = new(user:, time_frame:, sorteio: Sorteio.do_dia!(time_frame.turno))
       inscricao.save
     end
+    inscricao.sortear_e_notificar! if inscricao.persisted? && Rails.configuration.x.fastpass.sorteio_automatico
     inscricao
   rescue ActiveRecord::RecordNotUnique
     inscricao.errors.add(:base, :um_time_frame_por_turno)
     inscricao
+  end
+
+  # Marca a inscrição como sorteada e notifica o estudante. Atalho para testar
+  # o FastPass manualmente enquanto o algoritmo de sorteio não existe.
+  #
+  # Argumentos:: +agora+ (Time, opcional): momento do envio da notificação.
+  # Retorno:: a +Notificacao+ da inscrição.
+  # Efeitos colaterais:: grava o status +sorteado+ e cria a notificação
+  #                      "contemplado" (idempotente).
+  def sortear_e_notificar!(agora = Time.current)
+    sorteado!
+    notificar!(agora)
   end
 
   # Notifica o estudante sobre o resultado do sorteio (contemplado se sorteada

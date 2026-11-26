@@ -31,6 +31,9 @@ Rails.application.routes.draw do
       resources :turnos, only: %i[index create]
     end
     resources :catracas, only: %i[edit update destroy]
+    resource :relogio, only: %i[show update destroy] do
+      patch :deslocar
+    end
     resources :turnos, only: [] do
       resources :time_frames, only: :create
     end
